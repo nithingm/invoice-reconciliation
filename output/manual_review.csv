@@ -1,0 +1,10 @@
+invoice_id,claimed_credit,total_remaining_credit,shortfall,reason,requires_review
+INV-001,500.0,200,300.0,Insufficient credit,True
+INV-002,800.0,150,650.0,Insufficient credit,True
+INV-003,800.0,0,800.0,Insufficient credit,True
+INV-004,400.0,0,400.0,Insufficient credit,True
+INV-005,200.0,0,200.0,Insufficient credit,True
+INV-006,1000.0,250,750.0,Insufficient credit,True
+INV-009,400.0,0,400.0,Insufficient credit,True
+INV-010,700.0,300,400.0,Insufficient credit,True
+INV-001,600.0,0,600.0,Insufficient credit,True

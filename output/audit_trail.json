@@ -1,0 +1,197 @@
+[
+  {
+    "timestamp": "2025-07-29T09:45:09.215032",
+    "level": "INFO",
+    "message": "Loaded 12 invoices, 11 credit memos, 10 usage records"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.234132",
+    "level": "INFO",
+    "message": "Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.249958",
+    "level": "INFO",
+    "message": "Processing invoices..."
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.249958",
+    "level": "INFO",
+    "message": "Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.254088",
+    "level": "INFO",
+    "message": "Found 1 eligible credit memos for customer CUST-001"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.254088",
+    "level": "INFO",
+    "message": "Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.256122",
+    "level": "INFO",
+    "message": "Found 1 eligible credit memos for customer CUST-002"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.256122",
+    "level": "INFO",
+    "message": "Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.257871",
+    "level": "INFO",
+    "message": "Found 0 eligible credit memos for customer CUST-003"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.257871",
+    "level": "INFO",
+    "message": "Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.258874",
+    "level": "INFO",
+    "message": "Found 0 eligible credit memos for customer CUST-004"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.259771",
+    "level": "INFO",
+    "message": "Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.259771",
+    "level": "INFO",
+    "message": "Found 0 eligible credit memos for customer CUST-005"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.259771",
+    "level": "INFO",
+    "message": "Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.262698",
+    "level": "INFO",
+    "message": "Found 2 eligible credit memos for customer CUST-006"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.262698",
+    "level": "INFO",
+    "message": "Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.263894",
+    "level": "INFO",
+    "message": "Found 0 eligible credit memos for customer CUST-009"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.263894",
+    "level": "INFO",
+    "message": "Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.264892",
+    "level": "INFO",
+    "message": "Found 1 eligible credit memos for customer CUST-010"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.265892",
+    "level": "INFO",
+    "message": "Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.266757",
+    "level": "INFO",
+    "message": "Found 0 eligible credit memos for customer CUST-011"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.266757",
+    "level": "INFO",
+    "message": "Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.266757",
+    "level": "INFO",
+    "message": "Found 2 eligible credit memos for customer CUST-012"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.266757",
+    "level": "INFO",
+    "message": "Allocated $600 from memo CM-010"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.269660",
+    "level": "INFO",
+    "message": "Allocated $400.0 from memo CM-011"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:09.269660",
+    "level": "INFO",
+    "message": "Running LLM analysis on 9 manual review cases..."
+  },
+  {
+    "timestamp": "2025-07-29T09:45:11.592493",
+    "level": "INFO",
+    "message": "Ollama connection successful"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:16.087429",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-001"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:20.197528",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-002"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:24.220234",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-003"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:28.587426",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-004"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:32.551076",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-005"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:36.945026",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-006"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:40.955188",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-009"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:45.150130",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-010"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:49.218973",
+    "level": "INFO",
+    "message": "LLM analyzed case INV-001"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:49.218973",
+    "level": "INFO",
+    "message": "Generating outputs..."
+  },
+  {
+    "timestamp": "2025-07-29T09:45:49.222712",
+    "level": "INFO",
+    "message": "Saved 1 verified results to output\\results.csv"
+  },
+  {
+    "timestamp": "2025-07-29T09:45:49.222712",
+    "level": "INFO",
+    "message": "Saved 9 cases for manual review to output\\manual_review.csv"
+  }
+]

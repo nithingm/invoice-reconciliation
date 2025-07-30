@@ -1,0 +1,6 @@
+credit_memo_id,customer_id,credit_amount,date_issued,reason,related_invoice_id,status,part_number,remaining_credit
+CM-001,CUST-A,500.00,2024-01-10,Warranty,INV-001,Active,PART-123,500.00
+CM-002,CUST-A,300.00,2024-01-12,Return,,Active,,300.00
+CM-003,CUST-B,200.00,2023-12-15,Warranty,,Expired,,200.00
+CM-004,CUST-A,400.00,2024-01-05,Defect,,Active,PART-789,400.00
+CM-005,CUST-C,150.00,2024-01-28,Return,,Active,,150.00
