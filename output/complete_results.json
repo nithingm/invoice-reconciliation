@@ -1,0 +1,186 @@
+[
+  {
+    "invoice_id": "INV-012",
+    "verified": true,
+    "claimed_credit": 1000.0,
+    "matched_credit_memo_ids": [
+      "CM-010",
+      "CM-011"
+    ],
+    "total_remaining_credit": 1200,
+    "allocation_plan": [
+      {
+        "credit_memo_id": "CM-010",
+        "amount_used": 600
+      },
+      {
+        "credit_memo_id": "CM-011",
+        "amount_used": 400.0
+      }
+    ],
+    "shortfall": 0,
+    "customer_id": "CUST-012"
+  },
+  {
+    "invoice_id": "INV-001",
+    "verified": false,
+    "claimed_credit": 500.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 200,
+    "allocation_plan": [],
+    "shortfall": 300.0,
+    "customer_id": "CUST-001",
+    "llm_analysis": {
+      "recommendation": "REJECT",
+      "confidence": 0.8,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $500, but only has available credit of $200. This indicates a shortfall of $300, which is not supported by the available credit memos. Additionally, there is no part number associated with the invoice or credit claim, which raises suspicions about the legitimacy of the claim. The timing of the claim also seems suspicious given that it was issued in 2022-12-01 00:00:00, but there is no clear indication of when the actual work was performed. Therefore, based on these factors, I recommend rejecting the credit claim.",
+      "suggested_action": "Request additional information from the customer to clarify the legitimacy of the claim and provide supporting documentation for the work performed.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-002",
+    "verified": false,
+    "claimed_credit": 800.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 150,
+    "allocation_plan": [],
+    "shortfall": 650.0,
+    "customer_id": "CUST-002",
+    "llm_analysis": {
+      "recommendation": "APPROVE",
+      "confidence": 0.85,
+      "risk_level": "LOW",
+      "reasoning": "The customer has a remaining balance of $150, which is the exact amount claimed in the invoice. The available credit memos also show that this amount was issued to the same part number (PN-002) as the current invoice. This suggests that the claim is legitimate and the timing matches. Additionally, the shortfall amount ($650.0) is not unusually high for a single invoice. Therefore, based on these factors, I recommend approving the credit claim.",
+      "suggested_action": "Verify the customer's account status and ensure that there are no other outstanding invoices or credits that may affect this approval.",
+      "approved_amount": 800.0
+    }
+  },
+  {
+    "invoice_id": "INV-003",
+    "verified": false,
+    "claimed_credit": 800.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 0,
+    "allocation_plan": [],
+    "shortfall": 800.0,
+    "customer_id": "CUST-003",
+    "llm_analysis": {
+      "recommendation": "MANUAL_REVIEW",
+      "confidence": 0.75,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $800.0, but their available credit is $0, resulting in a shortfall of the same amount. This discrepancy raises concerns about the legitimacy of the claim. Additionally, the part number is not provided, which makes it difficult to verify the accuracy of the invoice. Given these factors, I recommend conducting a manual review to further investigate the claim and determine its validity.",
+      "suggested_action": "Request additional documentation from the customer, such as proof of payment or an explanation for the missing part number, to support their credit claim.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-004",
+    "verified": false,
+    "claimed_credit": 400.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 0,
+    "allocation_plan": [],
+    "shortfall": 400.0,
+    "customer_id": "CUST-004",
+    "llm_analysis": {
+      "recommendation": "MANUAL_REVIEW",
+      "confidence": 0.75,
+      "risk_level": "MEDIUM",
+      "reasoning": "The credit claim of $400.0 has a significant shortfall against the available credit of $0, indicating a potential issue with the customer's account. The lack of part number information makes it difficult to verify the legitimacy of the invoice. Additionally, the reason for manual review is unknown, which adds to the uncertainty. While the available credit memo CM-004 shows a remaining balance of $150, this does not directly address the shortfall in the current claim. Therefore, further investigation and clarification are required before making a decision.",
+      "suggested_action": "Request additional information from the customer regarding the reason for manual review and provide an opportunity for them to rectify any discrepancies or provide supporting documentation for the invoice.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-005",
+    "verified": false,
+    "claimed_credit": 200.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 0,
+    "allocation_plan": [],
+    "shortfall": 200.0,
+    "customer_id": "CUST-005",
+    "llm_analysis": {
+      "recommendation": "REJECT",
+      "confidence": 0.8,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $200.0, but the available credit is $0. This indicates a significant shortfall. Additionally, there are no matching part numbers or credits memos to support the claim. The reason for manual review is unknown, which adds to the uncertainty. Given these factors, I believe the credit claim is likely fraudulent and should be rejected.",
+      "suggested_action": "Request additional information from the customer regarding the reason for manual review and consider escalating the case to a supervisor for further review.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-006",
+    "verified": false,
+    "claimed_credit": 1000.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 250,
+    "allocation_plan": [],
+    "shortfall": 750.0,
+    "customer_id": "CUST-006",
+    "llm_analysis": {
+      "recommendation": "REJECT",
+      "confidence": 0.8,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $1000.0, but the available credit is only $250. This results in a shortfall of $750.0. Additionally, there are two available credit memos (CM-006 and CM-007) that reduce the available credit further. The part number for both memos matches with the claimed credit, which raises suspicions about the legitimacy of the claim. Furthermore, the timing of the memos is not consistent with the date of the invoice. Therefore, based on these factors, I conclude that the credit claim is likely fraudulent and should be rejected.",
+      "suggested_action": "Request additional documentation from the customer to verify the legitimacy of the claim or investigate further to determine the source of the discrepancy.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-009",
+    "verified": false,
+    "claimed_credit": 400.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 0,
+    "allocation_plan": [],
+    "shortfall": 400.0,
+    "customer_id": "CUST-009",
+    "llm_analysis": {
+      "recommendation": "REJECT",
+      "confidence": 0.8,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $400.0, but the available credit is $0, resulting in a shortfall of $400.0. This indicates a potential discrepancy. Additionally, there is no part number associated with the invoice, which raises further concerns about the legitimacy of the claim. The only available credit memo (CM-008) is for $300, which does not match the claimed amount. Given these inconsistencies, I recommend rejecting the credit claim.",
+      "suggested_action": "Request additional information from the customer to clarify the discrepancies and provide supporting documentation for the invoice.",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-010",
+    "verified": false,
+    "claimed_credit": 700.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 300,
+    "allocation_plan": [],
+    "shortfall": 400.0,
+    "customer_id": "CUST-010",
+    "llm_analysis": {
+      "recommendation": "REJECT",
+      "confidence": 0.8,
+      "risk_level": "MEDIUM",
+      "reasoning": "The customer has claimed a credit of $700, but only $300 is available in the system. This discrepancy suggests that the claim may be fraudulent or incorrect. Additionally, there is no part number associated with the invoice, which further raises suspicions. The timing of the claim also does not align with any known credits issued by the company (CM-009 was issued on 2023-01-20). Given these factors, I believe it is necessary to reject the credit claim and request additional information from the customer.",
+      "suggested_action": "Request additional documentation or clarification from the customer regarding the invoice and part number",
+      "approved_amount": 0.0
+    }
+  },
+  {
+    "invoice_id": "INV-001",
+    "verified": false,
+    "claimed_credit": 600.0,
+    "matched_credit_memo_ids": [],
+    "total_remaining_credit": 0,
+    "allocation_plan": [],
+    "shortfall": 600.0,
+    "customer_id": "CUST-011",
+    "llm_analysis": {
+      "recommendation": "MANUAL_REVIEW",
+      "confidence": 0.75,
+      "risk_level": "MEDIUM",
+      "reasoning": "The credit claim of $600.0 for INV-001 with CUST-011 has a significant shortfall of $600.0, indicating a potential discrepancy. The lack of part number information makes it challenging to verify the legitimacy of the claim. Additionally, the available credit is $0, which further raises suspicions. Given these factors, a manual review is necessary to determine the validity of the claim and assess any potential fraud or error.",
+      "suggested_action": "Request additional documentation from the customer, such as proof of purchase or payment records, to support their credit claim.",
+      "approved_amount": 0.0
+    }
+  }
+]

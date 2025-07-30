@@ -1,0 +1,167 @@
+2025-07-28 15:41:18,933 - INFO - Loaded 4 invoices, 5 credit memos, 1 usage records
+2025-07-28 15:41:18,950 - INFO - Filtered out 1 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-28 15:41:18,952 - INFO - Verifying invoice INV-001 for customer CUST-A, claimed credit: $800.0
+2025-07-28 15:41:18,954 - INFO - Found 2 eligible credit memos for customer CUST-A
+2025-07-28 15:41:18,955 - INFO - Allocated $500.0 from memo CM-001
+2025-07-28 15:41:18,955 - INFO - Allocated $300.0 from memo CM-002
+2025-07-28 15:41:18,955 - INFO - Verifying invoice INV-003 for customer CUST-A, claimed credit: $500.0
+2025-07-28 15:41:18,957 - INFO - Found 2 eligible credit memos for customer CUST-A
+2025-07-28 15:41:18,957 - INFO - Allocated $400.0 from memo CM-004
+2025-07-28 15:41:18,958 - INFO - Allocated $100.0 from memo CM-002
+2025-07-28 15:41:18,958 - INFO - Verifying invoice INV-004 for customer CUST-C, claimed credit: $400.0
+2025-07-28 15:41:18,959 - INFO - Found 1 eligible credit memos for customer CUST-C
+2025-07-28 15:41:18,961 - INFO - Saved 2 verified results to output\results.csv
+2025-07-28 15:41:18,963 - INFO - Saved 1 cases for manual review to output\manual_review.csv
+2025-07-28 15:41:18,963 - INFO - Saved complete results to output\complete_results.json
+2025-07-28 15:41:18,964 - INFO - Generated outputs: 2 verified, 1 for manual review
+2025-07-28 16:09:56,987 - INFO - Loaded 4 invoices, 5 credit memos, 1 usage records
+2025-07-28 16:09:56,990 - INFO - Filtered out 1 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-28 16:09:56,993 - INFO - Verifying invoice INV-001 for customer CUST-A, claimed credit: $800.0
+2025-07-28 16:09:56,994 - INFO - Found 2 eligible credit memos for customer CUST-A
+2025-07-28 16:09:56,994 - INFO - Allocated $500.0 from memo CM-001
+2025-07-28 16:09:56,995 - INFO - Allocated $300.0 from memo CM-002
+2025-07-28 16:09:56,995 - INFO - Verifying invoice INV-003 for customer CUST-A, claimed credit: $500.0
+2025-07-28 16:09:56,996 - INFO - Found 2 eligible credit memos for customer CUST-A
+2025-07-28 16:09:56,997 - INFO - Allocated $400.0 from memo CM-004
+2025-07-28 16:09:56,997 - INFO - Allocated $100.0 from memo CM-002
+2025-07-28 16:09:56,997 - INFO - Verifying invoice INV-004 for customer CUST-C, claimed credit: $400.0
+2025-07-28 16:09:56,998 - INFO - Found 1 eligible credit memos for customer CUST-C
+2025-07-28 16:09:57,001 - INFO - Saved 2 verified results to output\results.csv
+2025-07-28 16:09:57,002 - INFO - Saved 1 cases for manual review to output\manual_review.csv
+2025-07-28 16:09:57,003 - INFO - Saved complete results to output\complete_results.json
+2025-07-28 16:09:57,003 - INFO - Generated outputs: 2 verified, 1 for manual review
+2025-07-29 09:32:58,603 - INFO - Loaded 12 invoices, 11 credit memos, 10 usage records
+2025-07-29 09:32:58,625 - INFO - Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-29 09:32:58,636 - INFO - Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0
+2025-07-29 09:32:58,639 - INFO - Found 1 eligible credit memos for customer CUST-001
+2025-07-29 09:32:58,639 - INFO - Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0
+2025-07-29 09:32:58,641 - INFO - Found 1 eligible credit memos for customer CUST-002
+2025-07-29 09:32:58,641 - INFO - Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0
+2025-07-29 09:32:58,643 - INFO - Found 0 eligible credit memos for customer CUST-003
+2025-07-29 09:32:58,643 - INFO - Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0
+2025-07-29 09:32:58,644 - INFO - Found 0 eligible credit memos for customer CUST-004
+2025-07-29 09:32:58,645 - INFO - Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0
+2025-07-29 09:32:58,646 - INFO - Found 0 eligible credit memos for customer CUST-005
+2025-07-29 09:32:58,646 - INFO - Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0
+2025-07-29 09:32:58,648 - INFO - Found 2 eligible credit memos for customer CUST-006
+2025-07-29 09:32:58,648 - INFO - Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0
+2025-07-29 09:32:58,650 - INFO - Found 0 eligible credit memos for customer CUST-009
+2025-07-29 09:32:58,650 - INFO - Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0
+2025-07-29 09:32:58,651 - INFO - Found 1 eligible credit memos for customer CUST-010
+2025-07-29 09:32:58,651 - INFO - Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0
+2025-07-29 09:32:58,652 - INFO - Found 0 eligible credit memos for customer CUST-011
+2025-07-29 09:32:58,653 - INFO - Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0
+2025-07-29 09:32:58,654 - INFO - Found 2 eligible credit memos for customer CUST-012
+2025-07-29 09:32:58,655 - INFO - Allocated $600 from memo CM-010
+2025-07-29 09:32:58,655 - INFO - Allocated $400.0 from memo CM-011
+2025-07-29 09:32:58,656 - INFO - Saved 1 verified results to output\results.csv
+2025-07-29 09:32:58,659 - INFO - Saved 9 cases for manual review to output\manual_review.csv
+2025-07-29 09:32:58,661 - ERROR - Application error: Object of type int64 is not JSON serializable
+2025-07-29 09:35:11,743 - INFO - Loaded 12 invoices, 11 credit memos, 10 usage records
+2025-07-29 09:35:11,748 - INFO - Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-29 09:35:11,751 - INFO - Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0
+2025-07-29 09:35:11,758 - INFO - Found 1 eligible credit memos for customer CUST-001
+2025-07-29 09:35:11,758 - INFO - Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0
+2025-07-29 09:35:11,760 - INFO - Found 1 eligible credit memos for customer CUST-002
+2025-07-29 09:35:11,760 - INFO - Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0
+2025-07-29 09:35:11,761 - INFO - Found 0 eligible credit memos for customer CUST-003
+2025-07-29 09:35:11,761 - INFO - Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0
+2025-07-29 09:35:11,764 - INFO - Found 0 eligible credit memos for customer CUST-004
+2025-07-29 09:35:11,764 - INFO - Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0
+2025-07-29 09:35:11,766 - INFO - Found 0 eligible credit memos for customer CUST-005
+2025-07-29 09:35:11,766 - INFO - Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0
+2025-07-29 09:35:11,768 - INFO - Found 2 eligible credit memos for customer CUST-006
+2025-07-29 09:35:11,768 - INFO - Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0
+2025-07-29 09:35:11,769 - INFO - Found 0 eligible credit memos for customer CUST-009
+2025-07-29 09:35:11,770 - INFO - Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0
+2025-07-29 09:35:11,771 - INFO - Found 1 eligible credit memos for customer CUST-010
+2025-07-29 09:35:11,771 - INFO - Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0
+2025-07-29 09:35:11,773 - INFO - Found 0 eligible credit memos for customer CUST-011
+2025-07-29 09:35:11,773 - INFO - Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0
+2025-07-29 09:35:11,775 - INFO - Found 2 eligible credit memos for customer CUST-012
+2025-07-29 09:35:11,775 - INFO - Allocated $600 from memo CM-010
+2025-07-29 09:35:11,775 - INFO - Allocated $400.0 from memo CM-011
+2025-07-29 09:35:11,778 - INFO - Saved 1 verified results to output\results.csv
+2025-07-29 09:35:11,779 - INFO - Saved 9 cases for manual review to output\manual_review.csv
+2025-07-29 09:35:11,780 - INFO - Saved complete results to output\complete_results.json
+2025-07-29 09:35:11,781 - INFO - Generated outputs: 1 verified, 9 for manual review
+2025-07-29 09:42:04,119 - INFO - Loaded 12 invoices, 11 credit memos, 10 usage records
+2025-07-29 09:42:04,129 - INFO - Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-29 09:42:04,136 - INFO - Processing invoices...
+2025-07-29 09:42:04,136 - INFO - Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0
+2025-07-29 09:42:04,138 - INFO - Found 1 eligible credit memos for customer CUST-001
+2025-07-29 09:42:04,138 - INFO - Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0
+2025-07-29 09:42:04,140 - INFO - Found 1 eligible credit memos for customer CUST-002
+2025-07-29 09:42:04,140 - INFO - Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0
+2025-07-29 09:42:04,142 - INFO - Found 0 eligible credit memos for customer CUST-003
+2025-07-29 09:42:04,142 - INFO - Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0
+2025-07-29 09:42:04,143 - INFO - Found 0 eligible credit memos for customer CUST-004
+2025-07-29 09:42:04,143 - INFO - Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0
+2025-07-29 09:42:04,146 - INFO - Found 0 eligible credit memos for customer CUST-005
+2025-07-29 09:42:04,146 - INFO - Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0
+2025-07-29 09:42:04,147 - INFO - Found 2 eligible credit memos for customer CUST-006
+2025-07-29 09:42:04,147 - INFO - Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0
+2025-07-29 09:42:04,149 - INFO - Found 0 eligible credit memos for customer CUST-009
+2025-07-29 09:42:04,149 - INFO - Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0
+2025-07-29 09:42:04,150 - INFO - Found 1 eligible credit memos for customer CUST-010
+2025-07-29 09:42:04,151 - INFO - Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0
+2025-07-29 09:42:04,152 - INFO - Found 0 eligible credit memos for customer CUST-011
+2025-07-29 09:42:04,152 - INFO - Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0
+2025-07-29 09:42:04,154 - INFO - Found 2 eligible credit memos for customer CUST-012
+2025-07-29 09:42:04,154 - INFO - Allocated $600 from memo CM-010
+2025-07-29 09:42:04,154 - INFO - Allocated $400.0 from memo CM-011
+2025-07-29 09:42:04,154 - INFO - Running LLM analysis on 9 manual review cases...
+2025-07-29 09:42:29,032 - INFO - Ollama connection successful
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-001: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-002: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-003: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-004: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-005: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-006: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-009: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-010: 'customer_id'
+2025-07-29 09:42:29,033 - ERROR - LLM analysis failed for INV-001: 'customer_id'
+2025-07-29 09:42:29,033 - INFO - Generating outputs...
+2025-07-29 09:42:29,033 - INFO - Saved 1 verified results to output\results.csv
+2025-07-29 09:42:29,043 - INFO - Saved 9 cases for manual review to output\manual_review.csv
+2025-07-29 09:42:29,045 - INFO - Generated outputs: 1 verified, 9 for manual review
+2025-07-29 09:45:09,214 - INFO - Loaded 12 invoices, 11 credit memos, 10 usage records
+2025-07-29 09:45:09,234 - INFO - Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)
+2025-07-29 09:45:09,249 - INFO - Processing invoices...
+2025-07-29 09:45:09,249 - INFO - Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0
+2025-07-29 09:45:09,253 - INFO - Found 1 eligible credit memos for customer CUST-001
+2025-07-29 09:45:09,254 - INFO - Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0
+2025-07-29 09:45:09,255 - INFO - Found 1 eligible credit memos for customer CUST-002
+2025-07-29 09:45:09,256 - INFO - Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0
+2025-07-29 09:45:09,257 - INFO - Found 0 eligible credit memos for customer CUST-003
+2025-07-29 09:45:09,257 - INFO - Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0
+2025-07-29 09:45:09,258 - INFO - Found 0 eligible credit memos for customer CUST-004
+2025-07-29 09:45:09,258 - INFO - Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0
+2025-07-29 09:45:09,259 - INFO - Found 0 eligible credit memos for customer CUST-005
+2025-07-29 09:45:09,259 - INFO - Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0
+2025-07-29 09:45:09,259 - INFO - Found 2 eligible credit memos for customer CUST-006
+2025-07-29 09:45:09,262 - INFO - Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0
+2025-07-29 09:45:09,263 - INFO - Found 0 eligible credit memos for customer CUST-009
+2025-07-29 09:45:09,263 - INFO - Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0
+2025-07-29 09:45:09,264 - INFO - Found 1 eligible credit memos for customer CUST-010
+2025-07-29 09:45:09,265 - INFO - Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0
+2025-07-29 09:45:09,266 - INFO - Found 0 eligible credit memos for customer CUST-011
+2025-07-29 09:45:09,266 - INFO - Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0
+2025-07-29 09:45:09,266 - INFO - Found 2 eligible credit memos for customer CUST-012
+2025-07-29 09:45:09,266 - INFO - Allocated $600 from memo CM-010
+2025-07-29 09:45:09,269 - INFO - Allocated $400.0 from memo CM-011
+2025-07-29 09:45:09,269 - INFO - Running LLM analysis on 9 manual review cases...
+2025-07-29 09:45:11,592 - INFO - Ollama connection successful
+2025-07-29 09:45:16,087 - INFO - LLM analyzed case INV-001
+2025-07-29 09:45:20,197 - INFO - LLM analyzed case INV-002
+2025-07-29 09:45:24,220 - INFO - LLM analyzed case INV-003
+2025-07-29 09:45:28,587 - INFO - LLM analyzed case INV-004
+2025-07-29 09:45:32,551 - INFO - LLM analyzed case INV-005
+2025-07-29 09:45:36,945 - INFO - LLM analyzed case INV-006
+2025-07-29 09:45:40,955 - INFO - LLM analyzed case INV-009
+2025-07-29 09:45:45,150 - INFO - LLM analyzed case INV-010
+2025-07-29 09:45:49,218 - INFO - LLM analyzed case INV-001
+2025-07-29 09:45:49,218 - INFO - Generating outputs...
+2025-07-29 09:45:49,222 - INFO - Saved 1 verified results to output\results.csv
+2025-07-29 09:45:49,222 - INFO - Saved 9 cases for manual review to output\manual_review.csv
+2025-07-29 09:45:49,226 - INFO - Generated outputs: 1 verified, 9 for manual review
