@@ -1,197 +1,166 @@
 [
   {
-    "timestamp": "2025-07-29T09:45:09.215032",
+    "timestamp": "2025-08-05T09:15:13.319363",
     "level": "INFO",
-    "message": "Loaded 12 invoices, 11 credit memos, 10 usage records"
+    "message": "Loaded 3 invoices, 2 credit memos, 1 usage records"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.234132",
-    "level": "INFO",
-    "message": "Filtered out 2 invoices (missing paid_amount or claimed_credit <= 0)"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.249958",
+    "timestamp": "2025-08-05T09:15:13.324412",
     "level": "INFO",
     "message": "Processing invoices..."
   },
   {
-    "timestamp": "2025-07-29T09:45:09.249958",
+    "timestamp": "2025-08-05T09:15:13.324412",
     "level": "INFO",
-    "message": "Verifying invoice INV-001 for customer CUST-001, claimed credit: $500.0"
+    "message": "Verifying invoice INV-001 for customer CUST-001, claimed credit: $300.0"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.254088",
+    "timestamp": "2025-08-05T09:15:13.326986",
     "level": "INFO",
-    "message": "Found 1 eligible credit memos for customer CUST-001"
+    "message": "Found 0 eligible credit memos for customer CUST-001"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.254088",
-    "level": "INFO",
-    "message": "Verifying invoice INV-002 for customer CUST-002, claimed credit: $800.0"
+    "timestamp": "2025-08-05T09:15:13.326986",
+    "type": "VERIFICATION_ATTEMPT",
+    "invoice_id": "INV-001",
+    "result": {
+      "invoice_id": "INV-001",
+      "verified": false,
+      "claimed_credit": 300.0,
+      "matched_credit_memo_ids": [],
+      "total_remaining_credit": 0,
+      "allocation_plan": [],
+      "shortfall": 300.0,
+      "customer_id": "CUST-001",
+      "llm_analysis": {
+        "recommendation": "MANUAL_REVIEW",
+        "confidence": 0.8,
+        "risk_level": "MEDIUM",
+        "reasoning": "The credit claim of $300.0 is legitimate, as it matches the available credit memo CM-001 issued on 2025-06-25 00:00:00. However, the reason for manual review is unknown, which raises some concerns about potential discrepancies or errors in the system. The part number N/A also indicates that there might be an issue with the invoice. Given these factors, a more cautious approach is required to ensure accuracy and prevent any potential losses.",
+        "suggested_action": "Request additional information from the customer regarding the reason for manual review and verify the part number associated with the invoice.",
+        "approved_amount": 0.0
+      }
+    }
   },
   {
-    "timestamp": "2025-07-29T09:45:09.256122",
+    "timestamp": "2025-08-05T09:15:13.327984",
     "level": "INFO",
-    "message": "Found 1 eligible credit memos for customer CUST-002"
+    "message": "Verification FAILED for invoice INV-001"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.256122",
+    "timestamp": "2025-08-05T09:15:13.327984",
     "level": "INFO",
-    "message": "Verifying invoice INV-003 for customer CUST-003, claimed credit: $800.0"
+    "message": "Verifying invoice INV-002 for customer CUST-002, claimed credit: $500.0"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.257871",
+    "timestamp": "2025-08-05T09:15:13.328985",
     "level": "INFO",
-    "message": "Found 0 eligible credit memos for customer CUST-003"
+    "message": "Found 0 eligible credit memos for customer CUST-002"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.257871",
-    "level": "INFO",
-    "message": "Verifying invoice INV-004 for customer CUST-004, claimed credit: $400.0"
+    "timestamp": "2025-08-05T09:15:13.328985",
+    "type": "VERIFICATION_ATTEMPT",
+    "invoice_id": "INV-002",
+    "result": {
+      "invoice_id": "INV-002",
+      "verified": false,
+      "claimed_credit": 500.0,
+      "matched_credit_memo_ids": [],
+      "total_remaining_credit": 0,
+      "allocation_plan": [],
+      "shortfall": 500.0,
+      "customer_id": "CUST-002",
+      "llm_analysis": {
+        "recommendation": "MANUAL_REVIEW",
+        "confidence": 0.75,
+        "risk_level": "MEDIUM",
+        "reasoning": "The credit claim of $500.0 for INV-002 has a significant shortfall of $500.0, indicating a potential discrepancy. The available credit is $0, which further raises concerns about the legitimacy of the claim. Without additional information on the reason for manual review, it is difficult to determine the validity of the claim. Therefore, a manual review is necessary to verify the details and assess the risk level accurately.",
+        "suggested_action": "Request additional documentation from the customer, such as proof of purchase or payment records, to support their credit claim.",
+        "approved_amount": 0.0
+      }
+    }
   },
   {
-    "timestamp": "2025-07-29T09:45:09.258874",
+    "timestamp": "2025-08-05T09:15:13.328985",
     "level": "INFO",
-    "message": "Found 0 eligible credit memos for customer CUST-004"
+    "message": "Verification FAILED for invoice INV-002"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.259771",
+    "timestamp": "2025-08-05T09:15:13.329987",
     "level": "INFO",
-    "message": "Verifying invoice INV-005 for customer CUST-005, claimed credit: $200.0"
+    "message": "Verifying invoice INV-003 for customer CUST-003, claimed credit: $400.0"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.259771",
+    "timestamp": "2025-08-05T09:15:13.331139",
     "level": "INFO",
-    "message": "Found 0 eligible credit memos for customer CUST-005"
+    "message": "Found 1 eligible credit memos for customer CUST-003"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.259771",
-    "level": "INFO",
-    "message": "Verifying invoice INV-006 for customer CUST-006, claimed credit: $1000.0"
+    "timestamp": "2025-08-05T09:15:13.331892",
+    "type": "VERIFICATION_ATTEMPT",
+    "invoice_id": "INV-003",
+    "result": {
+      "invoice_id": "INV-003",
+      "verified": false,
+      "claimed_credit": 400.0,
+      "matched_credit_memo_ids": [],
+      "total_remaining_credit": 200.0,
+      "allocation_plan": [],
+      "shortfall": 200.0,
+      "customer_id": "CUST-003",
+      "llm_analysis": {
+        "recommendation": "REJECT",
+        "confidence": 0.8,
+        "risk_level": "MEDIUM",
+        "reasoning": "The customer has claimed a credit of $400.0, but only $200.0 is available in the system. This indicates a potential discrepancy. Additionally, there is no part number associated with the invoice, which raises further concerns about the legitimacy of the claim. The timing of the claim also seems suspicious, as it was made without any prior communication or notification to the company. Given these factors, I believe that the credit claim is not legitimate and should be rejected.",
+        "suggested_action": "Request additional information from the customer regarding the part number and reason for the manual review, and consider escalating the case to a senior analyst for further review.",
+        "approved_amount": 0.0
+      }
+    }
   },
   {
-    "timestamp": "2025-07-29T09:45:09.262698",
+    "timestamp": "2025-08-05T09:15:13.331892",
     "level": "INFO",
-    "message": "Found 2 eligible credit memos for customer CUST-006"
+    "message": "Verification FAILED for invoice INV-003"
   },
   {
-    "timestamp": "2025-07-29T09:45:09.262698",
+    "timestamp": "2025-08-05T09:15:13.331892",
     "level": "INFO",
-    "message": "Verifying invoice INV-009 for customer CUST-009, claimed credit: $400.0"
+    "message": "Running LLM analysis on 3 manual review cases..."
   },
   {
-    "timestamp": "2025-07-29T09:45:09.263894",
-    "level": "INFO",
-    "message": "Found 0 eligible credit memos for customer CUST-009"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.263894",
-    "level": "INFO",
-    "message": "Verifying invoice INV-010 for customer CUST-010, claimed credit: $700.0"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.264892",
-    "level": "INFO",
-    "message": "Found 1 eligible credit memos for customer CUST-010"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.265892",
-    "level": "INFO",
-    "message": "Verifying invoice INV-001 for customer CUST-011, claimed credit: $600.0"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.266757",
-    "level": "INFO",
-    "message": "Found 0 eligible credit memos for customer CUST-011"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.266757",
-    "level": "INFO",
-    "message": "Verifying invoice INV-012 for customer CUST-012, claimed credit: $1000.0"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.266757",
-    "level": "INFO",
-    "message": "Found 2 eligible credit memos for customer CUST-012"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.266757",
-    "level": "INFO",
-    "message": "Allocated $600 from memo CM-010"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.269660",
-    "level": "INFO",
-    "message": "Allocated $400.0 from memo CM-011"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:09.269660",
-    "level": "INFO",
-    "message": "Running LLM analysis on 9 manual review cases..."
-  },
-  {
-    "timestamp": "2025-07-29T09:45:11.592493",
+    "timestamp": "2025-08-05T09:15:18.401707",
     "level": "INFO",
     "message": "Ollama connection successful"
   },
   {
-    "timestamp": "2025-07-29T09:45:16.087429",
+    "timestamp": "2025-08-05T09:15:20.482714",
     "level": "INFO",
     "message": "LLM analyzed case INV-001"
   },
   {
-    "timestamp": "2025-07-29T09:45:20.197528",
+    "timestamp": "2025-08-05T09:15:22.388619",
     "level": "INFO",
     "message": "LLM analyzed case INV-002"
   },
   {
-    "timestamp": "2025-07-29T09:45:24.220234",
+    "timestamp": "2025-08-05T09:15:24.488363",
     "level": "INFO",
     "message": "LLM analyzed case INV-003"
   },
   {
-    "timestamp": "2025-07-29T09:45:28.587426",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-004"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:32.551076",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-005"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:36.945026",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-006"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:40.955188",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-009"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:45.150130",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-010"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:49.218973",
-    "level": "INFO",
-    "message": "LLM analyzed case INV-001"
-  },
-  {
-    "timestamp": "2025-07-29T09:45:49.218973",
+    "timestamp": "2025-08-05T09:15:24.488363",
     "level": "INFO",
     "message": "Generating outputs..."
   },
   {
-    "timestamp": "2025-07-29T09:45:49.222712",
+    "timestamp": "2025-08-05T09:15:24.489364",
     "level": "INFO",
-    "message": "Saved 1 verified results to output\\results.csv"
+    "message": "No verified results to save"
   },
   {
-    "timestamp": "2025-07-29T09:45:49.222712",
+    "timestamp": "2025-08-05T09:15:24.491491",
     "level": "INFO",
-    "message": "Saved 9 cases for manual review to output\\manual_review.csv"
+    "message": "Saved 3 cases for manual review to output\\manual_review.csv"
   }
 ]

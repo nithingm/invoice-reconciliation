@@ -7,6 +7,7 @@ import logging
 import json
 from datetime import datetime
 from typing import List, Dict, Any
+import numpy as np
 
 class LoggingSystem:
     def __init__(self, log_file: str = "reconciliation.log"):
@@ -56,6 +57,14 @@ class LoggingSystem:
         status = "VERIFIED" if result['verified'] else "FAILED"
         self.log_info(f"Verification {status} for invoice {invoice_id}")
     
+    def log_warning(self, message: str):
+        """Log warning message"""
+        self.logger.warning(message)
+        self.audit_trail.append({
+            'timestamp': datetime.now().isoformat(),
+            'level': 'WARNING',
+            'message': message
+        })
     def get_audit_trail(self) -> List[Dict[str, Any]]:
         """Get complete audit trail"""
         return self.audit_trail
@@ -63,4 +72,14 @@ class LoggingSystem:
     def save_audit_trail(self, filepath: str):
         """Save audit trail to JSON file"""
         with open(filepath, 'w') as f:
-            json.dump(self.audit_trail, f, indent=2)
+            json.dump(self.audit_trail, f, indent=2, default=self._convert_to_serializable)
+            
+    def _convert_to_serializable(self, obj):
+        if isinstance(obj, (np.integer, np.int64)):
+            return int(obj)
+        elif isinstance(obj, (np.floating, np.float64)):
+            return float(obj)
+        elif hasattr(obj, 'item'):
+            return obj.item()
+        else:
+            return str(obj)

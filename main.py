@@ -14,9 +14,9 @@ import os
 
 def main():
     parser = argparse.ArgumentParser(description='Invoice Reconciliation System')
-    parser.add_argument('--invoices', default='test_data/invoice_table.csv', help='Path to invoices CSV file')
-    parser.add_argument('--credit_memos', default='test_data/credit_memo_table.csv', help='Path to credit memos CSV file')
-    parser.add_argument('--credit_usage', default='test_data/credit_usage_table.csv', help='Path to credit usage CSV file')
+    parser.add_argument('--invoices', default='test_data/sample_invoices.csv', help='Path to invoices CSV file')
+    parser.add_argument('--credit_memos', default='test_data/sample_credit_memos.csv', help='Path to credit memos CSV file')
+    parser.add_argument('--credit_usage', default='test_data/sample_credit_usage.csv', help='Path to credit usage CSV file')
     parser.add_argument('--output_dir', default='output', help='Output directory for results')
     
     args = parser.parse_args()
@@ -39,6 +39,7 @@ def main():
         results = []
         for _, invoice in invoices_df.iterrows():
             result = credit_verifier.verify_credit(invoice, credit_memos_df, credit_usage_df)
+            logger.log_verification_attempt(invoice['invoice_id'], result)
             results.append(result)
         
         # Separate verified and manual review cases
