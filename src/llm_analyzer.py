@@ -9,7 +9,7 @@ from typing import Dict, List, Any, Optional
 import pandas as pd
 
 class LLMAnalyzer:
-    def __init__(self, logger, model_name: str = "llama3.2", base_url: str = "http://localhost:11434"):
+    def __init__(self, logger, model_name: str = "llama3.2:latest", base_url: str = "http://localhost:11434"):
         self.logger = logger
         self.model_name = model_name
         self.base_url = base_url
