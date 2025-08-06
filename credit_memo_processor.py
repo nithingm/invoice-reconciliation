@@ -93,8 +93,8 @@ class CreditMemoProcessor:
     def _extract_credit_memo_number(self, content: str) -> str:
         """Extract credit memo number from content."""
         patterns = [
-            r'Credit\s*Memo\s*#?\s*:?\s*([A-Z0-9\-]+)',
             r'Credit\s*Memo\s*Number\s*:?\s*([A-Z0-9\-]+)',
+            r'Credit\s*Memo\s*#?\s*:?\s*([A-Z0-9\-]+)',
             r'CM\s*:?\s*([A-Z0-9\-]+)',
             r'Credit\s*Memo\s*([A-Z0-9\-]+)',
             r'Memo\s*#?\s*:?\s*([A-Z0-9\-]+)'
@@ -125,9 +125,9 @@ class CreditMemoProcessor:
     def _extract_original_invoice_number(self, content: str) -> str:
         """Extract original invoice number from content."""
         patterns = [
+            r'Original\s*Invoice\s*Number\s*:?\s*([A-Z0-9\-]+)',
             r'Original\s*Invoice\s*#?\s*:?\s*([A-Z0-9\-]+)',
             r'Invoice\s*#?\s*:?\s*([A-Z0-9\-]+)',
-            r'Original\s*Invoice\s*Number\s*:?\s*([A-Z0-9\-]+)',
             r'Against\s*Invoice\s*:?\s*([A-Z0-9\-]+)'
         ]
         
@@ -215,10 +215,10 @@ class CreditMemoProcessor:
     def _extract_credit_amount(self, content: str) -> float:
         """Extract credit amount from content."""
         patterns = [
+            r'Total\s*Credit\s*:?\s*\$?([\d,]+\.?\d*)',
             r'Credit\s*Amount\s*:?\s*\$?([\d,]+\.?\d*)',
             r'Credit\s*:?\s*\$?([\d,]+\.?\d*)',
-            r'Amount\s*:?\s*\$?([\d,]+\.?\d*)',
-            r'Total\s*Credit\s*:?\s*\$?([\d,]+\.?\d*)'
+            r'Amount\s*:?\s*\$?([\d,]+\.?\d*)'
         ]
         
         for pattern in patterns:

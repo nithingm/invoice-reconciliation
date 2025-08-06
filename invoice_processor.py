@@ -94,8 +94,8 @@ class InvoiceProcessor:
     def _extract_invoice_number(self, content: str) -> str:
         """Extract invoice number from content."""
         patterns = [
-            r'Invoice\s*#?\s*:?\s*([A-Z0-9\-]+)',
             r'Invoice\s*Number\s*:?\s*([A-Z0-9\-]+)',
+            r'Invoice\s*#?\s*:?\s*([A-Z0-9\-]+)',
             r'INV\s*:?\s*([A-Z0-9\-]+)',
             r'Invoice\s*([A-Z0-9\-]+)'
         ]
@@ -238,14 +238,15 @@ class InvoiceProcessor:
     def _extract_total_amount(self, content: str) -> float:
         """Extract total amount from content."""
         patterns = [
-            r'Total\s*:?\s*\$?([\d,]+\.?\d*)',
+            r'^Total\s*:?\s*\$?([\d,]+\.?\d*)',
+            r'\nTotal\s*:?\s*\$?([\d,]+\.?\d*)',
             r'Amount\s*Due\s*:?\s*\$?([\d,]+\.?\d*)',
             r'Grand\s*Total\s*:?\s*\$?([\d,]+\.?\d*)',
             r'Balance\s*Due\s*:?\s*\$?([\d,]+\.?\d*)'
         ]
         
         for pattern in patterns:
-            match = re.search(pattern, content, re.IGNORECASE)
+            match = re.search(pattern, content, re.IGNORECASE | re.MULTILINE)
             if match:
                 amount_str = match.group(1).replace(',', '')
                 try:

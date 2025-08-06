@@ -73,8 +73,8 @@ def test_sample_documents():
                     def __init__(self, file_obj, filename):
                         self.file = file_obj
                         self.name = filename
-                    def read(self):
-                        return self.file.read()
+                    def read(self, size=-1):
+                        return self.file.read(size)
                     def seek(self, pos, whence=0):
                         return self.file.seek(pos, whence)
                     def tell(self):
@@ -105,8 +105,8 @@ def test_sample_documents():
                     def __init__(self, file_obj, filename):
                         self.file = file_obj
                         self.name = filename
-                    def read(self):
-                        return self.file.read()
+                    def read(self, size=-1):
+                        return self.file.read(size)
                     def seek(self, pos, whence=0):
                         return self.file.seek(pos, whence)
                     def tell(self):
