@@ -1,2 +1,0 @@
-usage_id,credit_memo_id,invoice_id,amount_used,date_used,verified
-U-001,CM-001,INV-001,300.00,2025-07-01,true
