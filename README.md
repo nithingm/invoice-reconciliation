@@ -1,57 +1,184 @@
-# Invoice Reconciliation System
+# TransMaster Pro - Transmission Remanufacturing Portal
 
-Automatically verify if claimed credits on invoices can be matched against active, valid credit memos using deterministic logic and human-verifiable audit trails.
+A modern web portal for an automobile transmission remanufacturing company featuring AI-powered customer support for invoice management and credit validation.
 
 ## Features
 
-- CSV-based data ingestion and normalization
-- Deterministic credit verification logic
-- FIFO allocation strategy for credit memos
-- Comprehensive logging and audit trails
-- Automated output generation (verified results + manual review cases)
+- **Modern Web Portal**: Clean, responsive design with professional automotive industry theme
+- **AI-Powered Chat Support**: Real-time chat system for customer inquiries
+- **Credit Validation System**: Automated validation of customer credits and invoice processing
+- **Invoice Management**: Track and manage transmission service invoices
+- **Company Information**: Comprehensive about us, services, and contact sections
+- **Mobile Responsive**: Optimized for all device sizes
 
-## Usage
+## Technology Stack
 
+### Frontend
+- React 18 with functional components and hooks
+- Tailwind CSS for modern styling
+- React Router for navigation
+- Socket.io client for real-time chat
+- Heroicons for consistent iconography
+- React Hot Toast for notifications
+- Framer Motion for animations
+
+### Backend
+- Node.js with Express.js
+- Socket.io for real-time communication
+- RESTful API endpoints
+- Mock database for development
+- CORS enabled for cross-origin requests
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn package manager
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd TestPortal
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm run install-all
+   ```
+
+3. **Start the development servers**
+   ```bash
+   npm run dev
+   ```
+
+   This will start:
+   - Backend server on http://localhost:5000
+   - Frontend development server on http://localhost:3000
+
+### Alternative: Start servers separately
+
+**Backend:**
 ```bash
-python main.py --invoices test_data/sample_invoices.csv \
-               --credit_memos test_data/sample_credit_memos.csv \
-               --credit_usage test_data/sample_credit_usage.csv \
-               --output_dir output
+npm run server
 ```
 
-## Data Format
+**Frontend:**
+```bash
+npm run client
+```
 
-### Invoice Table
-- `invoice_id`: Unique ID per invoice
-- `customer_id`: Who was billed
-- `invoice_amount`: Total amount charged
-- `date_issued`: When invoice was created
-- `part_number`: For item-level matching
-- `paid_amount`: Amount actually paid
-- `claimed_credit`: Computed as invoice_amount - paid_amount
+## Project Structure
 
-### Credit Memo Table
-- `credit_memo_id`: Unique ID per credit memo
-- `customer_id`: Same as invoice customer
-- `credit_amount`: Total credit issued
-- `date_issued`: When credit was granted
-- `reason`: E.g., Warranty, Return
-- `related_invoice_id`: If tied to specific invoice
-- `status`: Active/Expired/Redeemed
-- `part_number`: If part specific
-- `remaining_credit`: Available credit balance
+```
+TestPortal/
+├── client/                 # React frontend
+│   ├── public/            # Static files
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   ├── pages/         # Page components
+│   │   ├── App.js         # Main app component
+│   │   └── index.js       # Entry point
+│   ├── package.json
+│   └── tailwind.config.js
+├── server/                # Node.js backend
+│   ├── routes/           # API routes
+│   └── index.js          # Server entry point
+├── package.json          # Root package.json
+├── .env                  # Environment variables
+└── README.md
+```
 
-### Credit Usage Table
-- `usage_id`: Unique ID
-- `credit_memo_id`: FK to credit memo
-- `invoice_id`: FK to invoice
-- `amount_used`: Amount of credit applied
-- `date_used`: When credit was applied
-- `verified`: Boolean approval status
+## AI Chat System
 
-## Output Files
+The AI chat system processes customer inquiries about:
 
-- `results.csv`: Verified invoice-credit matches
-- `manual_review.csv`: Cases requiring human review
-- `complete_results.json`: Full results with allocation plans
-- `audit_trail.json`: Complete audit log
+- **Invoice Validation**: Check invoice status and details
+- **Credit Validation**: Validate available credits and expiry dates
+- **Account Information**: Customer account details and history
+- **General Support**: Transmission service questions
+
+### Chat Message Format
+
+To validate credits, customers should provide:
+- Invoice ID (e.g., "INV001")
+- Customer ID (e.g., "CUST001") 
+- Credit amount to apply (e.g., "$150")
+
+Example: "Validate $150 credit for invoice INV001, customer CUST001"
+
+## Mock Data
+
+The system includes mock data for testing:
+
+### Customers
+- CUST001: John Smith (Credits: $150 active, $75 expired)
+- CUST002: Sarah Johnson (Credits: $200 active)
+
+### Invoices
+- INV001: $2500 for 4L60E Remanufactured (CUST001)
+- INV002: $3200 for 4L80E Remanufactured (CUST002)
+
+## API Endpoints
+
+### Chat Routes
+- `POST /api/chat/message` - Send chat message
+- `GET /api/chat/history/:customerId` - Get chat history
+
+### Customer Routes
+- `GET /api/customers/:id` - Get customer details
+- `GET /api/customers/:id/credits` - Get customer credits
+- `GET /api/customers/:id/invoices` - Get customer invoices
+
+## Deployment
+
+### Production Build
+```bash
+npm run build
+```
+
+### Start Production Server
+```bash
+npm start
+```
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+PORT=5000
+NODE_ENV=production
+CLIENT_URL=https://your-domain.com
+JWT_SECRET=your-super-secret-jwt-key
+```
+
+## Future Enhancements
+
+- Database integration (MongoDB/PostgreSQL)
+- User authentication and authorization
+- Real AI integration (OpenAI GPT)
+- Payment processing integration
+- Email notifications
+- Advanced reporting and analytics
+- Mobile app development
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support and questions:
+- Email: support@transmasterpro.com
+- Phone: (555) 123-4567
+- Use the AI chat system in the application
