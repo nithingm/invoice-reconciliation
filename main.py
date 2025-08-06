@@ -199,35 +199,77 @@ def display_reconciliation_results(results):
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Total Invoices", len(results.get('invoices', [])))
+        st.metric("Matched Pairs", len(results.get('matched_pairs', [])))
     
     with col2:
-        st.metric("Total Credit Memos", len(results.get('credit_memos', [])))
-    
-    with col3:
-        st.metric("Reconciled Items", len(results.get('reconciled_items', [])))
-    
-    with col4:
         st.metric("Discrepancies", len(results.get('discrepancies', [])))
     
-    # Detailed results
-    if results.get('reconciled_items'):
-        st.subheader("✅ Reconciled Items")
-        reconciled_df = pd.DataFrame(results['reconciled_items'])
-        st.dataframe(reconciled_df)
+    with col3:
+        st.metric("Unmatched Invoices", len(results.get('unmatched_invoices', [])))
+    
+    with col4:
+        st.metric("Unmatched Credit Memos", len(results.get('unmatched_credit_memos', [])))
+    
+    # Analytics if available
+    if 'analytics' in results:
+        analytics = results['analytics']
+        st.subheader("📈 Analytics")
+        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Match Rate", f"{analytics.get('match_rate', 0):.1f}%")
+        with col2:
+            st.metric("Average Confidence", f"{analytics.get('average_confidence', 0):.1f}%")
+        with col3:
+            st.metric("Total Amount Reconciled", f"${analytics.get('total_invoice_amount', 0):,.2f}")
+    
+    # Matched pairs
+    if results.get('matched_pairs'):
+        st.subheader("✅ Valid Matches")
+        
+        # Create a summary table for matched pairs
+        matched_summary = []
+        for pair in results['matched_pairs']:
+            invoice = pair['invoice']
+            credit_memo = pair['credit_memo']
+            matched_summary.append({
+                'Invoice Number': invoice.get('invoice_number', ''),
+                'Credit Memo Number': credit_memo.get('credit_memo_number', ''),
+                'Customer': invoice.get('customer_name', ''),
+                'Invoice Amount': f"${invoice.get('total_amount', 0):,.2f}",
+                'Credit Amount': f"${credit_memo.get('credit_amount', 0):,.2f}",
+                'Confidence': f"{pair.get('match_confidence', 0):.1f}%",
+                'Match Reason': pair.get('match_reason', '')
+            })
+        
+        matched_df = pd.DataFrame(matched_summary)
+        st.dataframe(matched_df)
         
         # Download button
-        csv = reconciled_df.to_csv(index=False)
+        csv = matched_df.to_csv(index=False)
         st.download_button(
-            label="📥 Download Reconciled Items CSV",
+            label="📥 Download Matched Pairs CSV",
             data=csv,
-            file_name="reconciled_items.csv",
+            file_name="matched_pairs.csv",
             mime="text/csv"
         )
     
+    # Discrepancies
     if results.get('discrepancies'):
         st.subheader("⚠️ Discrepancies Found")
-        discrepancies_df = pd.DataFrame(results['discrepancies'])
+        
+        # Create a summary table for discrepancies
+        discrepancy_summary = []
+        for disc in results['discrepancies']:
+            discrepancy_summary.append({
+                'Type': disc.get('type', ''),
+                'Severity': disc.get('severity', ''),
+                'Description': disc.get('description', ''),
+                'Invoice Number': disc.get('invoice_number', ''),
+                'Credit Memo Number': disc.get('credit_memo_number', '')
+            })
+        
+        discrepancies_df = pd.DataFrame(discrepancy_summary)
         st.dataframe(discrepancies_df)
         
         # Download button
@@ -238,57 +280,122 @@ def display_reconciliation_results(results):
             file_name="discrepancies.csv",
             mime="text/csv"
         )
+    
+    # Unmatched invoices
+    if results.get('unmatched_invoices'):
+        st.subheader("❌ Unmatched Invoices")
+        unmatched_inv_summary = []
+        for inv in results['unmatched_invoices']:
+            unmatched_inv_summary.append({
+                'Invoice Number': inv.get('invoice_number', ''),
+                'Customer': inv.get('customer_name', ''),
+                'Amount': f"${inv.get('total_amount', 0):,.2f}",
+                'Date': inv.get('invoice_date', '')
+            })
+        
+        unmatched_inv_df = pd.DataFrame(unmatched_inv_summary)
+        st.dataframe(unmatched_inv_df)
+    
+    # Unmatched credit memos
+    if results.get('unmatched_credit_memos'):
+        st.subheader("❌ Unmatched Credit Memos")
+        unmatched_cm_summary = []
+        for cm in results['unmatched_credit_memos']:
+            unmatched_cm_summary.append({
+                'Credit Memo Number': cm.get('credit_memo_number', ''),
+                'Customer': cm.get('customer_name', ''),
+                'Amount': f"${cm.get('credit_amount', 0):,.2f}",
+                'Original Invoice': cm.get('original_invoice_number', ''),
+                'Date': cm.get('credit_memo_date', '')
+            })
+        
+        unmatched_cm_df = pd.DataFrame(unmatched_cm_summary)
+        st.dataframe(unmatched_cm_df)
 
 def display_analytics(results):
     st.subheader("📊 Analytics Dashboard")
+    
+    # Check if analytics are available
+    if 'analytics' not in results:
+        st.info("ℹ️ No analytics data available. Complete reconciliation to view analytics.")
+        return
+    
+    analytics = results['analytics']
     
     # Create visualizations
     col1, col2 = st.columns(2)
     
     with col1:
-        # Reconciliation status pie chart
-        if results.get('reconciled_items') and results.get('discrepancies'):
-            labels = ['Reconciled', 'Discrepancies']
-            values = [len(results['reconciled_items']), len(results['discrepancies'])]
-            
-            fig = px.pie(
-                values=values,
-                names=labels,
-                title="Reconciliation Status",
-                color_discrete_sequence=['#2E8B57', '#FF6B6B']
-            )
-            st.plotly_chart(fig, use_container_width=True)
+        # Match rate and confidence
+        st.subheader("📈 Performance Metrics")
+        
+        # Match rate gauge
+        match_rate = analytics.get('match_rate', 0)
+        st.metric("Match Rate", f"{match_rate:.1f}%")
+        
+        # Confidence gauge
+        avg_confidence = analytics.get('average_confidence', 0)
+        st.metric("Average Confidence", f"{avg_confidence:.1f}%")
+        
+        # Amount metrics
+        total_invoice_amount = analytics.get('total_invoice_amount', 0)
+        total_credit_amount = analytics.get('total_credit_amount', 0)
+        amount_difference = analytics.get('amount_difference', 0)
+        
+        st.metric("Total Invoice Amount", f"${total_invoice_amount:,.2f}")
+        st.metric("Total Credit Amount", f"${total_credit_amount:,.2f}")
+        st.metric("Amount Difference", f"${amount_difference:,.2f}")
     
     with col2:
-        # Amount distribution
-        if results.get('reconciled_items'):
-            reconciled_df = pd.DataFrame(results['reconciled_items'])
-            if 'amount' in reconciled_df.columns:
-                fig = px.histogram(
-                    reconciled_df,
-                    x='amount',
-                    title="Amount Distribution",
-                    nbins=20
-                )
-                st.plotly_chart(fig, use_container_width=True)
+        # Discrepancy breakdown
+        st.subheader("⚠️ Discrepancy Analysis")
+        
+        discrepancy_breakdown = analytics.get('discrepancy_breakdown', {})
+        high_severity = discrepancy_breakdown.get('high_severity', 0)
+        medium_severity = discrepancy_breakdown.get('medium_severity', 0)
+        low_severity = discrepancy_breakdown.get('low_severity', 0)
+        total_discrepancies = discrepancy_breakdown.get('total', 0)
+        
+        st.metric("High Severity", high_severity)
+        st.metric("Medium Severity", medium_severity)
+        st.metric("Low Severity", low_severity)
+        st.metric("Total Discrepancies", total_discrepancies)
     
-    # Summary statistics
-    if results.get('reconciled_items'):
-        reconciled_df = pd.DataFrame(results['reconciled_items'])
-        st.subheader("📈 Summary Statistics")
+    # Create charts
+    if total_discrepancies > 0:
+        st.subheader("📊 Discrepancy Distribution")
         
-        col1, col2, col3 = st.columns(3)
+        # Create pie chart for discrepancy severity
+        severity_data = {
+            'High Severity': high_severity,
+            'Medium Severity': medium_severity,
+            'Low Severity': low_severity
+        }
         
-        with col1:
-            if 'amount' in reconciled_df.columns:
-                st.metric("Total Reconciled Amount", f"${reconciled_df['amount'].sum():,.2f}")
-        
-        with col2:
-            if 'amount' in reconciled_df.columns:
-                st.metric("Average Amount", f"${reconciled_df['amount'].mean():,.2f}")
-        
-        with col3:
-            st.metric("Total Items", len(reconciled_df))
+        fig = px.pie(
+            values=list(severity_data.values()),
+            names=list(severity_data.keys()),
+            title="Discrepancy Severity Distribution",
+            color_discrete_sequence=['#ff4444', '#ffaa00', '#44aa44']
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    
+    # Reconciliation summary
+    st.subheader("📋 Reconciliation Summary")
+    
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Matched Pairs", len(results.get('matched_pairs', [])))
+    
+    with col2:
+        st.metric("Unmatched Invoices", len(results.get('unmatched_invoices', [])))
+    
+    with col3:
+        st.metric("Unmatched Credit Memos", len(results.get('unmatched_credit_memos', [])))
+    
+    with col4:
+        st.metric("Total Discrepancies", total_discrepancies)
 
 if __name__ == "__main__":
     main() 

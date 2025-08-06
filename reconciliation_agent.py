@@ -1,30 +1,33 @@
 import openai
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import logging
 import json
 from datetime import datetime
 import pandas as pd
+import re
 
 class ReconciliationAgent:
     """
-    AI-powered agent for reconciling invoices with credit memos.
+    Enhanced AI-powered agent for reconciling invoices with credit memos.
+    Includes proper validation and discrepancy detection.
     """
     
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str = None):
         """
         Initialize the reconciliation agent.
         
         Args:
-            api_key: OpenAI API key
+            api_key: OpenAI API key (optional for fallback mode)
         """
         self.api_key = api_key
-        openai.api_key = api_key
+        if api_key:
+            openai.api_key = api_key
         self.logger = logging.getLogger(__name__)
         
     def reconcile_documents(self, invoices: List[Dict[str, Any]], 
                           credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Reconcile invoices with credit memos using AI.
+        Reconcile invoices with credit memos using enhanced validation.
         
         Args:
             invoices: List of processed invoice data
@@ -34,361 +37,306 @@ class ReconciliationAgent:
             Dict containing reconciliation results
         """
         try:
-            self.logger.info(f"Starting AI reconciliation for {len(invoices)} invoices and {len(credit_memos)} credit memos")
+            self.logger.info(f"Starting enhanced reconciliation for {len(invoices)} invoices and {len(credit_memos)} credit memos")
             
-            # Prepare data for AI analysis
-            reconciliation_data = self._prepare_reconciliation_data(invoices, credit_memos)
+            # Perform comprehensive validation and matching
+            reconciliation_results = self._enhanced_matching(invoices, credit_memos)
             
-            # Use AI to analyze and match documents
-            ai_analysis = self._analyze_with_ai(reconciliation_data)
-            
-            # Process AI results
-            reconciliation_results = self._process_ai_results(ai_analysis, invoices, credit_memos)
+            # Add analytics and metrics
+            reconciliation_results['analytics'] = self._calculate_analytics(reconciliation_results)
             
             return reconciliation_results
             
         except Exception as e:
-            self.logger.error(f"Error during AI reconciliation: {str(e)}")
+            self.logger.error(f"Error during enhanced reconciliation: {str(e)}")
             raise
     
-    def _prepare_reconciliation_data(self, invoices: List[Dict[str, Any]], 
-                                   credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _enhanced_matching(self, invoices: List[Dict[str, Any]], 
+                          credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Prepare data for AI analysis.
+        Enhanced matching with comprehensive validation.
         
         Args:
             invoices: List of invoice data
             credit_memos: List of credit memo data
             
         Returns:
-            Dict containing prepared data
+            Enhanced matching results
         """
-        # Extract key information for AI analysis
-        invoice_summaries = []
-        for inv in invoices:
-            summary = {
-                'invoice_number': inv.get('invoice_number', ''),
-                'invoice_date': inv.get('invoice_date', ''),
-                'vendor_name': inv.get('vendor_name', ''),
-                'customer_name': inv.get('customer_name', ''),
-                'total_amount': inv.get('total_amount', 0.0),
-                'currency': inv.get('currency', 'USD'),
-                'po_number': inv.get('po_number', ''),
-                'notes': inv.get('notes', ''),
-                'filename': inv.get('filename', '')
-            }
-            invoice_summaries.append(summary)
-        
-        credit_memo_summaries = []
-        for cm in credit_memos:
-            summary = {
-                'credit_memo_number': cm.get('credit_memo_number', ''),
-                'credit_memo_date': cm.get('credit_memo_date', ''),
-                'original_invoice_number': cm.get('original_invoice_number', ''),
-                'original_invoice_date': cm.get('original_invoice_date', ''),
-                'vendor_name': cm.get('vendor_name', ''),
-                'customer_name': cm.get('customer_name', ''),
-                'credit_amount': cm.get('credit_amount', 0.0),
-                'currency': cm.get('currency', 'USD'),
-                'credit_reason': cm.get('credit_reason', ''),
-                'credit_type': cm.get('credit_type', ''),
-                'notes': cm.get('notes', ''),
-                'filename': cm.get('filename', '')
-            }
-            credit_memo_summaries.append(summary)
-        
-        return {
-            'invoices': invoice_summaries,
-            'credit_memos': credit_memo_summaries,
-            'total_invoices': len(invoices),
-            'total_credit_memos': len(credit_memos)
-        }
-    
-    def _analyze_with_ai(self, reconciliation_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Use AI to analyze and match documents.
-        
-        Args:
-            reconciliation_data: Prepared data for analysis
-            
-        Returns:
-            Dict containing AI analysis results
-        """
-        try:
-            # Create prompt for AI analysis
-            prompt = self._create_analysis_prompt(reconciliation_data)
-            
-            # Call OpenAI API
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are an expert financial analyst specializing in invoice and credit memo reconciliation. 
-                        Your task is to analyze invoices and credit memos to identify matches and discrepancies.
-                        
-                        Please provide your analysis in the following JSON format:
-                        {
-                            "reconciled_items": [
-                                {
-                                    "invoice_number": "INV-001",
-                                    "credit_memo_number": "CM-001",
-                                    "match_confidence": 0.95,
-                                    "match_reason": "Exact invoice number match",
-                                    "amount_difference": 0.0,
-                                    "reconciliation_status": "FULLY_RECONCILED"
-                                }
-                            ],
-                            "discrepancies": [
-                                {
-                                    "invoice_number": "INV-002",
-                                    "credit_memo_number": "CM-002",
-                                    "discrepancy_type": "AMOUNT_MISMATCH",
-                                    "discrepancy_description": "Credit memo amount doesn't match invoice amount",
-                                    "invoice_amount": 1000.0,
-                                    "credit_amount": 950.0,
-                                    "difference": 50.0
-                                }
-                            ],
-                            "unmatched_invoices": ["INV-003", "INV-004"],
-                            "unmatched_credit_memos": ["CM-003"],
-                            "summary": {
-                                "total_reconciled": 5,
-                                "total_discrepancies": 2,
-                                "unmatched_invoices_count": 2,
-                                "unmatched_credit_memos_count": 1
-                            }
-                        }"""
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.1,
-                max_tokens=2000
-            )
-            
-            # Parse AI response
-            ai_response = response.choices[0].message.content
-            analysis_result = json.loads(ai_response)
-            
-            return analysis_result
-            
-        except Exception as e:
-            self.logger.error(f"Error in AI analysis: {str(e)}")
-            # Fallback to basic matching
-            return self._fallback_matching(reconciliation_data)
-    
-    def _create_analysis_prompt(self, reconciliation_data: Dict[str, Any]) -> str:
-        """
-        Create prompt for AI analysis.
-        
-        Args:
-            reconciliation_data: Data to analyze
-            
-        Returns:
-            Formatted prompt string
-        """
-        invoices = reconciliation_data['invoices']
-        credit_memos = reconciliation_data['credit_memos']
-        
-        prompt = f"""
-        Please analyze the following invoices and credit memos for reconciliation:
-        
-        INVOICES ({len(invoices)} total):
-        """
-        
-        for i, inv in enumerate(invoices, 1):
-            prompt += f"""
-        Invoice {i}:
-        - Invoice Number: {inv['invoice_number']}
-        - Date: {inv['invoice_date']}
-        - Vendor: {inv['vendor_name']}
-        - Customer: {inv['customer_name']}
-        - Amount: {inv['currency']} {inv['total_amount']}
-        - PO Number: {inv['po_number']}
-        - Notes: {inv['notes']}
-        - Filename: {inv['filename']}
-        """
-        
-        prompt += f"""
-        CREDIT MEMOS ({len(credit_memos)} total):
-        """
-        
-        for i, cm in enumerate(credit_memos, 1):
-            prompt += f"""
-        Credit Memo {i}:
-        - Credit Memo Number: {cm['credit_memo_number']}
-        - Date: {cm['credit_memo_date']}
-        - Original Invoice: {cm['original_invoice_number']}
-        - Original Invoice Date: {cm['original_invoice_date']}
-        - Vendor: {cm['vendor_name']}
-        - Customer: {cm['customer_name']}
-        - Credit Amount: {cm['currency']} {cm['credit_amount']}
-        - Credit Reason: {cm['credit_reason']}
-        - Credit Type: {cm['credit_type']}
-        - Notes: {cm['notes']}
-        - Filename: {cm['filename']}
-        """
-        
-        prompt += """
-        
-        Please analyze these documents and provide reconciliation results in the specified JSON format.
-        Consider the following matching criteria:
-        1. Exact invoice number matches
-        2. Vendor name similarity
-        3. Customer name similarity
-        4. Amount matching (with tolerance for partial credits)
-        5. Date proximity
-        6. PO number matches
-        
-        For discrepancies, identify the type and provide detailed explanations.
-        """
-        
-        return prompt
-    
-    def _fallback_matching(self, reconciliation_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Fallback matching logic when AI analysis fails.
-        
-        Args:
-            reconciliation_data: Data to match
-            
-        Returns:
-            Basic matching results
-        """
-        invoices = reconciliation_data['invoices']
-        credit_memos = reconciliation_data['credit_memos']
-        
-        reconciled_items = []
+        matched_pairs = []
         discrepancies = []
         unmatched_invoices = []
         unmatched_credit_memos = []
         
-        # Simple matching based on invoice numbers
-        for inv in invoices:
-            matched = False
-            for cm in credit_memos:
-                if (inv['invoice_number'] and cm['original_invoice_number'] and 
-                    inv['invoice_number'].lower() == cm['original_invoice_number'].lower()):
-                    
-                    amount_diff = abs(inv['total_amount'] - cm['credit_amount'])
-                    
-                    if amount_diff < 0.01:  # Exact match
-                        reconciled_items.append({
-                            'invoice_number': inv['invoice_number'],
-                            'credit_memo_number': cm['credit_memo_number'],
-                            'match_confidence': 0.9,
-                            'match_reason': 'Exact invoice number and amount match',
-                            'amount_difference': amount_diff,
-                            'reconciliation_status': 'FULLY_RECONCILED'
-                        })
-                        matched = True
-                        break
-                    else:
-                        discrepancies.append({
-                            'invoice_number': inv['invoice_number'],
-                            'credit_memo_number': cm['credit_memo_number'],
-                            'discrepancy_type': 'AMOUNT_MISMATCH',
-                            'discrepancy_description': f'Amount mismatch: Invoice ${inv["total_amount"]} vs Credit ${cm["credit_amount"]}',
-                            'invoice_amount': inv['total_amount'],
-                            'credit_amount': cm['credit_amount'],
-                            'difference': amount_diff
-                        })
-                        matched = True
-                        break
-            
-            if not matched:
-                unmatched_invoices.append(inv['invoice_number'])
+        # Create lookup dictionaries for efficient matching
+        invoice_lookup = {inv.get('invoice_number', '').lower(): inv for inv in invoices}
+        credit_memo_lookup = {cm.get('credit_memo_number', '').lower(): cm for cm in credit_memos}
         
-        # Find unmatched credit memos
-        for cm in credit_memos:
-            matched = False
-            for inv in invoices:
-                if (inv['invoice_number'] and cm['original_invoice_number'] and 
-                    inv['invoice_number'].lower() == cm['original_invoice_number'].lower()):
-                    matched = True
-                    break
+        # Track which credit memos have been matched
+        matched_credit_memos = set()
+        
+        # Step 1: Find exact matches based on invoice number
+        for inv in invoices:
+            inv_number = inv.get('invoice_number', '').lower()
+            inv_customer = inv.get('customer_name', '').lower()
             
-            if not matched:
-                unmatched_credit_memos.append(cm['credit_memo_number'])
+            # Find credit memos that reference this invoice
+            matching_credit_memos = []
+            for cm in credit_memos:
+                cm_original_inv = cm.get('original_invoice_number', '').lower()
+                cm_customer = cm.get('customer_name', '').lower()
+                
+                if cm_original_inv == inv_number:
+                    # Validate the match
+                    validation_result = self._validate_match(inv, cm)
+                    
+                    if validation_result['is_valid']:
+                        matching_credit_memos.append((cm, validation_result))
+                    else:
+                        # This is a discrepancy - wrong credit memo for this invoice
+                        discrepancies.append({
+                            'type': 'WRONG_CREDIT_MEMO_MATCH',
+                            'invoice_number': inv.get('invoice_number'),
+                            'credit_memo_number': cm.get('credit_memo_number'),
+                            'description': f"Credit memo {cm.get('credit_memo_number')} references invoice {inv.get('invoice_number')} but validation failed: {validation_result['reason']}",
+                            'severity': 'high',
+                            'validation_details': validation_result
+                        })
+            
+            # Process valid matches
+            for cm, validation in matching_credit_memos:
+                if cm.get('credit_memo_number', '').lower() not in matched_credit_memos:
+                    matched_pairs.append({
+                        'invoice': inv,
+                        'credit_memo': cm,
+                        'match_confidence': validation['confidence'],
+                        'match_reason': validation['reason'],
+                        'validation_details': validation
+                    })
+                    matched_credit_memos.add(cm.get('credit_memo_number', '').lower())
+        
+        # Step 2: Find unmatched invoices
+        matched_invoice_numbers = {pair['invoice'].get('invoice_number', '').lower() for pair in matched_pairs}
+        for inv in invoices:
+            if inv.get('invoice_number', '').lower() not in matched_invoice_numbers:
+                unmatched_invoices.append(inv)
+        
+        # Step 3: Find unmatched credit memos
+        for cm in credit_memos:
+            if cm.get('credit_memo_number', '').lower() not in matched_credit_memos:
+                unmatched_credit_memos.append(cm)
+        
+        # Step 4: Additional discrepancy checks
+        additional_discrepancies = self._check_additional_discrepancies(matched_pairs, invoices, credit_memos)
+        discrepancies.extend(additional_discrepancies)
         
         return {
-            'reconciled_items': reconciled_items,
+            'matched_pairs': matched_pairs,
             'discrepancies': discrepancies,
             'unmatched_invoices': unmatched_invoices,
             'unmatched_credit_memos': unmatched_credit_memos,
             'summary': {
-                'total_reconciled': len(reconciled_items),
+                'total_matched_pairs': len(matched_pairs),
                 'total_discrepancies': len(discrepancies),
                 'unmatched_invoices_count': len(unmatched_invoices),
                 'unmatched_credit_memos_count': len(unmatched_credit_memos)
             }
         }
     
-    def _process_ai_results(self, ai_analysis: Dict[str, Any], 
-                           invoices: List[Dict[str, Any]], 
-                           credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _validate_match(self, invoice: Dict[str, Any], credit_memo: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Process AI analysis results and add additional context.
+        Validate if a credit memo properly matches an invoice.
         
         Args:
-            ai_analysis: Results from AI analysis
-            invoices: Original invoice data
-            credit_memos: Original credit memo data
+            invoice: Invoice data
+            credit_memo: Credit memo data
             
         Returns:
-            Enhanced reconciliation results
+            Validation result with details
         """
-        # Add detailed information to reconciled items
-        reconciled_items = []
-        for item in ai_analysis.get('reconciled_items', []):
-            # Find corresponding invoice and credit memo
-            invoice_data = next((inv for inv in invoices if inv.get('invoice_number') == item['invoice_number']), {})
-            credit_memo_data = next((cm for cm in credit_memos if cm.get('credit_memo_number') == item['credit_memo_number']), {})
-            
-            enhanced_item = {
-                **item,
-                'invoice_date': invoice_data.get('invoice_date', ''),
-                'credit_memo_date': credit_memo_data.get('credit_memo_date', ''),
-                'vendor_name': invoice_data.get('vendor_name', ''),
-                'customer_name': invoice_data.get('customer_name', ''),
-                'invoice_amount': invoice_data.get('total_amount', 0.0),
-                'credit_amount': credit_memo_data.get('credit_amount', 0.0),
-                'currency': invoice_data.get('currency', 'USD'),
-                'credit_reason': credit_memo_data.get('credit_reason', ''),
-                'credit_type': credit_memo_data.get('credit_type', ''),
-                'processed_at': datetime.now().isoformat()
-            }
-            reconciled_items.append(enhanced_item)
+        validation_issues = []
+        confidence_score = 100.0
         
-        # Add detailed information to discrepancies
-        discrepancies = []
-        for item in ai_analysis.get('discrepancies', []):
-            invoice_data = next((inv for inv in invoices if inv.get('invoice_number') == item['invoice_number']), {})
-            credit_memo_data = next((cm for cm in credit_memos if cm.get('credit_memo_number') == item['credit_memo_number']), {})
+        # 1. Customer name validation
+        inv_customer = invoice.get('customer_name', '').lower().strip()
+        cm_customer = credit_memo.get('customer_name', '').lower().strip()
+        
+        if inv_customer and cm_customer:
+            if inv_customer != cm_customer:
+                validation_issues.append(f"Customer mismatch: Invoice customer '{invoice.get('customer_name')}' vs Credit memo customer '{credit_memo.get('customer_name')}'")
+                confidence_score -= 50.0  # High penalty for customer mismatch
+        
+        # 2. Date validation
+        try:
+            inv_date = datetime.strptime(invoice.get('invoice_date', ''), '%Y-%m-%d')
+            cm_date = datetime.strptime(credit_memo.get('credit_memo_date', ''), '%Y-%m-%d')
             
-            enhanced_discrepancy = {
-                **item,
-                'invoice_date': invoice_data.get('invoice_date', ''),
-                'credit_memo_date': credit_memo_data.get('credit_memo_date', ''),
-                'vendor_name': invoice_data.get('vendor_name', ''),
-                'customer_name': invoice_data.get('customer_name', ''),
-                'currency': invoice_data.get('currency', 'USD'),
-                'credit_reason': credit_memo_data.get('credit_reason', ''),
-                'credit_type': credit_memo_data.get('credit_type', ''),
-                'processed_at': datetime.now().isoformat()
-            }
-            discrepancies.append(enhanced_discrepancy)
+            if cm_date < inv_date:
+                validation_issues.append(f"Credit memo date ({credit_memo.get('credit_memo_date')}) is before invoice date ({invoice.get('invoice_date')})")
+                confidence_score -= 20.0
+        except (ValueError, TypeError):
+            validation_issues.append("Invalid date format in invoice or credit memo")
+            confidence_score -= 15.0
+        
+        # 3. Amount validation
+        inv_amount = float(invoice.get('total_amount', 0))
+        cm_amount = float(credit_memo.get('credit_amount', 0))
+        
+        if cm_amount > inv_amount:
+            validation_issues.append(f"Credit amount (${cm_amount}) exceeds invoice amount (${inv_amount})")
+            confidence_score -= 25.0
+        
+        # 4. Vendor validation (if available)
+        inv_vendor = invoice.get('vendor_name', '').lower().strip()
+        cm_vendor = credit_memo.get('vendor_name', '').lower().strip()
+        
+        if inv_vendor and cm_vendor and inv_vendor != cm_vendor:
+            validation_issues.append(f"Vendor mismatch: Invoice vendor '{invoice.get('vendor_name')}' vs Credit memo vendor '{credit_memo.get('vendor_name')}'")
+            confidence_score -= 15.0
+        
+        # 5. Currency validation
+        inv_currency = invoice.get('currency', 'USD').upper()
+        cm_currency = credit_memo.get('currency', 'USD').upper()
+        
+        if inv_currency != cm_currency:
+            validation_issues.append(f"Currency mismatch: Invoice currency '{inv_currency}' vs Credit memo currency '{cm_currency}'")
+            confidence_score -= 10.0
+        
+        # Determine if match is valid
+        is_valid = confidence_score >= 80.0 and len(validation_issues) <= 1  # Stricter validation
         
         return {
-            'reconciled_items': reconciled_items,
-            'discrepancies': discrepancies,
-            'unmatched_invoices': ai_analysis.get('unmatched_invoices', []),
-            'unmatched_credit_memos': ai_analysis.get('unmatched_credit_memos', []),
-            'summary': ai_analysis.get('summary', {}),
-            'invoices': invoices,
-            'credit_memos': credit_memos,
-            'processed_at': datetime.now().isoformat()
-        } 
+            'is_valid': is_valid,
+            'confidence': max(0.0, confidence_score),
+            'issues': validation_issues,
+            'reason': 'Valid match' if is_valid else f"Validation failed: {'; '.join(validation_issues)}"
+        }
+    
+    def _check_additional_discrepancies(self, matched_pairs: List[Dict[str, Any]], 
+                                       invoices: List[Dict[str, Any]], 
+                                       credit_memos: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Check for additional discrepancies beyond basic matching.
+        
+        Args:
+            matched_pairs: List of matched invoice-credit memo pairs
+            invoices: All invoice data
+            credit_memos: All credit memo data
+            
+        Returns:
+            List of additional discrepancies
+        """
+        discrepancies = []
+        
+        # Check for duplicate credit memos
+        credit_memo_counts = {}
+        for cm in credit_memos:
+            original_inv = cm.get('original_invoice_number', '').lower()
+            if original_inv:
+                credit_memo_counts[original_inv] = credit_memo_counts.get(original_inv, 0) + 1
+        
+        for inv_number, count in credit_memo_counts.items():
+            if count > 1:
+                discrepancies.append({
+                    'type': 'DUPLICATE_CREDIT_MEMOS',
+                    'invoice_number': inv_number,
+                    'description': f"Multiple credit memos ({count}) reference the same invoice {inv_number}",
+                    'severity': 'medium'
+                })
+        
+        # Check for orphaned credit memos (no matching invoice)
+        for cm in credit_memos:
+            original_inv = cm.get('original_invoice_number', '').lower()
+            if original_inv:
+                matching_invoice = next((inv for inv in invoices if inv.get('invoice_number', '').lower() == original_inv), None)
+                if not matching_invoice:
+                    discrepancies.append({
+                        'type': 'ORPHANED_CREDIT_MEMO',
+                        'credit_memo_number': cm.get('credit_memo_number'),
+                        'description': f"Credit memo {cm.get('credit_memo_number')} references non-existent invoice {original_inv}",
+                        'severity': 'high'
+                    })
+        
+        # Check for unusual credit amounts
+        for pair in matched_pairs:
+            invoice = pair['invoice']
+            credit_memo = pair['credit_memo']
+            
+            inv_amount = float(invoice.get('total_amount', 0))
+            cm_amount = float(credit_memo.get('credit_amount', 0))
+            
+            # Flag if credit amount is more than 50% of invoice amount (might be suspicious)
+            if cm_amount > inv_amount * 0.5 and cm_amount != inv_amount:
+                discrepancies.append({
+                    'type': 'LARGE_CREDIT_AMOUNT',
+                    'invoice_number': invoice.get('invoice_number'),
+                    'credit_memo_number': credit_memo.get('credit_memo_number'),
+                    'description': f"Credit amount (${cm_amount}) is {cm_amount/inv_amount*100:.1f}% of invoice amount (${inv_amount})",
+                    'severity': 'medium'
+                })
+        
+        return discrepancies
+    
+    def _calculate_analytics(self, reconciliation_results: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Calculate analytics and metrics from reconciliation results.
+        
+        Args:
+            reconciliation_results: Results from reconciliation
+            
+        Returns:
+            Analytics data
+        """
+        matched_pairs = reconciliation_results.get('matched_pairs', [])
+        discrepancies = reconciliation_results.get('discrepancies', [])
+        unmatched_invoices = reconciliation_results.get('unmatched_invoices', [])
+        unmatched_credit_memos = reconciliation_results.get('unmatched_credit_memos', [])
+        
+        # Calculate amounts
+        total_invoice_amount = sum(float(pair['invoice'].get('total_amount', 0)) for pair in matched_pairs)
+        total_credit_amount = sum(float(pair['credit_memo'].get('credit_amount', 0)) for pair in matched_pairs)
+        
+        # Calculate match rate
+        total_invoices = len(matched_pairs) + len(unmatched_invoices)
+        total_credit_memos = len(matched_pairs) + len(unmatched_credit_memos)
+        
+        match_rate = (len(matched_pairs) / total_invoices * 100) if total_invoices > 0 else 0
+        credit_memo_match_rate = (len(matched_pairs) / total_credit_memos * 100) if total_credit_memos > 0 else 0
+        
+        # Calculate average confidence
+        avg_confidence = sum(pair.get('match_confidence', 0) for pair in matched_pairs) / len(matched_pairs) if matched_pairs else 0
+        
+        # Categorize discrepancies
+        high_severity = len([d for d in discrepancies if d.get('severity') == 'high'])
+        medium_severity = len([d for d in discrepancies if d.get('severity') == 'medium'])
+        low_severity = len([d for d in discrepancies if d.get('severity') == 'low'])
+        
+        return {
+            'match_rate': round(match_rate, 1),
+            'credit_memo_match_rate': round(credit_memo_match_rate, 1),
+            'average_confidence': round(avg_confidence, 1),
+            'total_invoice_amount': total_invoice_amount,
+            'total_credit_amount': total_credit_amount,
+            'amount_difference': total_invoice_amount - total_credit_amount,
+            'discrepancy_breakdown': {
+                'high_severity': high_severity,
+                'medium_severity': medium_severity,
+                'low_severity': low_severity,
+                'total': len(discrepancies)
+            }
+        }
+
+def fallback_match_documents(invoices: List[Dict[str, Any]], 
+                           credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Fallback matching function for when AI is not available.
+    
+    Args:
+        invoices: List of invoice data
+        credit_memos: List of credit memo data
+        
+    Returns:
+        Basic matching results
+    """
+    agent = ReconciliationAgent()
+    return agent.reconcile_documents(invoices, credit_memos) 
