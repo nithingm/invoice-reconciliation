@@ -86,14 +86,24 @@ def demo_basic_processing():
     print("📝 Credit memo processor ready to extract data from PDFs")
     print()
 
-def demo_ai_reconciliation(api_key=None):
+def demo_ai_reconciliation(ollama_url="http://localhost:11434", model="llama2"):
     """Demonstrate AI reconciliation functionality."""
     print("🤖 Demo: AI Reconciliation")
     print("=" * 50)
     
-    if not api_key:
-        print("⚠️  No OpenAI API key provided. Using fallback matching.")
-        print("   To use AI features, set your OpenAI API key.")
+    # Test Ollama connection
+    try:
+        import requests
+        response = requests.get(f"{ollama_url}/api/tags", timeout=5)
+        if response.status_code == 200:
+            print("✅ Ollama server is accessible")
+        else:
+            print("⚠️  Ollama server not accessible. Using fallback matching.")
+            print("   To use AI features, ensure Ollama is running.")
+            print()
+    except Exception as e:
+        print(f"⚠️  Cannot connect to Ollama server: {str(e)}")
+        print("   To use AI features, ensure Ollama is running.")
         print()
     
     # Create sample data
@@ -111,10 +121,11 @@ def demo_ai_reconciliation(api_key=None):
     print()
     
     # Initialize reconciliation agent
-    if api_key:
-        reconciliation_agent = ReconciliationAgent(api_key)
+    try:
+        reconciliation_agent = ReconciliationAgent(ollama_url=ollama_url, model=model)
         print("🤖 AI reconciliation agent initialized")
-    else:
+    except Exception as e:
+        print(f"❌ Error initializing AI agent: {str(e)}")
         reconciliation_agent = None
         print("🔧 Using fallback matching (no AI)")
     
@@ -258,13 +269,14 @@ def main():
     demo_basic_processing()
     
     # Demo AI reconciliation
-    api_key = os.getenv('OPENAI_API_KEY')
-    results = demo_ai_reconciliation(api_key)
+    ollama_url = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+    model = os.getenv('OLLAMA_MODEL', 'llama2')
+    results = demo_ai_reconciliation(ollama_url, model)
     
     print("🎉 Demo completed successfully!")
     print()
     print("To run the full application:")
-    print("1. Set your OpenAI API key (optional but recommended)")
+    print("1. Ensure Ollama is installed and running")
     print("2. Run: streamlit run main.py")
     print("3. Open your browser to http://localhost:8501")
     print()

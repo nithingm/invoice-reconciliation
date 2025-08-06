@@ -1,12 +1,19 @@
-# OpenAI API Configuration
-# Get your API key from: https://platform.openai.com/api-keys
-OPENAI_API_KEY=your_openai_api_key_here
+# Ollama Configuration
+# Make sure Ollama is installed and running on your system
+# Download from: https://ollama.ai/
 
-# Optional: Configure OpenAI model (default: gpt-4)
-OPENAI_MODEL=gpt-4
+# Ollama Server URL (default: localhost:11434)
+OLLAMA_URL=http://localhost:11434
 
-# Optional: Configure temperature for AI responses (default: 0.1)
-OPENAI_TEMPERATURE=0.1
+# Ollama Model to use (default: llama2)
+# Available models depend on what you have pulled with: ollama pull <model_name>
+OLLAMA_MODEL=llama2
 
-# Optional: Configure max tokens for AI responses (default: 2000)
-OPENAI_MAX_TOKENS=2000 
+# Optional: Configure Ollama generation parameters
+OLLAMA_TEMPERATURE=0.1
+OLLAMA_MAX_TOKENS=2000
+
+# Optional: Alternative models you can use
+# OLLAMA_MODEL=codellama
+# OLLAMA_MODEL=llama2:13b
+# OLLAMA_MODEL=llama2:7b 

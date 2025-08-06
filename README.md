@@ -5,7 +5,7 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 ## ✨ Features
 
 - **📄 PDF Processing**: Extract data from invoice and credit memo PDFs
-- **🤖 AI-Powered Matching**: Intelligent matching using OpenAI's GPT-4
+- **🤖 AI-Powered Matching**: Intelligent matching using Ollama local models
 - **🔍 Discrepancy Detection**: Automatically identify mismatches and issues
 - **📊 Analytics Dashboard**: Visual analytics and reporting
 - **📥 Export Capabilities**: Download results in CSV and JSON formats
@@ -16,7 +16,7 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 ### Prerequisites
 
 - Python 3.8 or higher
-- OpenAI API key (for AI features)
+- Ollama installed and running locally (for AI features)
 
 ### Installation
 
@@ -27,13 +27,11 @@ An intelligent AI-powered application for reconciling invoices with credit memos
    pip install -r requirements.txt
    ```
 
-3. **Set up your OpenAI API key**:
-   - Get an API key from [OpenAI](https://platform.openai.com/)
-   - Create a `.env` file in the project directory:
-     ```
-     OPENAI_API_KEY=your_api_key_here
-     ```
-   - Or enter it directly in the application
+3. **Set up Ollama**:
+   - Install Ollama from [ollama.ai](https://ollama.ai/)
+   - Start the Ollama service
+   - Pull a model (e.g., `ollama pull llama2`)
+   - The application will automatically connect to localhost:11434
 
 4. **Run the application**:
    ```bash
@@ -58,7 +56,7 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 
 ### Step 3: AI Reconciliation
 - Go to the "🤖 AI Reconciliation" tab
-- Enter your OpenAI API key if not already set
+- Ensure Ollama is running and accessible
 - Click "Start AI Reconciliation"
 - The AI will analyze and match your documents
 
@@ -74,15 +72,16 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 Create a `.env` file in the project directory:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama2
 ```
 
-### API Key Setup
+### Ollama Setup
 
-You can set your OpenAI API key in three ways:
-1. **Environment variable**: Add to `.env` file
-2. **Application input**: Enter directly in the sidebar
-3. **System environment**: Set as system environment variable
+1. **Install Ollama**: Download from [ollama.ai](https://ollama.ai/)
+2. **Start Ollama service**: The service runs on localhost:11434 by default
+3. **Pull a model**: Run `ollama pull llama2` or another model of your choice
+4. **Configure in app**: The application will automatically detect available models
 
 ## 📊 Features in Detail
 

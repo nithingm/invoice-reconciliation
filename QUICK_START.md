@@ -7,13 +7,15 @@
 pip install -r requirements.txt
 ```
 
-### 2. Set Up OpenAI API Key (Optional)
-Create a `.env` file in the project directory:
-```
-OPENAI_API_KEY=your_openai_api_key_here
+### 2. Set Up Ollama (Optional but Recommended)
+Install Ollama from [ollama.ai](https://ollama.ai/) and pull a model:
+```bash
+# Install Ollama (follow instructions on ollama.ai)
+# Then pull a model:
+ollama pull llama2
 ```
 
-Or enter it directly in the application.
+The application will automatically connect to localhost:11434.
 
 ### 3. Run the Application
 ```bash
@@ -25,6 +27,7 @@ Then open your browser to `http://localhost:8501`
 ## 🧪 Test Your Installation
 ```bash
 python test_installation.py
+python test_ollama_integration.py
 ```
 
 ## 🎯 Try the Demo
@@ -52,7 +55,7 @@ python demo.py
 ## 🔧 Features
 
 ✅ **PDF Processing**: Extract data from invoice and credit memo PDFs  
-✅ **AI Matching**: Intelligent matching using OpenAI GPT-4  
+✅ **AI Matching**: Intelligent matching using Ollama local models  
 ✅ **Discrepancy Detection**: Automatically identify mismatches  
 ✅ **Analytics Dashboard**: Visual charts and metrics  
 ✅ **Export Capabilities**: Download results in multiple formats  

@@ -61,21 +61,51 @@ def main():
     # Sidebar
     st.sidebar.title("📋 Configuration")
     
-    # API Key input
-    api_key = st.sidebar.text_input(
-        "OpenAI API Key",
-        type="password",
-        help="Enter your OpenAI API key to enable AI processing"
+    # Ollama Configuration
+    st.sidebar.subheader("🤖 AI Configuration")
+    
+    ollama_url = st.sidebar.text_input(
+        "Ollama Server URL",
+        value="http://localhost:11434",
+        help="URL of your Ollama server (default: localhost:11434)"
     )
     
-    if not api_key:
-        st.sidebar.warning("⚠️ Please enter your OpenAI API key to use AI features")
-        api_key = os.getenv("OPENAI_API_KEY")
+    # Check available models
+    try:
+        import requests
+        response = requests.get(f"{ollama_url}/api/tags", timeout=5)
+        if response.status_code == 200:
+            models = [model['name'] for model in response.json().get('models', [])]
+            default_model = models[0] if models else "llama2"
+        else:
+            models = ["llama2"]
+            default_model = "llama2"
+    except:
+        models = ["llama2"]
+        default_model = "llama2"
+    
+    selected_model = st.sidebar.selectbox(
+        "Ollama Model",
+        options=models,
+        index=0 if default_model in models else 0,
+        help="Select the Ollama model to use for AI analysis"
+    )
+    
+    # Test Ollama connection
+    if st.sidebar.button("🔗 Test Ollama Connection"):
+        try:
+            response = requests.get(f"{ollama_url}/api/tags", timeout=5)
+            if response.status_code == 200:
+                st.sidebar.success("✅ Ollama server is accessible")
+            else:
+                st.sidebar.error("❌ Cannot connect to Ollama server")
+        except Exception as e:
+            st.sidebar.error(f"❌ Connection failed: {str(e)}")
     
     # Initialize processors
     invoice_processor = InvoiceProcessor()
     credit_memo_processor = CreditMemoProcessor()
-    reconciliation_agent = ReconciliationAgent(api_key) if api_key else None
+    reconciliation_agent = ReconciliationAgent(ollama_url=ollama_url, model=selected_model)
     
     # Main content
     tab1, tab2, tab3, tab4 = st.tabs(["📄 Upload Documents", "🔍 Process & Extract", "🤖 AI Reconciliation", "📊 Analytics"])
@@ -160,9 +190,9 @@ def main():
     with tab3:
         st.header("🤖 AI Reconciliation")
         
-        if not reconciliation_agent:
-            st.warning("⚠️ Please enter your OpenAI API key to use AI reconciliation features")
-            return
+        # Check Ollama availability
+        ollama_status = "🟢 Available" if reconciliation_agent.ollama_client.is_server_available() else "🔴 Not Available"
+        st.info(f"Ollama Status: {ollama_status}")
         
         if st.session_state.processed_invoices and st.session_state.processed_credit_memos:
             if st.button("Start AI Reconciliation", type="primary"):
@@ -209,6 +239,36 @@ def display_reconciliation_results(results):
     
     with col4:
         st.metric("Unmatched Credit Memos", len(results.get('unmatched_credit_memos', [])))
+    
+    # AI Analysis if available
+    if 'ai_analysis' in results:
+        ai_analysis = results['ai_analysis']
+        st.subheader("🤖 AI Analysis")
+        
+        if 'error' not in ai_analysis:
+            # Display AI insights
+            if 'key_insights' in ai_analysis:
+                st.write("**🔍 Key Insights:**")
+                for insight in ai_analysis['key_insights']:
+                    st.write(f"• {insight}")
+            
+            if 'potential_issues' in ai_analysis:
+                st.write("**⚠️ Potential Issues:**")
+                for issue in ai_analysis['potential_issues']:
+                    st.write(f"• {issue}")
+            
+            if 'recommendations' in ai_analysis:
+                st.write("**💡 Recommendations:**")
+                for rec in ai_analysis['recommendations']:
+                    st.write(f"• {rec}")
+            
+            if 'summary' in ai_analysis:
+                st.write(f"**📝 Summary:** {ai_analysis['summary']}")
+            
+            if 'confidence_score' in ai_analysis:
+                st.metric("AI Confidence", f"{ai_analysis['confidence_score']*100:.1f}%")
+        else:
+            st.warning(f"AI Analysis Error: {ai_analysis['error']}")
     
     # Analytics if available
     if 'analytics' in results:

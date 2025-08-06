@@ -1,33 +1,32 @@
-import openai
 from typing import Dict, Any, List, Optional, Tuple
 import logging
 import json
 from datetime import datetime
 import pandas as pd
 import re
+from ollama_client import OllamaClient
 
 class ReconciliationAgent:
     """
     Enhanced AI-powered agent for reconciling invoices with credit memos.
-    Includes proper validation and discrepancy detection.
+    Uses Ollama for AI-powered analysis and validation.
     """
     
-    def __init__(self, api_key: str = None):
+    def __init__(self, ollama_url: str = "http://localhost:11434", model: str = "llama2"):
         """
         Initialize the reconciliation agent.
         
         Args:
-            api_key: OpenAI API key (optional for fallback mode)
+            ollama_url: Ollama server URL (default: localhost:11434)
+            model: Ollama model name (default: llama2)
         """
-        self.api_key = api_key
-        if api_key:
-            openai.api_key = api_key
+        self.ollama_client = OllamaClient(base_url=ollama_url, model=model)
         self.logger = logging.getLogger(__name__)
         
     def reconcile_documents(self, invoices: List[Dict[str, Any]], 
                           credit_memos: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Reconcile invoices with credit memos using enhanced validation.
+        Reconcile invoices with credit memos using AI-enhanced validation.
         
         Args:
             invoices: List of processed invoice data
@@ -37,10 +36,19 @@ class ReconciliationAgent:
             Dict containing reconciliation results
         """
         try:
-            self.logger.info(f"Starting enhanced reconciliation for {len(invoices)} invoices and {len(credit_memos)} credit memos")
+            self.logger.info(f"Starting AI-enhanced reconciliation for {len(invoices)} invoices and {len(credit_memos)} credit memos")
             
             # Perform comprehensive validation and matching
             reconciliation_results = self._enhanced_matching(invoices, credit_memos)
+            
+            # Add AI-powered analysis if Ollama is available
+            if self.ollama_client.is_server_available():
+                ai_analysis = self.ollama_client.analyze_reconciliation_data(invoices, credit_memos)
+                reconciliation_results['ai_analysis'] = ai_analysis
+                self.logger.info("AI analysis completed successfully")
+            else:
+                reconciliation_results['ai_analysis'] = {"error": "Ollama server not available"}
+                self.logger.warning("Ollama server not available, skipping AI analysis")
             
             # Add analytics and metrics
             reconciliation_results['analytics'] = self._calculate_analytics(reconciliation_results)
@@ -48,7 +56,7 @@ class ReconciliationAgent:
             return reconciliation_results
             
         except Exception as e:
-            self.logger.error(f"Error during enhanced reconciliation: {str(e)}")
+            self.logger.error(f"Error during AI-enhanced reconciliation: {str(e)}")
             raise
     
     def _enhanced_matching(self, invoices: List[Dict[str, Any]], 
@@ -145,14 +153,38 @@ class ReconciliationAgent:
     
     def _validate_match(self, invoice: Dict[str, Any], credit_memo: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Validate if a credit memo properly matches an invoice.
+        Validate a potential match between invoice and credit memo using AI and rule-based validation.
         
         Args:
             invoice: Invoice data
             credit_memo: Credit memo data
             
         Returns:
-            Validation result with details
+            Validation results with confidence score
+        """
+        # First, perform rule-based validation
+        rule_based_result = self._rule_based_validation(invoice, credit_memo)
+        
+        # Then, enhance with AI validation if Ollama is available
+        if self.ollama_client.is_server_available():
+            ai_result = self.ollama_client.validate_match_with_ai(invoice, credit_memo)
+            
+            # Combine rule-based and AI validation
+            return self._combine_validation_results(rule_based_result, ai_result)
+        else:
+            # Fallback to rule-based only
+            return rule_based_result
+    
+    def _rule_based_validation(self, invoice: Dict[str, Any], credit_memo: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Perform rule-based validation of invoice-credit memo match.
+        
+        Args:
+            invoice: Invoice data
+            credit_memo: Credit memo data
+            
+        Returns:
+            Rule-based validation results
         """
         validation_issues = []
         confidence_score = 100.0
@@ -209,7 +241,50 @@ class ReconciliationAgent:
             'is_valid': is_valid,
             'confidence': max(0.0, confidence_score),
             'issues': validation_issues,
-            'reason': 'Valid match' if is_valid else f"Validation failed: {'; '.join(validation_issues)}"
+            'reason': 'Valid match' if is_valid else f"Validation failed: {'; '.join(validation_issues)}",
+            'validation_type': 'rule_based'
+        }
+    
+    def _combine_validation_results(self, rule_result: Dict[str, Any], ai_result: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Combine rule-based and AI validation results.
+        
+        Args:
+            rule_result: Rule-based validation results
+            ai_result: AI validation results
+            
+        Returns:
+            Combined validation results
+        """
+        if 'error' in ai_result:
+            # AI validation failed, use rule-based only
+            return rule_result
+        
+        # Extract AI confidence and reasoning
+        ai_confidence = ai_result.get('confidence_score', 0.5) * 100  # Convert to percentage
+        ai_reasoning = ai_result.get('reasoning', '')
+        ai_is_valid = ai_result.get('is_valid_match', False)
+        
+        # Combine confidence scores (weighted average: 60% rule-based, 40% AI)
+        combined_confidence = (rule_result['confidence'] * 0.6) + (ai_confidence * 0.4)
+        
+        # Combine issues
+        combined_issues = rule_result['issues'].copy()
+        if 'issues' in ai_result:
+            combined_issues.extend(ai_result['issues'])
+        
+        # Determine final validity (both must agree or AI must be very confident)
+        final_is_valid = rule_result['is_valid'] and (ai_is_valid or ai_confidence > 90)
+        
+        return {
+            'is_valid': final_is_valid,
+            'confidence': round(combined_confidence, 1),
+            'issues': combined_issues,
+            'reason': f"Combined validation: {rule_result['reason']} | AI: {ai_reasoning}",
+            'validation_type': 'combined',
+            'rule_based_confidence': rule_result['confidence'],
+            'ai_confidence': ai_confidence,
+            'ai_reasoning': ai_reasoning
         }
     
     def _check_additional_discrepancies(self, matched_pairs: List[Dict[str, Any]], 
