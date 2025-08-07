@@ -119,7 +119,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="w-full bg-white shadow-2xl border-l border-gray-200 flex flex-col h-screen">
+    <div className="fixed top-16 right-0 w-96 bg-white shadow-2xl border-l border-gray-200 flex flex-col z-40" style={{ height: 'calc(100vh - 64px)' }}>
       <div className="flex items-center justify-between p-4 border-b bg-primary-600 text-white">
         <div className="flex items-center space-x-3">
           <ChatBubbleLeftRightIcon className="h-6 w-6" />

@@ -41,11 +41,9 @@ function App() {
             </Routes>
           </main>
 
-          {/* Chat Sidebar - Fixed position */}
+          {/* Chat Sidebar - Fixed position, independent scrolling */}
           {isChatOpen && (
-            <div className="w-96 flex-shrink-0">
-              <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
-            </div>
+            <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
           )}
         </div>
         <div className={`transition-all duration-300 ${
