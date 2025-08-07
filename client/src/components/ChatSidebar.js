@@ -118,12 +118,8 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     ));
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="w-96 bg-white shadow-2xl border-l border-gray-200 flex flex-col h-screen">
+    <div className="w-full bg-white shadow-2xl border-l border-gray-200 flex flex-col h-screen">
       <div className="flex items-center justify-between p-4 border-b bg-primary-600 text-white">
         <div className="flex items-center space-x-3">
           <ChatBubbleLeftRightIcon className="h-6 w-6" />

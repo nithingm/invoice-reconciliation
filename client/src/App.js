@@ -27,10 +27,10 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
-        <div className="flex flex-grow">
+        <div className="flex flex-grow relative">
           {/* Main Content Area */}
           <main className={`flex-grow transition-all duration-300 ${
-            isChatOpen ? 'mr-96' : 'mr-0'
+            isChatOpen ? 'w-[calc(100%-384px)]' : 'w-full'
           }`}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -41,11 +41,15 @@ function App() {
             </Routes>
           </main>
 
-          {/* Chat Sidebar */}
-          <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
+          {/* Chat Sidebar - Fixed position */}
+          {isChatOpen && (
+            <div className="w-96 flex-shrink-0">
+              <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
+            </div>
+          )}
         </div>
         <div className={`transition-all duration-300 ${
-          isChatOpen ? 'mr-96' : 'mr-0'
+          isChatOpen ? 'w-[calc(100%-384px)]' : 'w-full'
         }`}>
           <Footer />
         </div>
