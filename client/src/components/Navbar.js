@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bars3Icon, XMarkIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,13 +46,6 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/chat"
-              className="btn-primary flex items-center space-x-2"
-            >
-              <ChatBubbleLeftRightIcon className="h-4 w-4" />
-              <span>Customer Chat</span>
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -89,16 +82,6 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/chat"
-              className="block px-3 py-2 text-base font-medium text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-md transition-colors duration-200"
-              onClick={() => setIsOpen(false)}
-            >
-              <div className="flex items-center space-x-2">
-                <ChatBubbleLeftRightIcon className="h-5 w-5" />
-                <span>Customer Chat</span>
-              </div>
-            </Link>
           </div>
         </div>
       )}
