@@ -27,20 +27,31 @@ function App() {
     <Router>
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/customer-data" element={<CustomerData />} />
-          </Routes>
-        </main>
-        <Footer />
+        <div className="flex flex-grow">
+          {/* Main Content Area */}
+          <main className={`flex-grow transition-all duration-300 ${
+            isChatOpen ? 'mr-96' : 'mr-0'
+          }`}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/customer-data" element={<CustomerData />} />
+            </Routes>
+          </main>
 
-        {/* Chat Components */}
+          {/* Chat Sidebar */}
+          <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
+        </div>
+        <div className={`transition-all duration-300 ${
+          isChatOpen ? 'mr-96' : 'mr-0'
+        }`}>
+          <Footer />
+        </div>
+
+        {/* Chat Toggle Button */}
         <ChatToggle onClick={toggleChat} isOpen={isChatOpen} />
-        <ChatSidebar isOpen={isChatOpen} onClose={closeChat} />
 
         <Toaster
           position="top-right"
