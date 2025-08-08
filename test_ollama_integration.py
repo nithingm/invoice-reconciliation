@@ -12,42 +12,41 @@ from datetime import datetime
 # Add the current directory to the path so we can import our modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from ollama_client import OllamaClient
+from litellm_client import LiteLLMClient
 from reconciliation_agent import ReconciliationAgent
 
-def test_ollama_connection():
-    """Test basic Ollama server connection."""
-    print("🔗 Testing Ollama Connection")
+def test_ai_connection():
+    """Test basic AI model connection."""
+    print("🔗 Testing AI Model Connection")
     print("=" * 40)
     
-    client = OllamaClient()
+    client = LiteLLMClient()
     
     if client.is_server_available():
-        print("✅ Ollama server is accessible")
+        print("✅ AI model server is accessible")
         
         # Get available models
         models = client.get_available_models()
         if models:
-            print(f"📋 Available models: {', '.join(models)}")
+            print(f"📋 Available models: {', '.join(models[:5])}...")  # Show first 5 models
         else:
-            print("⚠️  No models found. You may need to pull a model first.")
-            print("   Try: ollama pull llama2")
+            print("⚠️  No models found.")
         
         return True
     else:
-        print("❌ Ollama server is not accessible")
-        print("   Make sure Ollama is installed and running:")
-        print("   1. Install from https://ollama.ai/")
-        print("   2. Start the service")
-        print("   3. Pull a model: ollama pull llama2")
+        print("❌ AI model server is not accessible")
+        print("   Make sure you have:")
+        print("   1. OpenAI API key set (OPENAI_API_KEY)")
+        print("   2. Or Anthropic API key set (ANTHROPIC_API_KEY)")
+        print("   3. Or Ollama running locally")
         return False
 
-def test_ollama_generation():
-    """Test basic text generation with Ollama."""
-    print("\n🤖 Testing Ollama Text Generation")
+def test_ai_generation():
+    """Test basic text generation with AI model."""
+    print("\n🤖 Testing AI Text Generation")
     print("=" * 40)
     
-    client = OllamaClient()
+    client = LiteLLMClient()
     
     if not client.is_server_available():
         print("❌ Skipping generation test - server not available")
@@ -67,7 +66,7 @@ def test_ollama_generation():
         return False
 
 def test_reconciliation_agent():
-    """Test the reconciliation agent with Ollama."""
+    """Test the reconciliation agent with AI model."""
     print("\n🔍 Testing Reconciliation Agent")
     print("=" * 40)
     
@@ -132,7 +131,7 @@ def test_validation_with_ai():
     print("\n✅ Testing AI Validation")
     print("=" * 40)
     
-    client = OllamaClient()
+    client = LiteLLMClient()
     
     if not client.is_server_available():
         print("❌ Skipping validation test - server not available")
@@ -171,13 +170,13 @@ def test_validation_with_ai():
 
 def main():
     """Run all tests."""
-    print("🧪 Ollama Integration Test Suite")
+    print("🧪 AI Model Integration Test Suite")
     print("=" * 50)
     print()
     
     tests = [
-        ("Ollama Connection", test_ollama_connection),
-        ("Text Generation", test_ollama_generation),
+        ("AI Connection", test_ai_connection),
+        ("Text Generation", test_ai_generation),
         ("Reconciliation Agent", test_reconciliation_agent),
         ("AI Validation", test_validation_with_ai)
     ]
@@ -204,19 +203,19 @@ def main():
     print(f"{'='*60}")
     
     if passed == total:
-        print("🎉 All tests passed! Ollama integration is working correctly.")
+        print("🎉 All tests passed! AI model integration is working correctly.")
     elif passed > 0:
         print("⚠️  Some tests passed. Check the output above for details.")
     else:
-        print("❌ No tests passed. Please check your Ollama setup.")
+        print("❌ No tests passed. Please check your AI model setup.")
     
     print("\nNext steps:")
     print("1. If tests passed, you can run the main application:")
     print("   streamlit run main.py")
-    print("2. If tests failed, check your Ollama installation:")
-    print("   - Install from https://ollama.ai/")
-    print("   - Start the service")
-    print("   - Pull a model: ollama pull llama2")
+    print("2. If tests failed, check your AI model setup:")
+    print("   - Set OPENAI_API_KEY for OpenAI models")
+    print("   - Set ANTHROPIC_API_KEY for Anthropic models")
+    print("   - Or run Ollama locally for local models")
 
 if __name__ == "__main__":
     main() 

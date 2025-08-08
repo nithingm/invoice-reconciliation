@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 import pandas as pd
 import re
-from ollama_client import OllamaClient
+from litellm_client import LiteLLMClient
 
 class ReconciliationAgent:
     """
@@ -12,15 +12,19 @@ class ReconciliationAgent:
     Uses Ollama for AI-powered analysis and validation.
     """
     
-    def __init__(self, ollama_url: str = "http://localhost:11434", model: str = "llama2"):
+    def __init__(self, model: str = "gpt-3.5-turbo", api_key: str = None, 
+                 base_url: str = None, provider: str = None):
         """
         Initialize the reconciliation agent.
         
         Args:
-            ollama_url: Ollama server URL (default: localhost:11434)
-            model: Ollama model name (default: llama2)
+            model: AI model name to use (default: gpt-3.5-turbo)
+            api_key: API key for the model provider
+            base_url: Base URL for the API (for local models like Ollama)
+            provider: Provider name (openai, anthropic, ollama, etc.)
         """
-        self.ollama_client = OllamaClient(base_url=ollama_url, model=model)
+        self.ai_client = LiteLLMClient(model=model, api_key=api_key, 
+                                      base_url=base_url, provider=provider)
         self.logger = logging.getLogger(__name__)
         
     def reconcile_documents(self, invoices: List[Dict[str, Any]], 
@@ -41,14 +45,14 @@ class ReconciliationAgent:
             # Perform comprehensive validation and matching
             reconciliation_results = self._enhanced_matching(invoices, credit_memos)
             
-            # Add AI-powered analysis if Ollama is available
-            if self.ollama_client.is_server_available():
-                ai_analysis = self.ollama_client.analyze_reconciliation_data(invoices, credit_memos)
+            # Add AI-powered analysis if AI model is available
+            if self.ai_client.is_server_available():
+                ai_analysis = self.ai_client.analyze_reconciliation_data(invoices, credit_memos)
                 reconciliation_results['ai_analysis'] = ai_analysis
                 self.logger.info("AI analysis completed successfully")
             else:
-                reconciliation_results['ai_analysis'] = {"error": "Ollama server not available"}
-                self.logger.warning("Ollama server not available, skipping AI analysis")
+                reconciliation_results['ai_analysis'] = {"error": "AI model server not available"}
+                self.logger.warning("AI model server not available, skipping AI analysis")
             
             # Add analytics and metrics
             reconciliation_results['analytics'] = self._calculate_analytics(reconciliation_results)
@@ -165,9 +169,9 @@ class ReconciliationAgent:
         # First, perform rule-based validation
         rule_based_result = self._rule_based_validation(invoice, credit_memo)
         
-        # Then, enhance with AI validation if Ollama is available
-        if self.ollama_client.is_server_available():
-            ai_result = self.ollama_client.validate_match_with_ai(invoice, credit_memo)
+        # Then, enhance with AI validation if AI model is available
+        if self.ai_client.is_server_available():
+            ai_result = self.ai_client.validate_match_with_ai(invoice, credit_memo)
             
             # Combine rule-based and AI validation
             return self._combine_validation_results(rule_based_result, ai_result)

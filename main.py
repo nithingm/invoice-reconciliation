@@ -9,6 +9,7 @@ from invoice_processor import InvoiceProcessor
 from credit_memo_processor import CreditMemoProcessor
 from reconciliation_agent import ReconciliationAgent
 from utils import create_download_link
+from ai_config import get_available_providers, get_default_provider, create_ai_client, print_available_configs
 
 # Load environment variables
 load_dotenv()
@@ -61,51 +62,79 @@ def main():
     # Sidebar
     st.sidebar.title("📋 Configuration")
     
-    # Ollama Configuration
+    # AI Configuration
     st.sidebar.subheader("🤖 AI Configuration")
     
-    ollama_url = st.sidebar.text_input(
-        "Ollama Server URL",
-        value="http://localhost:11434",
-        help="URL of your Ollama server (default: localhost:11434)"
+    # Provider selection
+    available_providers = get_available_providers()
+    default_provider = get_default_provider()
+    
+    selected_provider = st.sidebar.selectbox(
+        "AI Provider",
+        options=available_providers,
+        index=available_providers.index(default_provider) if default_provider in available_providers else 0,
+        help="Select the AI provider to use"
     )
     
-    # Check available models
-    try:
-        import requests
-        response = requests.get(f"{ollama_url}/api/tags", timeout=5)
-        if response.status_code == 200:
-            models = [model['name'] for model in response.json().get('models', [])]
-            default_model = models[0] if models else "llama2"
-        else:
-            models = ["llama2"]
-            default_model = "llama2"
-    except:
-        models = ["llama2"]
-        default_model = "llama2"
-    
-    selected_model = st.sidebar.selectbox(
-        "Ollama Model",
-        options=models,
-        index=0 if default_model in models else 0,
-        help="Select the Ollama model to use for AI analysis"
-    )
-    
-    # Test Ollama connection
-    if st.sidebar.button("🔗 Test Ollama Connection"):
+    # Model selection based on provider
+    if selected_provider == "ollama":
+        # For Ollama, allow custom URL and model
+        ollama_url = st.sidebar.text_input(
+            "Ollama Server URL",
+            value="http://localhost:11434",
+            help="URL of your Ollama server"
+        )
+        
+        # Try to get available models from Ollama
         try:
+            import requests
             response = requests.get(f"{ollama_url}/api/tags", timeout=5)
             if response.status_code == 200:
-                st.sidebar.success("✅ Ollama server is accessible")
+                models = [model['name'] for model in response.json().get('models', [])]
+                default_model = models[0] if models else "llama2"
             else:
-                st.sidebar.error("❌ Cannot connect to Ollama server")
+                models = ["llama2", "llama2:13b", "mistral", "codellama"]
+                default_model = "llama2"
+        except:
+            models = ["llama2", "llama2:13b", "mistral", "codellama"]
+            default_model = "llama2"
+    else:
+        # For other providers, use predefined models
+        from ai_config import AI_CONFIGS
+        models = AI_CONFIGS[selected_provider]["model"].split(",") if "," in AI_CONFIGS[selected_provider]["model"] else [AI_CONFIGS[selected_provider]["model"]]
+        default_model = models[0]
+        ollama_url = None
+    
+    selected_model = st.sidebar.selectbox(
+        "AI Model",
+        options=models,
+        index=0,
+        help=f"Select the {selected_provider} model to use"
+    )
+    
+    # Test AI connection
+    if st.sidebar.button("🔗 Test AI Connection"):
+        try:
+            ai_client = create_ai_client(
+                provider=selected_provider,
+                model=selected_model,
+                base_url=ollama_url if selected_provider == "ollama" else None
+            )
+            if ai_client.is_server_available():
+                st.sidebar.success(f"✅ {selected_provider.upper()} connection successful")
+            else:
+                st.sidebar.error(f"❌ Cannot connect to {selected_provider}")
         except Exception as e:
             st.sidebar.error(f"❌ Connection failed: {str(e)}")
     
     # Initialize processors
     invoice_processor = InvoiceProcessor()
     credit_memo_processor = CreditMemoProcessor()
-    reconciliation_agent = ReconciliationAgent(ollama_url=ollama_url, model=selected_model)
+    reconciliation_agent = ReconciliationAgent(
+        model=selected_model,
+        base_url=ollama_url if selected_provider == "ollama" else None,
+        provider=selected_provider
+    )
     
     # Main content
     tab1, tab2, tab3, tab4 = st.tabs(["📄 Upload Documents", "🔍 Process & Extract", "🤖 AI Reconciliation", "📊 Analytics"])
@@ -190,9 +219,9 @@ def main():
     with tab3:
         st.header("🤖 AI Reconciliation")
         
-        # Check Ollama availability
-        ollama_status = "🟢 Available" if reconciliation_agent.ollama_client.is_server_available() else "🔴 Not Available"
-        st.info(f"Ollama Status: {ollama_status}")
+        # Check AI availability
+        ai_status = "🟢 Available" if reconciliation_agent.ai_client.is_server_available() else "🔴 Not Available"
+        st.info(f"AI Model Status: {ai_status}")
         
         if st.session_state.processed_invoices and st.session_state.processed_credit_memos:
             if st.button("Start AI Reconciliation", type="primary"):

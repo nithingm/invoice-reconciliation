@@ -5,7 +5,8 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 ## ✨ Features
 
 - **📄 PDF Processing**: Extract data from invoice and credit memo PDFs
-- **🤖 AI-Powered Matching**: Intelligent matching using Ollama local models
+- **🤖 AI-Powered Matching**: Intelligent matching using multiple AI providers (OpenAI, Anthropic, Ollama, Google, Cohere)
+- **🔄 Easy Model Switching**: Seamlessly switch between different AI models without code changes
 - **🔍 Discrepancy Detection**: Automatically identify mismatches and issues
 - **📊 Analytics Dashboard**: Visual analytics and reporting
 - **📥 Export Capabilities**: Download results in CSV and JSON formats
@@ -16,7 +17,12 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 ### Prerequisites
 
 - Python 3.8 or higher
-- Ollama installed and running locally (for AI features)
+- One of the following AI providers:
+  - **OpenAI**: Set `OPENAI_API_KEY` environment variable
+  - **Anthropic**: Set `ANTHROPIC_API_KEY` environment variable
+  - **Ollama**: Install and run locally (default fallback)
+  - **Google**: Set `GOOGLE_API_KEY` environment variable
+  - **Cohere**: Set `COHERE_API_KEY` environment variable
 
 ### Installation
 
@@ -27,11 +33,12 @@ An intelligent AI-powered application for reconciling invoices with credit memos
    pip install -r requirements.txt
    ```
 
-3. **Set up Ollama**:
-   - Install Ollama from [ollama.ai](https://ollama.ai/)
-   - Start the Ollama service
-   - Pull a model (e.g., `ollama pull llama2`)
-   - The application will automatically connect to localhost:11434
+3. **Set up AI Provider** (choose one):
+   - **For OpenAI**: Set `OPENAI_API_KEY` in your environment
+   - **For Anthropic**: Set `ANTHROPIC_API_KEY` in your environment
+   - **For Ollama**: Install from [ollama.ai](https://ollama.ai/) and run `ollama pull llama2`
+   - **For Google**: Set `GOOGLE_API_KEY` in your environment
+   - **For Cohere**: Set `COHERE_API_KEY` in your environment
 
 4. **Run the application**:
    ```bash
@@ -56,7 +63,8 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 
 ### Step 3: AI Reconciliation
 - Go to the "🤖 AI Reconciliation" tab
-- Ensure Ollama is running and accessible
+- Select your preferred AI provider and model from the sidebar
+- Test the AI connection if needed
 - Click "Start AI Reconciliation"
 - The AI will analyze and match your documents
 
@@ -72,11 +80,32 @@ An intelligent AI-powered application for reconciling invoices with credit memos
 Create a `.env` file in the project directory:
 
 ```env
+# For OpenAI
+OPENAI_API_KEY=your_openai_api_key_here
+
+# For Anthropic
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# For Google
+GOOGLE_API_KEY=your_google_api_key_here
+
+# For Cohere
+COHERE_API_KEY=your_cohere_api_key_here
+
+# For Ollama (optional, defaults to localhost:11434)
 OLLAMA_URL=http://localhost:11434
-OLLAMA_MODEL=llama2
 ```
 
-### Ollama Setup
+### AI Provider Setup
+
+The system automatically detects available providers in this order:
+1. **OpenAI** (if `OPENAI_API_KEY` is set)
+2. **Anthropic** (if `ANTHROPIC_API_KEY` is set)
+3. **Google** (if `GOOGLE_API_KEY` is set)
+4. **Cohere** (if `COHERE_API_KEY` is set)
+5. **Ollama** (local fallback)
+
+### Ollama Setup (Local Models)
 
 1. **Install Ollama**: Download from [ollama.ai](https://ollama.ai/)
 2. **Start Ollama service**: The service runs on localhost:11434 by default
@@ -89,6 +118,12 @@ OLLAMA_MODEL=llama2
 - **Invoice Extraction**: Extracts invoice numbers, dates, amounts, vendor info, line items
 - **Credit Memo Extraction**: Extracts credit memo numbers, original invoice references, credit amounts, reasons
 - **Multi-format Support**: Handles various PDF layouts and formats
+
+### AI Model Switching
+- **Multiple Providers**: Support for OpenAI, Anthropic, Ollama, Google, and Cohere
+- **Easy Switching**: Change AI models through the web interface
+- **Automatic Fallback**: Gracefully handles unavailable models
+- **Consistent Interface**: Same API across all providers
 
 ### AI Matching Criteria
 1. **Exact Invoice Number Match**: Primary matching criterion
@@ -146,6 +181,29 @@ invoice-reconciliation-agent/
 - Calculates metrics and statistics
 - Prepares data for visualization and export
 
+## 🧪 Testing
+
+### AI Integration Tests
+```bash
+# Test all AI providers
+python test_ai_integration.py
+
+# Demo different AI models
+python demo_ai_models.py
+
+# Test specific provider
+python -c "
+from ai_config import create_ai_client
+client = create_ai_client(provider='openai')
+print('OpenAI available:', client.is_server_available())
+"
+```
+
+### Manual Testing
+1. **Upload Test Documents**: Use the sample documents in `sample_documents/`
+2. **Test Different Providers**: Switch between AI providers in the web interface
+3. **Verify Results**: Check that reconciliation results are consistent across providers
+
 ## 🛠️ Customization
 
 ### Adding New Document Types
@@ -163,6 +221,12 @@ invoice-reconciliation-agent/
 1. Add new metrics in `utils.py`
 2. Create new visualizations in `main.py`
 3. Extend the analytics dashboard with custom charts
+
+### Adding New AI Providers
+1. Add provider configuration to `ai_config.py`
+2. Update the `AI_CONFIGS` dictionary
+3. Test with the new provider
+4. Update documentation
 
 ## 🐛 Troubleshooting
 
