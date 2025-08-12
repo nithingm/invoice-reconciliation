@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { 
-  PaperAirplaneIcon, 
+import {
+  PaperAirplaneIcon,
   ChatBubbleLeftRightIcon,
   InformationCircleIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
 
 const ChatSidebar = ({ isOpen, onClose }) => {
   const [socket, setSocket] = useState(null);
@@ -16,6 +15,13 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   const [inputMessage, setInputMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationContext, setConversationContext] = useState({
+    customerId: null,
+    customerName: null,
+    sessionId: null,
+    lastInvoiceId: null,
+    pendingCreditMemoId: null
+  });
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -25,11 +31,14 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
       newSocket.on('connect', () => {
         setIsConnected(true);
-        toast.success('Connected to support chat');
-        
+
+        // Generate session ID for conversation tracking
+        const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        setConversationContext(prev => ({ ...prev, sessionId }));
+
         setMessages([{
           id: Date.now(),
-          text: 'Hello! I am your AI assistant. I can help you with invoice inquiries, credit validation, account information, and general questions. To validate credits, please provide your invoice ID, customer ID, and the credit amount you would like to apply.',
+          text: 'Hello! I am your AI assistant. I can help you with:\n\n• Invoice inquiries and credit validation\n• Quantity discrepancy reports\n• Damage reports and credit memos\n• Account balance and purchase history\n• General transmission service questions\n\nHow can I assist you today?',
           sender: 'bot',
           type: 'greeting',
           timestamp: new Date()
@@ -38,7 +47,6 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
       newSocket.on('disconnect', () => {
         setIsConnected(false);
-        toast.error('Disconnected from support chat');
       });
 
       newSocket.on('ai_response', (response) => {
@@ -51,6 +59,14 @@ const ChatSidebar = ({ isOpen, onClose }) => {
           details: response.details,
           timestamp: new Date()
         }]);
+
+        // Update conversation context if provided
+        if (response.context) {
+          setConversationContext(prev => ({
+            ...prev,
+            ...response.context
+          }));
+        }
       });
     }
 
@@ -81,7 +97,12 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
-    socket.emit('chat_message', { message: inputMessage });
+    // Send message with conversation context
+    socket.emit('chat_message', {
+      message: inputMessage,
+      context: conversationContext,
+      messageHistory: messages.slice(-5) // Send last 5 messages for context
+    });
     setInputMessage('');
   };
 
@@ -91,6 +112,13 @@ const ChatSidebar = ({ isOpen, onClose }) => {
       setSocket(null);
       setIsConnected(false);
       setMessages([]);
+      setConversationContext({
+        customerId: null,
+        customerName: null,
+        sessionId: null,
+        lastInvoiceId: null,
+        pendingCreditMemoId: null
+      });
     }
     onClose();
   };
@@ -105,7 +133,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
       case 'greeting':
         return <InformationCircleIcon className="h-4 w-4 text-blue-500" />;
       default:
-        return <ChatBubbleLeftRightIcon className="h-4 w-4 text-gray-500" />;
+        return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
     }
   };
 
@@ -119,7 +147,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed top-16 right-0 w-96 bg-white shadow-2xl border-l border-gray-200 flex flex-col z-40" style={{ height: 'calc(100vh - 64px)' }}>
+    <div className="fixed top-0 right-0 w-96 bg-white shadow-2xl border-l border-gray-200 flex flex-col z-40" style={{ height: '100vh' }}>
       <div className="flex items-center justify-between p-4 border-b bg-primary-600 text-white">
         <div className="flex items-center space-x-3">
           <ChatBubbleLeftRightIcon className="h-6 w-6" />

@@ -1,2 +1,8 @@
 # Dependencies - only ignore node_modules
 node_modules/
+
+# Test files
+test-setup.js
+test_*.js
+test_*.py
+test_python_service.py
