@@ -14,11 +14,16 @@ const CustomerData = () => {
   const fetchCustomers = async () => {
     try {
       const response = await fetch('/api/customers');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
-      setCustomers(data.customers);
+      setCustomers(data.customers || []);
       setLoading(false);
     } catch (err) {
+      console.error('Error fetching customers:', err);
       setError('Failed to fetch customer data');
+      setCustomers([]); // Set empty array as fallback
       setLoading(false);
     }
   };
@@ -91,7 +96,7 @@ const CustomerData = () => {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {customers.map((customer) => (
+                {customers && customers.length > 0 ? customers.map((customer) => (
                   <div
                     key={customer.id}
                     className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
@@ -127,7 +132,12 @@ const CustomerData = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center text-gray-500 py-8">
+                    <UserIcon className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                    <p>No customers found</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -160,21 +170,25 @@ const CustomerData = () => {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Credits</h3>
                     <div className="space-y-3">
-                      {selectedCustomer.credits.map((credit) => (
-                        <div key={credit.id} className="border border-gray-200 rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-gray-900">${credit.amount}</span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(credit.status)}`}>
-                              {credit.status}
-                            </span>
+                      {selectedCustomer.credits && selectedCustomer.credits.length > 0 ? (
+                        selectedCustomer.credits.map((credit) => (
+                          <div key={credit.id} className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-gray-900">${credit.amount}</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(credit.status)}`}>
+                                {credit.status}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">{credit.description}</p>
+                            <div className="text-xs text-gray-500">
+                              <p>Earned: {formatDate(credit.earnedDate)}</p>
+                              <p>Expires: {formatDate(credit.expiryDate)}</p>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-1">{credit.description}</p>
-                          <div className="text-xs text-gray-500">
-                            <p>Earned: {formatDate(credit.earnedDate)}</p>
-                            <p>Expires: {formatDate(credit.expiryDate)}</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">No credits available</p>
+                      )}
                     </div>
                   </div>
 
@@ -182,19 +196,23 @@ const CustomerData = () => {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Purchase History</h3>
                     <div className="space-y-3">
-                      {selectedCustomer.purchaseHistory.map((purchase, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-medium text-gray-900">{purchase.product}</span>
-                            <span className="text-green-600 font-medium">${purchase.amount}</span>
+                      {selectedCustomer.purchaseHistory && selectedCustomer.purchaseHistory.length > 0 ? (
+                        selectedCustomer.purchaseHistory.map((purchase, index) => (
+                          <div key={index} className="border border-gray-200 rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="font-medium text-gray-900">{purchase.product}</span>
+                              <span className="text-green-600 font-medium">${purchase.amount}</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              <p>Invoice: {purchase.invoiceId}</p>
+                              <p>Date: {formatDate(purchase.date)}</p>
+                              <p>Credits Earned: ${purchase.creditsEarned}</p>
+                            </div>
                           </div>
-                          <div className="text-sm text-gray-600">
-                            <p>Invoice: {purchase.invoiceId}</p>
-                            <p>Date: {formatDate(purchase.date)}</p>
-                            <p>Credits Earned: ${purchase.creditsEarned}</p>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">No purchase history available</p>
+                      )}
                     </div>
                   </div>
                 </div>

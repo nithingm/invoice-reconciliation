@@ -29,6 +29,13 @@ A modern web portal for an automobile transmission remanufacturing company featu
 - Mock database for development
 - CORS enabled for cross-origin requests
 
+### AI & Microservices
+- **Ollama LLM Integration**: llama3.2:3b model for natural language processing
+- **Python Microservice**: Precise financial calculations and credit validation
+- **Intelligent Intent Recognition**: Automatic routing based on customer message analysis
+- **Credit Memo Generation**: Automated draft creation with approval workflows
+- **Multi-step Conversations**: Context-aware dialogue management
+
 ## Getting Started
 
 ### Prerequisites
@@ -92,44 +99,114 @@ TestPortal/
 
 ## AI Chat System
 
-The AI chat system processes customer inquiries about:
+The AI chat system uses **Ollama LLM (llama3.2:3b)** with **Python microservices** to process sophisticated customer inquiries about:
 
+### Core Features
 - **Invoice Validation**: Check invoice status and details
 - **Credit Validation**: Validate available credits and expiry dates
 - **Account Information**: Customer account details and history
 - **General Support**: Transmission service questions
 
-### Chat Message Format
+### Advanced Features (NEW)
+- **Quantity Discrepancy Handling**: Process missing/incorrect quantities received
+- **Damage Report Processing**: Handle damaged items and generate credit memos
+- **Automated Credit Memo Generation**: Create draft credit memos with approval workflow
+- **Flexible Credit Options**: Apply to current invoice, future account, or issue refunds
+- **Payment Status Awareness**: Different options based on whether invoice is paid
 
-To validate credits, customers should provide:
-- Invoice ID (e.g., "INV001")
-- Customer ID (e.g., "CUST001") 
-- Credit amount to apply (e.g., "$150")
+### Supported Scenarios
 
-Example: "Validate $150 credit for invoice INV001, customer CUST001"
+#### A. Quantity Discrepancy (Common)
+**Customer:** "Invoice INV-2025-001 billed 100 units but we received 95. Fix?"
+**Bot:** "Got it — you received 95 instead of 100 on invoice INV-2025-001. I suggest issuing a credit memo for 5 units ($250.00 + tax). Approve draft credit memo?"
+**Customer:** "Yes, draft it."
+**Bot:** Generates draft credit memo, shows amounts & reason. "Approve to apply credit to the invoice or issue a refund?"
+**Customer:** "Apply to invoice."
+**Bot:** Applies credit in accounting, updates invoice balance, sends vendor notification, logs action.
+
+#### B. Damage Reports
+**Customer:** "We received a damaged 4L60E transmission on invoice INV-2025-002. The case is cracked."
+**Bot:** Processes damage report, generates credit memo for full item value, offers refund or account credit options.
+
+#### C. Already Paid Invoices
+**Customer:** "We already paid INV-2025-001 in full, but need credit for returned goods."
+**Bot:** "Options: (1) Apply credit to future invoice, (2) Issue refund. Which do you prefer?"
+**Customer:** "Apply to future invoice."
+**Bot:** Creates credit memo with status applied_to_account, notifies AP team and vendor.
+
+### Chat Message Examples
+
+#### Credit Applications
+- "Apply $150 credit to invoice INV001 for customer CUST001"
+- "I need to use my credits on invoice INV002"
+
+#### Quantity Issues
+- "Invoice INV-2025-001 billed 100 units but we received 95"
+- "We're short 10 transmission filter kits on our last order"
+
+#### Damage Reports
+- "The 4L60E transmission arrived damaged with a cracked case"
+- "Invoice INV002 transmission has oil leak damage"
+
+#### Credit Memo Approvals
+- "Yes, apply credit to my account for future purchases"
+- "Apply credit to current invoice"
+- "Issue refund please"
 
 ## Mock Data
 
-The system includes mock data for testing:
+The system includes comprehensive mock data for testing all scenarios:
 
 ### Customers
-- CUST001: John Smith (Credits: $150 active, $75 expired)
-- CUST002: Sarah Johnson (Credits: $200 active)
+- **CUST001: John Smith** (Credits: $5,250 active, $300 expired)
+  - Email: john.smith@email.com
+  - Phone: (555) 123-4567
+  - Active Credits: $5,000 + $250 (expires 2025-2026)
+- **CUST002: Sarah Johnson** (Credits: $550 active)
+  - Email: sarah.johnson@email.com
+  - Phone: (555) 987-6543
+  - Active Credits: $400 + $150 (expires 2025-2026)
+- **CUST003: Mike Wilson** (Credits: $350 active, $100 expired)
+  - Email: mike.wilson@email.com
+  - Phone: (555) 456-7890
 
 ### Invoices
-- INV001: $2500 for 4L60E Remanufactured (CUST001)
-- INV002: $3200 for 4L80E Remanufactured (CUST002)
+- **INV001**: $2,800 - 4L60E Remanufactured (CUST001) - Pending
+- **INV002**: $3,500 - 4L80E Remanufactured (CUST002) - Pending
+- **INV003**: $1,800 - Transmission Rebuild (CUST003) - Pending
+- **INV004**: $950 - Maintenance Package (CUST001) - Pending
+
+### Test Scenarios (Pre-loaded)
+- **INV-2025-001**: $5,000 - Bulk Filter Kits (CUST001) - **PAID** *(Missing 5 units)*
+- **INV-2025-002**: $3,200 - 4L60E Transmission (CUST002) - **PAID** *(Damaged on arrival)*
+
+### Credit Memos & Damage Reports
+- **CM001**: Draft credit memo for missing quantity (INV-2025-001)
+- **DR001**: Damage report for cracked transmission (INV-2025-002)
 
 ## API Endpoints
 
 ### Chat Routes
-- `POST /api/chat/message` - Send chat message
+- `POST /api/chat/message` - Send chat message (REST API - currently redirects to Socket.io)
 - `GET /api/chat/history/:customerId` - Get chat history
+- **Socket.io Events**:
+  - `chat_message` - Send message to AI system
+  - `ai_response` - Receive AI-generated response
 
 ### Customer Routes
 - `GET /api/customers/:id` - Get customer details
 - `GET /api/customers/:id/credits` - Get customer credits
 - `GET /api/customers/:id/invoices` - Get customer invoices
+- `GET /api/customers` - Get all customers with credit summary
+
+### Python Microservice Actions
+- `validate` - Validate credit application
+- `apply` - Apply credits to invoice
+- `balance` - Get credit balance
+- `history` - Get purchase history
+- `quantity_discrepancy` - Process missing quantity reports
+- `damage_report` - Process damage claims
+- `approve_credit_memo` - Approve and process credit memos
 
 ## Deployment
 
@@ -141,6 +218,52 @@ npm run build
 ### Start Production Server
 ```bash
 npm start
+```
+
+## Testing
+
+### Prerequisites for AI Features
+1. **Install Ollama**: Download from [ollama.ai](https://ollama.ai)
+2. **Pull the model**:
+   ```bash
+   ollama pull llama3.2:3b
+   ```
+3. **Start Ollama server**:
+   ```bash
+   ollama serve
+   ```
+
+### Run Tests
+```bash
+# Test all new features
+node test_new_features.js
+
+# Test Python microservice directly
+node test_python_service.py
+
+# Test specific message types
+node test_messages.js
+```
+
+### Manual Testing via Chat Interface
+1. Start the development servers: `npm run dev`
+2. Open http://localhost:3000
+3. Click the chat button (bottom right)
+4. Try these test messages:
+
+**Quantity Discrepancy:**
+```
+Invoice INV-2025-001 billed 100 units but we received 95. Fix?
+```
+
+**Damage Report:**
+```
+We received a damaged 4L60E transmission on invoice INV-2025-002. The case is cracked.
+```
+
+**Credit Memo Approval:**
+```
+Yes, apply credit to my account for future purchases
 ```
 
 ## Environment Variables

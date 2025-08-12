@@ -31,6 +31,7 @@
     "mongoose": "^7.5.0",
     "ollama": "^0.5.16",
     "socket.io": "^4.7.2",
+    "socket.io-client": "^4.8.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

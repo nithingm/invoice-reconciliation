@@ -1,0 +1,215 @@
+/**
+ * Credits Mock Data
+ * Contains detailed credit information linked to customers and invoices
+ */
+
+const credits = [
+  {
+    id: "CREDIT001",
+    customerId: "CUST001",
+    customerName: "John Smith",
+    amount: 500.00,
+    originalAmount: 500.00,
+    status: "active",
+    earnedDate: "2024-01-15",
+    expiryDate: "2025-12-15",
+    sourceInvoiceId: "INV001",
+    sourceType: "purchase_reward",
+    description: "5% cashback on transmission rebuild",
+    category: "loyalty_reward",
+    usageHistory: [],
+    notes: "Earned from large transmission rebuild purchase"
+  },
+  {
+    id: "CREDIT002",
+    customerId: "CUST001",
+    customerName: "John Smith",
+    amount: 250.00,
+    originalAmount: 300.00,
+    status: "partially_used",
+    earnedDate: "2024-02-20",
+    expiryDate: "2025-12-20",
+    sourceInvoiceId: "INV005",
+    sourceType: "damage_compensation",
+    description: "Compensation for damaged filter kit",
+    category: "damage_credit",
+    usageHistory: [
+      {
+        date: "2024-03-01",
+        amount: 50.00,
+        appliedToInvoice: "INV009",
+        description: "Partial credit applied to new order"
+      }
+    ],
+    notes: "Partial credit used, balance remaining"
+  },
+  {
+    id: "CREDIT003",
+    customerId: "CUST002",
+    customerName: "Sarah Johnson",
+    amount: 750.00,
+    originalAmount: 750.00,
+    status: "active",
+    earnedDate: "2024-01-10",
+    expiryDate: "2025-12-10",
+    sourceInvoiceId: "INV002",
+    sourceType: "bulk_discount_refund",
+    description: "Additional bulk discount applied retroactively",
+    category: "pricing_adjustment",
+    usageHistory: [],
+    notes: "Bulk pricing adjustment credit"
+  },
+  {
+    id: "CREDIT004",
+    customerId: "CUST003",
+    customerName: "Mike Wilson",
+    amount: 1200.00,
+    originalAmount: 1200.00,
+    status: "active",
+    earnedDate: "2024-01-25",
+    expiryDate: "2025-12-25",
+    sourceInvoiceId: "INV003",
+    sourceType: "quantity_discrepancy",
+    description: "Credit for missing transmission parts",
+    category: "quantity_adjustment",
+    usageHistory: [],
+    notes: "Quantity discrepancy - 2 units short on delivery"
+  },
+  {
+    id: "CREDIT005",
+    customerId: "CUST003",
+    customerName: "Mike Wilson",
+    amount: 0.00,
+    originalAmount: 800.00,
+    status: "used",
+    earnedDate: "2024-02-15",
+    expiryDate: "2025-02-15",
+    sourceInvoiceId: "INV007",
+    sourceType: "early_payment_bonus",
+    description: "Early payment discount credit",
+    category: "payment_incentive",
+    usageHistory: [
+      {
+        date: "2024-03-10",
+        amount: 800.00,
+        appliedToInvoice: "INV011",
+        description: "Full credit applied to new fleet order"
+      }
+    ],
+    notes: "Fully utilized early payment bonus"
+  },
+  {
+    id: "CREDIT006",
+    customerId: "CUST004",
+    customerName: "Lisa Chen",
+    amount: 300.00,
+    originalAmount: 300.00,
+    status: "active",
+    earnedDate: "2024-03-01",
+    expiryDate: "2025-10-01",
+    sourceInvoiceId: "INV004",
+    sourceType: "welcome_bonus",
+    description: "New customer welcome credit",
+    category: "promotional",
+    usageHistory: [],
+    notes: "Welcome bonus for new customer"
+  },
+  {
+    id: "CREDIT007",
+    customerId: "CUST001",
+    customerName: "John Smith",
+    amount: 150.00,
+    originalAmount: 150.00,
+    status: "expired",
+    earnedDate: "2024-03-15",
+    expiryDate: "2025-07-15",
+    sourceInvoiceId: null,
+    sourceType: "promotional",
+    description: "Spring promotion credit",
+    category: "seasonal_promotion",
+    usageHistory: [],
+    notes: "Limited time spring promotion - expires soon"
+  },
+  {
+    id: "CREDIT008",
+    customerId: "CUST002",
+    customerName: "Sarah Johnson",
+    amount: 400.00,
+    originalAmount: 400.00,
+    status: "active",
+    earnedDate: "2024-02-28",
+    expiryDate: "2025-09-28",
+    sourceInvoiceId: "INV006",
+    sourceType: "damage_compensation",
+    description: "Compensation for defective torque converter",
+    category: "damage_credit",
+    usageHistory: [],
+    notes: "Defective part replacement credit"
+  },
+  {
+    id: "CREDIT009",
+    customerId: "CUST003",
+    customerName: "Mike Wilson",
+    amount: 600.00,
+    originalAmount: 600.00,
+    status: "active",
+    earnedDate: "2024-03-20",
+    expiryDate: "2025-09-20",
+    sourceInvoiceId: "INV011",
+    sourceType: "loyalty_reward",
+    description: "Loyalty program milestone reward",
+    category: "loyalty_reward",
+    usageHistory: [],
+    notes: "Milestone reward for reaching $50K in purchases"
+  },
+  {
+    id: "CREDIT010",
+    customerId: "CUST004",
+    customerName: "Lisa Chen",
+    amount: 200.00,
+    originalAmount: 200.00,
+    status: "expired",
+    earnedDate: "2024-03-25",
+    expiryDate: "2025-05-25",
+    sourceInvoiceId: "INV008",
+    sourceType: "referral_bonus",
+    description: "Referral bonus credit",
+    category: "referral",
+    usageHistory: [],
+    notes: "Credit for referring new customer"
+  },
+  {
+    id: "CREDIT011",
+    customerId: "CUST005",
+    customerName: "Robert Davis",
+    amount: 900.00,
+    originalAmount: 900.00,
+    status: "expired",
+    earnedDate: "2024-01-05",
+    expiryDate: "2025-01-05",
+    sourceInvoiceId: "INV013",
+    sourceType: "volume_discount",
+    description: "High volume purchase credit",
+    category: "volume_incentive",
+    usageHistory: [],
+    notes: "Volume discount for large order"
+  },
+  {
+    id: "CREDIT012",
+    customerId: "CUST005",
+    customerName: "Robert Davis",
+    amount: 350.00,
+    originalAmount: 350.00,
+    status: "active",
+    earnedDate: "2024-02-10",
+    expiryDate: "2026-02-10",
+    sourceInvoiceId: "INV014",
+    sourceType: "quality_issue",
+    description: "Credit for quality issue resolution",
+    category: "quality_adjustment",
+    usageHistory: [],
+    notes: "Quality issue compensation credit"
+  }
+];
+
+module.exports = credits;
