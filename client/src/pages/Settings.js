@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import {
   CogIcon,
   UserIcon,
@@ -7,7 +8,9 @@ import {
   CircleStackIcon,
   ServerIcon,
   ChartBarIcon,
-  KeyIcon
+  KeyIcon,
+  CpuChipIcon, // New Icon
+  ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
 import { useChat } from '../App';
 
@@ -15,8 +18,35 @@ const Settings = () => {
   const { openChat } = useChat();
   const [activeTab, setActiveTab] = useState('general');
 
+  // State for AI Settings
+  const [aiModels, setAiModels] = useState({ ollama: [], gemini: [] });
+  const [selectedProvider, setSelectedProvider] = useState('ollama');
+  const [selectedModel, setSelectedModel] = useState('');
+
+  useEffect(() => {
+    // Fetch available AI models from the backend
+    fetch('/api/ai/models')
+      .then(res => res.json())
+      .then(data => {
+        setAiModels(data);
+        // Set a default provider and model
+        const firstProvider = Object.keys(data)[0];
+        if (firstProvider) {
+          setSelectedProvider(firstProvider);
+          if (data[firstProvider] && data[firstProvider].length > 0) {
+            setSelectedModel(data[firstProvider][0]);
+          }
+        }
+      })
+      .catch(error => {
+        console.error("Failed to fetch AI models:", error);
+        toast.error("Could not fetch AI models.");
+      });
+  }, []);
+
   const tabs = [
     { id: 'general', name: 'General', icon: CogIcon },
+    { id: 'ai', name: 'AI Settings', icon: CpuChipIcon }, // New Tab
     { id: 'users', name: 'User Management', icon: UserIcon },
     { id: 'notifications', name: 'Notifications', icon: BellIcon },
     { id: 'security', name: 'Security', icon: ShieldCheckIcon },
@@ -24,6 +54,138 @@ const Settings = () => {
     { id: 'integrations', name: 'Integrations', icon: ServerIcon },
     { id: 'reports', name: 'Reports', icon: ChartBarIcon }
   ];
+
+  const handleProviderChange = (e) => {
+    const provider = e.target.value;
+    setSelectedProvider(provider);
+    // Set the default model for the newly selected provider
+    if (aiModels[provider] && aiModels[provider].length > 0) {
+      setSelectedModel(aiModels[provider][0]);
+    } else {
+      setSelectedModel('');
+    }
+  };
+
+  const testGeminiService = (model) => {
+    fetch('/api/ai/test-gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: model }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        toast.success('Gemini service is working!');
+        console.log('Test response:', data);
+      } else {
+        toast.error(`Service test failed: ${data.error}`);
+      }
+    })
+    .catch(error => {
+      console.error("Failed to test Gemini service:", error);
+      toast.error('Failed to test Gemini service. Please check your API key and network connection.');
+    });
+  };
+
+  const handleSaveChanges = () => {
+    // Save AI configuration
+    if (activeTab === 'ai') {
+      fetch('/api/ai/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: selectedModel }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          toast.success(data.message);
+        } else {
+          toast.error('Failed to save AI configuration.');
+        }
+      })
+      .catch(error => {
+        console.error("Failed to save AI config:", error);
+        toast.error('An error occurred while saving.');
+      });
+    }
+    // Add logic to save other settings tabs here
+  };
+
+  const renderAiSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">AI Model Configuration</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="ai-provider" className="block text-sm font-medium text-gray-700 mb-2">AI Provider</label>
+            <select 
+              id="ai-provider" 
+              className="w-full border border-gray-300 rounded-lg px-3 py-2" 
+              value={selectedProvider} 
+              onChange={handleProviderChange}
+            >
+              {Object.keys(aiModels).map(providerKey => (
+                <option key={providerKey} value={providerKey}>
+                  {providerKey === 'ollama' ? 'Ollama (Local)' : 
+                   providerKey === 'gemini' ? 'Google Gemini' : 
+                   providerKey === 'openai' ? 'OpenAI' : 
+                   providerKey === 'anthropic' ? 'Anthropic' : 
+                   providerKey.charAt(0).toUpperCase() + providerKey.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="ai-model" className="block text-sm font-medium text-gray-700 mb-2">Model</label>
+            <select 
+              id="ai-model" 
+              className="w-full border border-gray-300 rounded-lg px-3 py-2" 
+              value={selectedModel} 
+              onChange={(e) => setSelectedModel(e.target.value)}
+              disabled={!aiModels[selectedProvider] || aiModels[selectedProvider].length === 0}
+            >
+              {aiModels[selectedProvider] && aiModels[selectedProvider].length > 0 ? (
+                aiModels[selectedProvider].map(model => (
+                  <option key={model} value={model}>{model}</option>
+                ))
+              ) : (
+                <option>No models available</option>
+              )}
+            </select>
+          </div>
+        </div>
+        {selectedProvider === 'gemini' && (
+          <div className="mt-4 space-y-4">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <ExclamationTriangleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-700">
+                    Please ensure your Gemini API key is set in the `.env` file on the server as `GEMINI_API_KEY`.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="text-blue-800 font-medium mb-2">Test Gemini Service</h4>
+              <p className="text-blue-600 text-sm mb-3">
+                Test if the Gemini service is working correctly with your API key.
+              </p>
+              <button
+                onClick={() => testGeminiService(selectedModel)}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+              >
+                Test Service
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   const renderGeneralSettings = () => (
     <div className="space-y-6">
@@ -242,6 +404,7 @@ const Settings = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'general': return renderGeneralSettings();
+      case 'ai': return renderAiSettings(); // New case
       case 'users': return renderUserManagement();
       case 'security': return renderSecuritySettings();
       case 'database': return renderDatabaseSettings();
@@ -304,7 +467,10 @@ const Settings = () => {
                   <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
                     Cancel
                   </button>
-                  <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                  <button 
+                    onClick={handleSaveChanges}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  >
                     Save Changes
                   </button>
                 </div>
@@ -318,3 +484,4 @@ const Settings = () => {
 };
 
 export default Settings;
+

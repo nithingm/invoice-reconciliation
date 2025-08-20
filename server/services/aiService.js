@@ -1,5 +1,5 @@
 /**
- * AI SERVICE - Ollama LLM Integration
+ * AI SERVICE - LiteLLM Integration
  * ===================================
  * 
  * Handles all AI-related operations:
@@ -8,41 +8,92 @@
  * - Context-aware prompt building
  */
 
+const litellm = require('litellm');
 const { getExtractionPrompt, getGeneralQueryPrompt, buildContextInfo } = require('../config/aiConfig');
 const database = require('../data/database');
+const axios = require('axios');
 
 /**
- * Extract information and intent from user message using Ollama LLM
- * 
+ * Check if a model is a Gemini model that needs Python processing
+ * @param {string} model - The model name
+ * @returns {boolean} - True if it's a Gemini model
+ */
+function isGeminiModel(model) {
+  return model.startsWith('gemini-') || model.startsWith('google/');
+}
+
+/**
+ * Process AI query with Python microservice for Gemini models
  * @param {string} message - User's message
+ * @param {string} model - The Gemini model to use
  * @param {object} conversationContext - Current conversation context
  * @returns {Promise<object>} - Extracted information with intent
  */
-async function extractInfoWithOllama(message, conversationContext = null) {
+async function processWithPythonGemini(message, model, conversationContext = null) {
   try {
-    const { Ollama } = require('ollama');
-    const ollama = new Ollama({ host: 'http://localhost:11434' });
+    console.log(`🐍 Processing with Python Gemini: ${model}`);
+
+    const contextInfo = buildContextInfo(conversationContext);
+    const prompt = getExtractionPrompt(message, contextInfo);
+
+    // Clean up model name for Python service
+    const cleanModel = model.replace('google/', '').replace('gemini/', '');
+
+    const response = await axios.post('http://localhost:5001/ai/process', {
+      message: prompt,
+      model: cleanModel,
+      context: conversationContext
+    });
+
+    if (response.data.success) {
+      console.log('✅ Python Gemini processing successful');
+      return response.data.extractedInfo;
+    } else {
+      throw new Error(response.data.error || 'Python processing failed');
+    }
+
+  } catch (error) {
+    console.error('❌ Python Gemini processing error:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Extract information and intent from user message using a specified LLM
+ * 
+ * @param {string} message - User's message
+ * @param {string} model - The model to use (e.g., 'ollama/llama3', 'gemini-1.5-flash')
+ * @param {object} conversationContext - Current conversation context
+ * @returns {Promise<object>} - Extracted information with intent
+ */
+async function extractInfoWithLLM(message, model, conversationContext = null) {
+  try {
+    // Check if this is a Gemini model that needs Python LiteLLM processing
+    if (isGeminiModel(model)) {
+      return await processWithPythonGemini(message, model, conversationContext);
+    }
 
     // Build context-aware prompt using external template
     const contextInfo = buildContextInfo(conversationContext);
     const prompt = getExtractionPrompt(message, contextInfo);
 
-    console.log(' Sending prompt to Ollama:', prompt.substring(0, 200) + '...');
+    console.log(`🧠 Sending prompt to ${model}:`, prompt.substring(0, 200) + '...');
 
-    const response = await ollama.chat({
-      model: 'llama3.2:3b',
+    // Use Node.js LiteLLM for non-Gemini models
+    const response = await litellm.completion({
+      model: model,
       messages: [{ role: 'user', content: prompt }],
       stream: false,
     });
 
-    console.log(' Ollama raw response:', response.message.content);
+    console.log('📡 LLM raw response:', response.choices[0].message.content);
 
     // Parse the JSON response
-    const jsonMatch = response.message.content.match(/\{[\s\S]*\}/);
+    const jsonMatch = response.choices[0].message.content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[0]);
-        console.log(' Successfully parsed:', parsed);
+        console.log('✅ Successfully parsed:', parsed);
 
         // Ensure numeric fields are numbers
         if (parsed.creditAmount && typeof parsed.creditAmount === 'string') {
@@ -65,11 +116,11 @@ async function extractInfoWithOllama(message, conversationContext = null) {
 
           if (!parsed.customerName && !explicitCustomerId && conversationContext.customerName) {
             parsed.customerName = conversationContext.customerName;
-            console.log(` Using context customer name: ${conversationContext.customerName}`);
+            console.log(`📋 Using context customer name: ${conversationContext.customerName}`);
           }
           if (!parsed.customerId && !explicitCustomerId && conversationContext.customerId) {
             parsed.customerId = conversationContext.customerId;
-            console.log(` Using context customer ID: ${conversationContext.customerId}`);
+            console.log(`📋 Using context customer ID: ${conversationContext.customerId}`);
           }
           if (!parsed.invoiceId && conversationContext.lastInvoiceId) {
             parsed.invoiceId = conversationContext.lastInvoiceId;
@@ -94,41 +145,61 @@ async function extractInfoWithOllama(message, conversationContext = null) {
         return { intent: 'general', error: 'Failed to parse AI response' };
       }
     } else {
-      console.error('❌ No JSON found in Ollama response');
+      console.error('❌ No JSON found in LLM response');
       return { intent: 'general', error: 'No structured response from AI' };
     }
 
   } catch (error) {
-    console.error('❌ Ollama extraction error:', error);
+    console.error(`❌ ${model} extraction error:`, error);
     return { intent: 'general', error: error.message };
   }
 }
 
 /**
- * Handle general conversation queries using Ollama LLM
+ * Handle general conversation queries using a specified LLM
  * 
  * @param {string} message - User's message
+ * @param {string} model - The model to use (e.g., 'ollama/llama3', 'gemini-1.5-flash')
  * @returns {Promise<object>} - Response object with message and type
  */
-async function handleGeneralQuery(message) {
+async function handleGeneralQuery(message, model) {
   try {
-    const { Ollama } = require('ollama');
-    const ollama = new Ollama({ host: 'http://localhost:11434' });
+    // Check if this is a Gemini model that needs Python processing
+    if (isGeminiModel(model)) {
+      const prompt = getGeneralQueryPrompt(message);
 
+      const cleanModel = model.replace('google/', '').replace('gemini/', '');
+
+      const response = await axios.post('http://localhost:5001/ai/general', {
+        message: prompt,
+        model: cleanModel
+      });
+
+      if (response.data.success) {
+        return {
+          message: response.data.response,
+          type: 'general'
+        };
+      } else {
+        throw new Error(response.data.error || 'Python processing failed');
+      }
+    }
+
+    // Use Node.js LiteLLM for non-Gemini models
     const prompt = getGeneralQueryPrompt(message);
 
-    console.log(' General query prompt:', prompt.substring(0, 200) + '...');
+    console.log(`💬 General query prompt to ${model}:`, prompt.substring(0, 200) + '...');
 
-    const response = await ollama.chat({
-      model: 'llama3.2:3b',
+    const response = await litellm.completion({
+      model: model,
       messages: [{ role: 'user', content: prompt }],
       stream: false,
     });
 
-    console.log(' General query response:', response.message.content);
+    console.log('💬 General query response:', response.choices[0].message.content);
 
     return {
-      message: response.message.content,
+      message: response.choices[0].message.content,
       type: 'general'
     };
 
@@ -141,7 +212,85 @@ async function handleGeneralQuery(message) {
   }
 }
 
+/**
+ * Fetches available Ollama models from the local Ollama API.
+ * @returns {Promise<Array<string>>} - A list of available Ollama model names.
+ */
+async function getOllamaModels() {
+  try {
+    const response = await axios.get('http://localhost:11434/api/tags');
+    return response.data.models.map(model => `ollama/${model.name}`);
+  } catch (error) {
+    console.error('Error fetching Ollama models:', error.message);
+    return []; // Return empty array on error
+  }
+}
+
+/**
+ * Test Gemini connectivity using Python microservice
+ * @returns {Promise<object>} - Test result
+ */
+async function testGeminiConnection() {
+  try {
+    if (!process.env.GEMINI_API_KEY) {
+      return { success: false, error: 'No Gemini API key configured' };
+    }
+
+    console.log('🧪 Testing Gemini connection via Python microservice...');
+
+    // Try the newer Gemini models you specified
+    const modelFormats = [
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash',
+      'gemini-2.0-flash-lite'
+    ];
+
+    for (const modelFormat of modelFormats) {
+      try {
+        console.log(`Testing model: ${modelFormat}`);
+
+        const response = await axios.post('http://localhost:5001/ai/general', {
+          message: 'Hello, this is a test message. Please respond with "Connection successful!"',
+          model: modelFormat
+        });
+
+        if (response.data.success) {
+          console.log('✅ Gemini connection successful:', response.data.response);
+          return {
+            success: true,
+            message: `Gemini connection successful via Python LiteLLM (${modelFormat})`,
+            response: response.data.response,
+            modelFormat: modelFormat
+          };
+        } else {
+          console.log(`❌ Failed with ${modelFormat}:`, response.data.error);
+          continue;
+        }
+      } catch (formatError) {
+        console.log(`❌ Failed with ${modelFormat}:`, formatError.message);
+        continue;
+      }
+    }
+
+    return {
+      success: false,
+      error: 'All model formats failed',
+      details: 'Tried: ' + modelFormats.join(', ')
+    };
+
+  } catch (error) {
+    console.error('❌ Gemini connection test failed:', error.message);
+    return {
+      success: false,
+      error: error.message,
+      details: error.toString()
+    };
+  }
+}
+
 module.exports = {
-  extractInfoWithOllama,
-  handleGeneralQuery
+  extractInfoWithLLM,
+  handleGeneralQuery,
+  getOllamaModels,
+  testGeminiConnection
 };

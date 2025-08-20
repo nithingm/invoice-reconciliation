@@ -9,7 +9,7 @@
  * - Error handling
  */
 
-const { extractInfoWithOllama } = require('../services/aiService');
+const { extractInfoWithLLM } = require('../services/aiService');
 const { updateSessionContext, updateSessionActivity } = require('../services/contextService');
 const { handleCreditApplication, handleCreditBalanceInquiry, handleCreditMemoApproval } = require('../handlers/creditHandler');
 const { handleInvoiceInquiry, handlePurchaseHistoryInquiry } = require('../handlers/invoiceHandler');
@@ -21,29 +21,25 @@ const { handleGeneral } = require('../handlers/generalHandler');
  * Main AI Processing Pipeline - The Heart of the Chatbot
  * 
  * This function orchestrates the entire AI workflow:
- * 1. Uses Ollama LLM to understand user intent and extract information
+ * 1. Uses a configured LLM to understand user intent and extract information
  * 2. Routes to appropriate business logic handler based on intent
  * 3. Returns formatted response to the user
  * 
- * SUPPORTED INTENTS:
- * - credit_application: Apply credits to invoices
- * - credit_balance_inquiry: Check available credit balance
- * - purchase_history: View customer purchase history
- * - invoice_inquiry: Get invoice details
- * - quantity_discrepancy: Report missing/incorrect quantities
- * - damage_report: Report damaged items
- * - credit_memo_approval: Approve credit memo options
- * - partial_payment: Process partial payments with credit deduction
- * - general: General conversation and greetings
+ * @param {object} app - The Express app instance
+ * @param {string} message - User's message
+ * @param {object} conversationContext - Current conversation context
  */
-async function processAIQuery(message, conversationContext = null) {
+async function processAIQuery(app, message, conversationContext = null) {
   try {
     console.log('🧠 Processing message with AI:', message);
     console.log('📋 Conversation context:', conversationContext);
 
-    // STEP 1: Use Ollama LLM to understand user intent and extract information
-    const extractedInfo = await extractInfoWithOllama(message, conversationContext);
-    console.log('🔍 Ollama extracted info:', extractedInfo);
+    // Get the current AI model from the app's configuration
+    const model = app.locals.aiConfig.model;
+
+    // STEP 1: Use the configured LLM to understand user intent and extract information
+    const extractedInfo = await extractInfoWithLLM(message, model, conversationContext);
+    console.log(`🔍 ${model} extracted info:`, extractedInfo);
 
     // STEP 2: Route to appropriate handler based on detected intent
     switch (extractedInfo.intent) {
@@ -73,7 +69,7 @@ async function processAIQuery(message, conversationContext = null) {
 
       case 'general':
       default:
-        return await handleGeneral(message);
+        return await handleGeneral(message, model);
     }
 
   } catch (error) {
@@ -89,8 +85,9 @@ async function processAIQuery(message, conversationContext = null) {
  * Configure Socket.IO event handlers
  * 
  * @param {object} io - Socket.IO server instance
+ * @param {object} app - The Express app instance
  */
-function configureSocketHandlers(io) {
+function configureSocketHandlers(io, app) {
   /**
    * Handle real-time chat connections
    * Each user gets a unique socket connection for instant messaging
@@ -121,7 +118,7 @@ function configureSocketHandlers(io) {
         }
 
         // Process the message through AI and business logic
-        const response = await processAIQuery(message, sessionContext);
+        const response = await processAIQuery(app, message, sessionContext);
 
         // Update session context with any changes from the response
         if (context && context.sessionId && response.context) {

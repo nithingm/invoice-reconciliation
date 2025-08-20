@@ -9,7 +9,7 @@ server/
 │   ├── aiConfig.js            # 🧠 AI prompts & response formatters
 │   └── socketConfig.js        # 💬 Socket.IO configuration & routing
 ├── services/
-│   ├── aiService.js           # 🤖 Ollama LLM integration
+│   ├── aiService.js           # 🤖 AI routing & Ollama integration
 │   ├── pythonService.js       # 🐍 Python microservice calls
 │   └── contextService.js      # 📋 Conversation context management
 ├── handlers/
@@ -48,6 +48,7 @@ server/
 - Server startup
 
 ### 🧠 **services/aiService.js**
+- AI model routing (Gemini → Python, Others → Node.js)
 - Ollama LLM integration
 - Intent extraction from messages
 - General conversation handling
@@ -55,6 +56,7 @@ server/
 
 ### 🐍 **services/pythonService.js**
 - Python microservice communication
+- Gemini LiteLLM integration (port 5001)
 - Business logic calculations
 - Credit validation & processing
 - Specific service method wrappers
@@ -101,9 +103,9 @@ server/
 User Message → Socket.IO → socketConfig.js → aiService.js → Handler → Response
 ```
 
-### 2. **Intent Processing**
+### 2. **AI Processing**
 ```
-Message → Ollama LLM → Intent Extraction → Route to Handler → Business Logic → Response
+Message → aiService.js → [Gemini: Python LiteLLM | Others: Node.js] → Intent Extraction → Handler → Response
 ```
 
 ### 3. **Context Management**
@@ -113,7 +115,7 @@ Session → contextService.js → Persistent Context → Multi-step Workflows
 
 ### 4. **Business Logic**
 ```
-Handler → pythonService.js → Python Microservice → Database Operations → Results
+Handler → pythonService.js → Python Microservice (port 5001) → Database Operations → Results
 ```
 
 ## 🚀 **Getting Started**

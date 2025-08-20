@@ -30,6 +30,15 @@ const database = require('./data/database');
 
 require('dotenv').config();
 
+// Ensure LiteLLM can access Gemini API key
+if (process.env.GEMINI_API_KEY) {
+  process.env.GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
+  process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
+  console.log('✅ Gemini API key configured for LiteLLM via index.js');
+} else {
+  console.log('⚠️  No Gemini API key found. Set GEMINI_API_KEY in .env file (from index.js)');
+}
+
 // ============================================================================
 // SERVER SETUP & CONFIGURATION
 // ============================================================================
@@ -50,23 +59,26 @@ app.use(cors());                                    // Enable cross-origin reque
 app.use(bodyParser.json());                         // Parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Set up database in app.locals for API routes
+// Set up database and AI config in app.locals for API routes
 app.locals.database = database;
+app.locals.aiConfig = { model: 'ollama/llama3.2:3b' }; // Default AI model
 
 // Import and setup API routes
 const chatRoutes = require('./routes/chat');
 const customerRoutes = require('./routes/customers');
+const aiRoutes = require('./routes/ai');
 
 // Register API routes
 app.use('/api/chat', chatRoutes);        // Chat-related endpoints
 app.use('/api/customers', customerRoutes); // Customer-related endpoints
+app.use('/api/ai', aiRoutes);             // AI configuration endpoints
 
 // ============================================================================
 // SOCKET.IO CONFIGURATION
 // ============================================================================
 
 // Configure Socket.IO handlers using modular approach
-configureSocketHandlers(io);
+configureSocketHandlers(io, app);
 
 // ============================================================================
 // BASIC API ROUTES

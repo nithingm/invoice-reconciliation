@@ -21,12 +21,12 @@ const { handleGeneralQuery } = require('../services/aiService');
  * 2. Provide helpful responses and guidance
  * 3. Maintain friendly, professional tone
  */
-async function handleGeneral(message) {
+async function handleGeneral(message, model) {
   try {
     console.log('💬 Processing general query:', message);
 
     // Use AI service for general conversation
-    const response = await handleGeneralQuery(message);
+    const response = await handleGeneralQuery(message, model);
     
     return response;
 
