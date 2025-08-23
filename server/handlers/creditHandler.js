@@ -29,7 +29,7 @@ async function handleCreditApplication(extractedInfo) {
     console.log('💳 Processing credit application:', extractedInfo);
 
     // STEP 1: Validate customer exists
-    const customerValidation = validateCustomer(extractedInfo.customerName, extractedInfo.customerId);
+    const customerValidation = await validateCustomer(extractedInfo.customerName, extractedInfo.customerId);
 
     if (!customerValidation.isValid) {
       return {
@@ -54,12 +54,7 @@ async function handleCreditApplication(extractedInfo) {
       customer.id,                    // Use validated customer ID
       customer.name,                  // Use validated customer name
       extractedInfo.creditAmount,
-      extractedInfo.invoiceId,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.invoiceId
     );
 
     console.log('🐍 Python result:', pythonResult);
@@ -125,12 +120,7 @@ async function handleCreditBalanceInquiry(extractedInfo) {
     // Call Python microservice for balance inquiry
     const pythonResult = await getCustomerCreditBalance(
       extractedInfo.customerId,
-      extractedInfo.customerName,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.customerName
     );
 
     console.log('🐍 Python balance result:', pythonResult);
@@ -217,12 +207,7 @@ async function handleCreditMemoApproval(extractedInfo, conversationContext) {
     const pythonResult = await approveCreditMemo(
       creditMemoId,
       choice,
-      targetInvoiceId,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      targetInvoiceId
     );
 
     console.log('🐍 Python approval result:', pythonResult);

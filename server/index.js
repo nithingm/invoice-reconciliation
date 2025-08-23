@@ -26,6 +26,7 @@ const socketIo = require('socket.io');
 
 // Import modular services and configuration
 const { configureSocketHandlers } = require('./config/socketConfig');
+const { connectToMongoDB } = require('./config/mongodb');
 const database = require('./data/database');
 
 require('dotenv').config();
@@ -119,18 +120,33 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(' ============================================');
-  console.log(' TRANSMISSION PORTAL - CHATBOT SERVER');
-  console.log(' ============================================');
-  console.log(` Server running on port ${PORT}`);
-  console.log(` Frontend: http://localhost:3000`);
-  console.log(` Backend: http://localhost:${PORT}`);
-  console.log(` Ollama: http://localhost:11434`);
-  console.log(` Python microservice: Ready`);
-  console.log(` Socket.IO: Connected`);
-  console.log(' ============================================');
-  console.log(' Architecture: Modular & Clean');
-  console.log(' Ready to process chat messages!');
-  console.log(' ============================================');
-});
+// Start server with MongoDB connection
+async function startServer() {
+  try {
+    // Connect to MongoDB first
+    await connectToMongoDB();
+    
+    // Start the server
+    server.listen(PORT, () => {
+      console.log(' ============================================');
+      console.log(' TRANSMISSION PORTAL - CHATBOT SERVER');
+      console.log(' ============================================');
+      console.log(` Server running on port ${PORT}`);
+      console.log(` Frontend: http://localhost:3000`);
+      console.log(` Backend: http://localhost:${PORT}`);
+      console.log(` Database: MongoDB Connected`);
+      console.log(` Ollama: http://localhost:11434`);
+      console.log(` Python microservice: Ready`);
+      console.log(` Socket.IO: Connected`);
+      console.log(' ============================================');
+      console.log(' Architecture: Modular & Clean with MongoDB');
+      console.log(' Ready to process chat messages!');
+      console.log(' ============================================');
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+startServer();

@@ -28,7 +28,7 @@ This project was analyzed, and a detailed code review report is available in `CO
 - Node.js with Express.js
 - Socket.io for real-time communication
 - RESTful API for customer data
-- Mock database for development
+- MongoDB for data persistence with Mongoose for object data modeling
 
 ### AI & Microservices
 
@@ -117,9 +117,9 @@ This project has been optimized to remove unused dependencies:
 - `@google/generative-ai` - Using Python LiteLLM instead
 - `bcryptjs` - No authentication implemented yet
 - `jsonwebtoken` - No JWT authentication implemented yet
-- `mongoose` - Using mock data instead of MongoDB
 
 **Kept (actively used):**
+- `mongoose` - For MongoDB object data modeling
 - `litellm` - For Node.js non-Gemini models (Ollama, etc.)
 - `axios` - For Python service communication
 - `express`, `socket.io` - Core server functionality
@@ -132,6 +132,7 @@ This project has been optimized to remove unused dependencies:
 - Node.js (v16 or higher)
 - npm
 - Python 3.7 or higher
+- MongoDB
 - Gemini API key (for Gemini models)
 
 ### Installation

@@ -48,12 +48,7 @@ async function handleQuantityDiscrepancy(extractedInfo) {
       extractedInfo.customerName,
       extractedInfo.invoiceId,
       extractedInfo.missingQuantity,
-      extractedInfo.itemDescription,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.itemDescription
     );
 
     console.log('🐍 Python result:', pythonResult);
@@ -130,12 +125,7 @@ async function handleDamageReport(extractedInfo) {
       extractedInfo.customerId,
       extractedInfo.customerName,
       extractedInfo.invoiceId,
-      extractedInfo.damageDescription || extractedInfo.itemDescription,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.damageDescription || extractedInfo.itemDescription
     );
 
     console.log('🐍 Python result:', pythonResult);

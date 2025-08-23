@@ -1,15 +1,10 @@
-#!/usr/bin/env python3
-"""
-AI Service for Gemini Models
-Handles AI processing when Node.js LiteLLM can't support Gemini
-"""
-
 import os
 import json
 import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import litellm
+from credit_validator import CreditValidationService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -23,6 +18,8 @@ if os.getenv('GEMINI_API_KEY'):
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+credit_service = CreditValidationService()
+
 @app.route('/ai/process', methods=['POST'])
 def process_ai_query():
     """Process AI query with Gemini model for intent extraction"""
@@ -30,7 +27,6 @@ def process_ai_query():
         data = request.get_json()
         message = data.get('message')
         model = data.get('model', 'gemini-2.5-flash-lite')
-        context = data.get('context')
         
         if not message:
             return jsonify({'success': False, 'error': 'Message is required'})
@@ -38,7 +34,6 @@ def process_ai_query():
         logger.info(f"🐍 Processing with Python Gemini: {model}")
         logger.info(f"📝 Message: {message[:100]}...")
         
-        # Use LiteLLM to process with Gemini
         response = litellm.completion(
             model=f"gemini/{model}",
             messages=[{"role": "user", "content": message}],
@@ -49,9 +44,7 @@ def process_ai_query():
         ai_response = response.choices[0].message.content
         logger.info(f"🤖 AI Response: {ai_response[:100]}...")
         
-        # Parse the JSON response
         try:
-            # Find JSON in the response
             json_match = None
             if '{' in ai_response and '}' in ai_response:
                 start = ai_response.find('{')
@@ -62,7 +55,6 @@ def process_ai_query():
                 extracted_info = json.loads(json_match)
                 logger.info("✅ Successfully parsed JSON response")
                 
-                # Ensure numeric fields are numbers
                 if 'creditAmount' in extracted_info and isinstance(extracted_info['creditAmount'], str):
                     extracted_info['creditAmount'] = float(extracted_info['creditAmount']) or 0
                 if 'missingQuantity' in extracted_info and isinstance(extracted_info['missingQuantity'], str):
@@ -113,7 +105,6 @@ def handle_general_query():
         
         logger.info(f"💬 General query with Python Gemini: {model}")
         
-        # Use LiteLLM to process with Gemini
         response = litellm.completion(
             model=f"gemini/{model}",
             messages=[{"role": "user", "content": message}],
@@ -144,6 +135,81 @@ def health_check():
         'service': 'Python AI Service',
         'gemini_configured': bool(os.getenv('GEMINI_API_KEY'))
     })
+
+@app.route('/credit/apply', methods=['POST'])
+def apply_credit():
+    data = request.get_json()
+    result = credit_service.apply_credits(
+        data.get('customer_id'),
+        data.get('customer_name'),
+        data.get('credit_amount'),
+        data.get('invoice_id')
+    )
+    return jsonify(result)
+
+@app.route('/credit/balance', methods=['POST'])
+def get_credit_balance():
+    data = request.get_json()
+    result = credit_service.get_credit_balance(
+        data.get('customer_id'),
+        data.get('customer_name')
+    )
+    return jsonify(result)
+
+@app.route('/purchase/history', methods=['POST'])
+def get_purchase_history():
+    data = request.get_json()
+    result = credit_service.get_purchase_history(
+        data.get('customer_id'),
+        data.get('customer_name')
+    )
+    return jsonify(result)
+
+@app.route('/discrepancy/quantity', methods=['POST'])
+def process_quantity_discrepancy():
+    data = request.get_json()
+    result = credit_service.process_quantity_discrepancy(
+        data.get('customer_id'),
+        data.get('customer_name'),
+        data.get('invoice_id'),
+        data.get('missing_quantity'),
+        data.get('item_description')
+    )
+    return jsonify(result)
+
+@app.route('/discrepancy/damage', methods=['POST'])
+def process_damage_report():
+    data = request.get_json()
+    result = credit_service.process_damage_report(
+        data.get('customer_id'),
+        data.get('customer_name'),
+        data.get('invoice_id'),
+        data.get('item_description'),
+        data.get('damage_description')
+    )
+    return jsonify(result)
+
+@app.route('/credit_memo/approve', methods=['POST'])
+def approve_credit_memo():
+    data = request.get_json()
+    result = credit_service.approve_credit_memo(
+        data.get('credit_memo_id'),
+        data.get('customer_choice'),
+        data.get('target_invoice_id')
+    )
+    return jsonify(result)
+
+@app.route('/payment/partial', methods=['POST'])
+def process_partial_payment():
+    data = request.get_json()
+    result = credit_service.process_partial_payment(
+        data.get('customer_id'),
+        data.get('customer_name'),
+        data.get('invoice_id'),
+        data.get('paid_amount'),
+        data.get('invoice_amount')
+    )
+    return jsonify(result)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PYTHON_AI_PORT', 5001))

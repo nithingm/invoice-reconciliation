@@ -19,7 +19,8 @@ server/
 │   ├── paymentHandler.js      # 💰 Partial payment processing
 │   └── generalHandler.js      # 💬 General conversation
 ├── routes/                    # 🛣️ API endpoints (existing)
-└── data/                      # 💾 Mock database (existing)
+├── data/                      # 💾 Mongoose models and database functions
+└── models/                    # 📄 Mongoose schemas for MongoDB
 ```
 
 ## 🔄 **Architecture Benefits**
@@ -115,7 +116,7 @@ Session → contextService.js → Persistent Context → Multi-step Workflows
 
 ### 4. **Business Logic**
 ```
-Handler → pythonService.js → Python Microservice (port 5001) → Database Operations → Results
+Handler → pythonService.js → Python Microservice (port 5001) → MongoDB Operations → Results
 ```
 
 ## 🚀 **Getting Started**

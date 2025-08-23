@@ -29,7 +29,7 @@ async function handlePartialPayment(extractedInfo) {
     console.log('🔄 Processing partial payment:', extractedInfo);
 
     // STEP 1: Validate customer exists
-    const customerValidation = validateCustomer(extractedInfo.customerName, extractedInfo.customerId);
+    const customerValidation = await validateCustomer(extractedInfo.customerName, extractedInfo.customerId);
 
     if (!customerValidation.isValid) {
       return {
@@ -57,7 +57,7 @@ async function handlePartialPayment(extractedInfo) {
     }
 
     // STEP 3: Validate invoice ownership
-    const invoiceValidation = validateInvoiceOwnership(extractedInfo.invoiceId, customer.id);
+    const invoiceValidation = await validateInvoiceOwnership(extractedInfo.invoiceId, customer.id);
 
     if (!invoiceValidation.isValid) {
       let errorMessage = invoiceValidation.message;
@@ -82,12 +82,7 @@ async function handlePartialPayment(extractedInfo) {
       customer.name,                  // Use validated customer name
       extractedInfo.invoiceId,
       extractedInfo.paidAmount,
-      extractedInfo.invoiceAmount,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.invoiceAmount
     );
 
     console.log('🐍 Python partial payment result:', pythonResult);

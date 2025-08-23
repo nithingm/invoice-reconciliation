@@ -34,9 +34,7 @@ async function handleInvoiceInquiry(extractedInfo) {
     }
 
     // Find the invoice in the database
-    const invoice = database.invoices.find(inv => 
-      inv.id.toLowerCase() === extractedInfo.invoiceId.toLowerCase()
-    );
+    const invoice = await database.getInvoiceById(extractedInfo.invoiceId);
 
     if (!invoice) {
       return {
@@ -46,7 +44,7 @@ async function handleInvoiceInquiry(extractedInfo) {
     }
 
     // Find the customer associated with this invoice
-    const customer = database.customers.find(cust => cust.id === invoice.customerId);
+    const customer = await database.getCustomerById(invoice.customerId);
     
     if (!customer) {
       return {
@@ -56,26 +54,25 @@ async function handleInvoiceInquiry(extractedInfo) {
     }
 
     // Calculate customer's available credits
-    const activeCredits = database.getCustomerActiveCredits(customer.id);
-    const totalAvailableCredits = database.getCustomerTotalActiveCredits(customer.id);
+    const totalAvailableCredits = await database.getCustomerTotalActiveCredits(customer.id);
 
     return {
       message: `📄 **Invoice Details**\n\n` +
                `**Invoice ID:** ${invoice.id}\n` +
                `**Customer:** ${customer.name} (${customer.id})\n` +
-               `**Date:** ${invoice.date}\n` +
-               `**Due Date:** ${invoice.dueDate}\n` +
-               `**Original Amount:** $${invoice.originalAmount.toFixed(2)}\n` +
-               `**Current Amount:** $${invoice.currentAmount.toFixed(2)}\n` +
+               `**Date:** ${invoice.date.toLocaleDateString()}\n` +
+               `**Due Date:** ${invoice.dueDate.toLocaleDateString()}\n` +
+               `**Original Amount:** ${invoice.originalAmount.toFixed(2)}\n` +
+               `**Current Amount:** ${invoice.currentAmount.toFixed(2)}\n` +
                `**Status:** ${invoice.status}\n` +
                `**Payment Status:** ${invoice.paymentStatus}\n\n` +
                `**Description:** ${invoice.description}\n\n` +
                `**Items:**\n${invoice.items.map(item => 
-                 `• ${item.description} (${item.partNumber})\n  Qty: ${item.quantity} × $${item.unitPrice.toFixed(2)} = $${item.totalPrice.toFixed(2)}`
+                 `• ${item.description} (${item.partNumber})\n  Qty: ${item.quantity} × ${item.unitPrice.toFixed(2)} = ${item.totalPrice.toFixed(2)}`
                ).join('\n')}\n\n` +
-               `**Taxes:** $${invoice.taxes.salesTax.toFixed(2)} (${invoice.taxes.taxRate}%)\n` +
-               `**Shipping:** $${invoice.shipping.cost.toFixed(2)} (${invoice.shipping.method})\n\n` +
-               `**Customer Available Credits:** $${totalAvailableCredits.toFixed(2)}`,
+               `**Taxes:** ${invoice.taxes.salesTax.toFixed(2)} (${invoice.taxes.taxRate}%)\n` +
+               `**Shipping:** ${invoice.shipping.cost.toFixed(2)} (${invoice.shipping.method})\n\n` +
+               `**Customer Available Credits:** ${totalAvailableCredits.toFixed(2)}`,
       type: 'invoice_details'
     };
 
@@ -114,12 +111,7 @@ async function handlePurchaseHistoryInquiry(extractedInfo) {
     // Call Python microservice for purchase history
     const pythonResult = await getCustomerPurchaseHistory(
       extractedInfo.customerId,
-      extractedInfo.customerName,
-      {
-        customers: database.customers,
-        credits: database.credits,
-        invoices: database.invoices
-      }
+      extractedInfo.customerName
     );
 
     console.log('🐍 Python purchase history result:', pythonResult);

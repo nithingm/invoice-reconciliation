@@ -1,11 +1,11 @@
 /**
- * Main Database Module
- * Combines all mock data entities with relational helper functions
+ * Main Database Module - MongoDB Integration
+ * Provides relational queries and data integrity functions using MongoDB
  */
 
-const customers = require('./customers');
-const credits = require('./credits');
-const invoices = require('./invoices');
+const Customer = require('../models/Customer');
+const Credit = require('../models/Credit');
+const Invoice = require('../models/Invoice');
 
 /**
  * Database Helper Functions
@@ -13,147 +13,155 @@ const invoices = require('./invoices');
  */
 
 // Customer-related queries
-const getCustomerById = (customerId) => {
-  return customers.find(customer => customer.id === customerId);
+const getCustomerById = async (customerId) => {
+  return await Customer.findOne({ id: customerId });
 };
 
-const getCustomerByName = (customerName) => {
+const getCustomerByName = async (customerName) => {
   const name = customerName.toLowerCase();
-  return customers.find(customer => 
-    customer.name.toLowerCase().includes(name) || 
-    name.includes(customer.name.toLowerCase())
-  );
+  return await Customer.findOne({
+    $or: [
+      { name: { $regex: name, $options: 'i' } },
+      { name: { $regex: new RegExp(name.split(' ').join('.*'), 'i') } }
+    ]
+  });
 };
 
-const getCustomerCredits = (customerId) => {
-  return credits.filter(credit => credit.customerId === customerId);
+const getCustomerCredits = async (customerId) => {
+  return await Credit.find({ customerId });
 };
 
-const getCustomerInvoices = (customerId) => {
-  return invoices.filter(invoice => invoice.customerId === customerId);
+const getCustomerInvoices = async (customerId) => {
+  return await Invoice.find({ customerId });
 };
 
-const getCustomerActiveCredits = (customerId) => {
-  return credits.filter(credit =>
-    credit.customerId === customerId &&
-    (credit.status === 'active' || credit.status === 'partially_used') &&
-    credit.amount > 0 &&
-    new Date(credit.expiryDate) > new Date()
-  );
+const getCustomerActiveCredits = async (customerId) => {
+  return await Credit.find({
+    customerId,
+    status: { $in: ['active', 'partially_used'] },
+    amount: { $gt: 0 },
+    expiryDate: { $gt: new Date() }
+  });
 };
 
-const getCustomerTotalActiveCredits = (customerId) => {
-  const activeCredits = getCustomerActiveCredits(customerId);
+const getCustomerTotalActiveCredits = async (customerId) => {
+  const activeCredits = await getCustomerActiveCredits(customerId);
   return activeCredits.reduce((total, credit) => total + credit.amount, 0);
 };
 
 // Credit-related queries
-const getCreditById = (creditId) => {
-  return credits.find(credit => credit.id === creditId);
+const getCreditById = async (creditId) => {
+  return await Credit.findOne({ id: creditId });
 };
 
-const getCreditsByCustomer = (customerId) => {
-  return credits.filter(credit => credit.customerId === customerId);
+const getCreditsByCustomer = async (customerId) => {
+  return await Credit.find({ customerId });
 };
 
-const getExpiredCredits = () => {
-  const now = new Date();
-  return credits.filter(credit => new Date(credit.expiryDate) <= now);
+const getExpiredCredits = async () => {
+  return await Credit.find({ expiryDate: { $lte: new Date() } });
 };
 
-const getActiveCredits = () => {
-  const now = new Date();
-  return credits.filter(credit => 
-    credit.status === 'active' && 
-    credit.amount > 0 &&
-    new Date(credit.expiryDate) > now
-  );
+const getActiveCredits = async () => {
+  return await Credit.find({
+    status: 'active',
+    amount: { $gt: 0 },
+    expiryDate: { $gt: new Date() }
+  });
 };
 
 // Invoice-related queries
-const getInvoiceById = (invoiceId) => {
-  return invoices.find(invoice => invoice.id === invoiceId);
+const getInvoiceById = async (invoiceId) => {
+  return await Invoice.findOne({ id: invoiceId });
 };
 
-const getInvoicesByCustomer = (customerId) => {
-  return invoices.filter(invoice => invoice.customerId === customerId);
+const getInvoicesByCustomer = async (customerId) => {
+  return await Invoice.find({ customerId });
 };
 
-const getPendingInvoices = () => {
-  return invoices.filter(invoice => invoice.status === 'pending');
+const getPendingInvoices = async () => {
+  return await Invoice.find({ status: 'pending' });
 };
 
-const getPaidInvoices = () => {
-  return invoices.filter(invoice => invoice.status === 'paid');
+const getPaidInvoices = async () => {
+  return await Invoice.find({ status: 'paid' });
 };
 
-const getCustomerLatestInvoice = (customerId) => {
-  const customerInvoices = getInvoicesByCustomer(customerId)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
-  return customerInvoices[0] || null;
+const getCustomerLatestInvoice = async (customerId) => {
+  return await Invoice.findOne({ customerId }).sort({ date: -1 });
 };
 
-const getCustomerPendingInvoices = (customerId) => {
-  return invoices.filter(invoice => 
-    invoice.customerId === customerId && 
-    invoice.status === 'pending'
-  );
+const getCustomerPendingInvoices = async (customerId) => {
+  return await Invoice.find({ customerId, status: 'pending' });
 };
 
 // Relational queries
-const getCustomerWithCreditsAndInvoices = (customerId) => {
-  const customer = getCustomerById(customerId);
+const getCustomerWithCreditsAndInvoices = async (customerId) => {
+  const customer = await getCustomerById(customerId);
   if (!customer) return null;
 
+  const [credits, invoices, activeCredits, totalActiveCredits] = await Promise.all([
+    getCustomerCredits(customerId),
+    getCustomerInvoices(customerId),
+    getCustomerActiveCredits(customerId),
+    getCustomerTotalActiveCredits(customerId)
+  ]);
+
   return {
-    ...customer,
-    credits: getCustomerCredits(customerId),
-    invoices: getCustomerInvoices(customerId),
-    activeCredits: getCustomerActiveCredits(customerId),
-    totalActiveCredits: getCustomerTotalActiveCredits(customerId)
+    ...customer.toObject(),
+    credits,
+    invoices,
+    activeCredits,
+    totalActiveCredits
   };
 };
 
-const getInvoiceWithCustomerAndCredits = (invoiceId) => {
-  const invoice = getInvoiceById(invoiceId);
+const getInvoiceWithCustomerAndCredits = async (invoiceId) => {
+  const invoice = await getInvoiceById(invoiceId);
   if (!invoice) return null;
 
-  const customer = getCustomerById(invoice.customerId);
-  const relatedCredits = invoice.appliedCreditIds.map(creditId => getCreditById(creditId));
+  const [customer, appliedCredits] = await Promise.all([
+    getCustomerById(invoice.customerId),
+    Credit.find({ id: { $in: invoice.appliedCreditIds } })
+  ]);
 
   return {
-    ...invoice,
+    ...invoice.toObject(),
     customer,
-    appliedCredits: relatedCredits.filter(credit => credit !== undefined)
+    appliedCredits
   };
 };
 
-const getCreditWithCustomerAndInvoice = (creditId) => {
-  const credit = getCreditById(creditId);
+const getCreditWithCustomerAndInvoice = async (creditId) => {
+  const credit = await getCreditById(creditId);
   if (!credit) return null;
 
-  const customer = getCustomerById(credit.customerId);
-  const sourceInvoice = credit.sourceInvoiceId ? getInvoiceById(credit.sourceInvoiceId) : null;
+  const [customer, sourceInvoice] = await Promise.all([
+    getCustomerById(credit.customerId),
+    credit.sourceInvoiceId ? getInvoiceById(credit.sourceInvoiceId) : null
+  ]);
 
   return {
-    ...credit,
+    ...credit.toObject(),
     customer,
     sourceInvoice
   };
 };
 
 // Data manipulation functions
-const applyCreditsToInvoice = (invoiceId, creditIds, amounts) => {
-  const invoice = getInvoiceById(invoiceId);
-  if (!invoice) return false;
+const applyCreditsToInvoice = async (invoiceId, creditIds, amounts) => {
+  const invoice = await getInvoiceById(invoiceId);
+  if (!invoice) return { success: false, error: 'Invoice not found' };
 
   let totalCreditsApplied = 0;
   const appliedCredits = [];
 
-  creditIds.forEach((creditId, index) => {
-    const credit = getCreditById(creditId);
-    const amountToApply = amounts[index] || 0;
-
+  for (let i = 0; i < creditIds.length; i++) {
+    const creditId = creditIds[i];
+    const amountToApply = amounts[i] || 0;
+    
+    const credit = await getCreditById(creditId);
+    
     if (credit && credit.amount >= amountToApply) {
       credit.amount -= amountToApply;
       if (credit.amount === 0) {
@@ -164,21 +172,25 @@ const applyCreditsToInvoice = (invoiceId, creditIds, amounts) => {
 
       // Add to usage history
       credit.usageHistory.push({
-        date: new Date().toISOString().split('T')[0],
+        date: new Date(),
         amount: amountToApply,
         appliedToInvoice: invoiceId,
         description: `Credit applied to invoice ${invoiceId}`
       });
 
+      await credit.save();
+      
       totalCreditsApplied += amountToApply;
       appliedCredits.push(creditId);
     }
-  });
+  }
 
   // Update invoice
   invoice.creditsApplied += totalCreditsApplied;
   invoice.currentAmount -= totalCreditsApplied;
   invoice.appliedCreditIds.push(...appliedCredits);
+  
+  await invoice.save();
 
   return {
     success: true,
@@ -189,34 +201,41 @@ const applyCreditsToInvoice = (invoiceId, creditIds, amounts) => {
 };
 
 // Purchase history with detailed information
-const getCustomerPurchaseHistory = (customerId) => {
-  const customerInvoices = getInvoicesByCustomer(customerId)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+const getCustomerPurchaseHistory = async (customerId) => {
+  const customerInvoices = await Invoice.find({ customerId }).sort({ date: -1 });
 
-  return customerInvoices.map(invoice => ({
-    invoiceId: invoice.id,
-    date: invoice.date,
-    amount: invoice.originalAmount,
-    currentAmount: invoice.currentAmount,
-    creditsApplied: invoice.creditsApplied,
-    status: invoice.status,
-    paymentStatus: invoice.paymentStatus,
-    description: invoice.description,
-    itemCount: invoice.items.length,
-    creditsEarned: invoice.earnedCreditIds.length > 0 ? 
-      invoice.earnedCreditIds.reduce((total, creditId) => {
-        const credit = getCreditById(creditId);
-        return total + (credit ? credit.originalAmount : 0);
-      }, 0) : 0
-  }));
+  const purchaseHistory = [];
+  
+  for (const invoice of customerInvoices) {
+    let creditsEarned = 0;
+    if (invoice.earnedCreditIds.length > 0) {
+      const earnedCredits = await Credit.find({ id: { $in: invoice.earnedCreditIds } });
+      creditsEarned = earnedCredits.reduce((total, credit) => total + credit.originalAmount, 0);
+    }
+    
+    purchaseHistory.push({
+      invoiceId: invoice.id,
+      date: invoice.date,
+      amount: invoice.originalAmount,
+      currentAmount: invoice.currentAmount,
+      creditsApplied: invoice.creditsApplied,
+      status: invoice.status,
+      paymentStatus: invoice.paymentStatus,
+      description: invoice.description,
+      itemCount: invoice.items.length,
+      creditsEarned
+    });
+  }
+  
+  return purchaseHistory;
 };
 
 // Export the complete database
 module.exports = {
-  // Raw data
-  customers,
-  credits,
-  invoices,
+  // MongoDB Models
+  Customer,
+  Credit,
+  Invoice,
 
   // Customer queries
   getCustomerById,

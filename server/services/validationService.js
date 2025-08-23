@@ -15,10 +15,10 @@ const database = require('../data/database');
  * @param {string} customerId - Customer ID to validate
  * @returns {object} - Validation result with customer info or error details
  */
-function validateCustomer(customerName, customerId) {
+async function validateCustomer(customerName, customerId) {
   // If we have a customer ID, validate it
   if (customerId) {
-    const customer = database.getCustomerById(customerId);
+    const customer = await database.getCustomerById(customerId);
     if (customer) {
       return {
         isValid: true,
@@ -29,15 +29,15 @@ function validateCustomer(customerName, customerId) {
       return {
         isValid: false,
         error: 'CUSTOMER_ID_NOT_FOUND',
-        message: ` Customer ID '${customerId}' not found.`,
-        suggestions: getCustomerSuggestions()
+        message: ` Customer ID '${customerId}' not found.`, 
+        suggestions: await getCustomerSuggestions()
       };
     }
   }
 
   // If we have a customer name, validate it
   if (customerName) {
-    const customer = database.getCustomerByName(customerName);
+    const customer = await database.getCustomerByName(customerName);
     if (customer) {
       return {
         isValid: true,
@@ -46,13 +46,13 @@ function validateCustomer(customerName, customerId) {
       };
     } else {
       // Customer not found - provide helpful suggestions
-      const suggestions = findSimilarCustomers(customerName);
+      const suggestions = await findSimilarCustomers(customerName);
       return {
         isValid: false,
         error: 'CUSTOMER_NAME_NOT_FOUND',
-        message: ` Customer '${customerName}' not found.`,
+        message: ` Customer '${customerName}' not found.`, 
         suggestions: suggestions,
-        allCustomers: getCustomerSuggestions()
+        allCustomers: await getCustomerSuggestions()
       };
     }
   }
@@ -61,8 +61,8 @@ function validateCustomer(customerName, customerId) {
   return {
     isValid: false,
     error: 'MISSING_CUSTOMER_INFO',
-    message: ' Please provide a customer name or ID.',
-    suggestions: getCustomerSuggestions()
+    message: ' Please provide a customer name or ID.', 
+    suggestions: await getCustomerSuggestions()
   };
 }
 
@@ -72,8 +72,8 @@ function validateCustomer(customerName, customerId) {
  * @param {string} searchName - Name to search for
  * @returns {array} - Array of similar customer names
  */
-function findSimilarCustomers(searchName) {
-  const customers = database.customers;
+async function findSimilarCustomers(searchName) {
+  const customers = await database.Customer.find();
   const searchLower = searchName.toLowerCase();
   
   const similarities = customers.map(customer => {
@@ -150,8 +150,9 @@ function levenshteinDistance(str1, str2) {
  * 
  * @returns {array} - Array of customer suggestions
  */
-function getCustomerSuggestions() {
-  return database.customers.map(customer => ({
+async function getCustomerSuggestions() {
+    const customers = await database.Customer.find().limit(10);
+  return customers.map(customer => ({
     name: customer.name,
     id: customer.id,
     company: customer.company
@@ -192,8 +193,8 @@ function formatCustomerValidationError(validationResult) {
  * @param {string} customerId - Customer ID to check ownership
  * @returns {object} - Validation result
  */
-function validateInvoiceOwnership(invoiceId, customerId) {
-  const invoice = database.getInvoiceById(invoiceId);
+async function validateInvoiceOwnership(invoiceId, customerId) {
+  const invoice = await database.getInvoiceById(invoiceId);
   
   if (!invoice) {
     return {
@@ -204,11 +205,11 @@ function validateInvoiceOwnership(invoiceId, customerId) {
   }
   
   if (invoice.customerId !== customerId) {
-    const actualCustomer = database.getCustomerById(invoice.customerId);
+    const actualCustomer = await database.getCustomerById(invoice.customerId);
     return {
       isValid: false,
       error: 'INVOICE_OWNERSHIP_MISMATCH',
-      message: ` Invoice '${invoiceId}' belongs to ${actualCustomer.name}, not the specified customer.`,
+      message: ` Invoice '${invoiceId}' belongs to ${actualCustomer.name}, not the specified customer.`, 
       actualOwner: actualCustomer
     };
   }
@@ -219,6 +220,7 @@ function validateInvoiceOwnership(invoiceId, customerId) {
     message: ` Invoice ownership validated`
   };
 }
+
 
 module.exports = {
   validateCustomer,
