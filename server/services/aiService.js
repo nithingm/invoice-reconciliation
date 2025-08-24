@@ -288,9 +288,78 @@ async function testGeminiConnection() {
   }
 }
 
+/**
+ * Uses the LLM to select the best tool to use from a dynamic list.
+ * @param {string} message The user's message.
+ * @param {string} model The AI model to use.
+ * @param {Array<string>} availableTools A list of tool names.
+ * @returns {Promise<object>} e.g., { tool: 'findCustomersByName', args: { name: 'John' } }
+ */
+async function selectTool(message, model, availableTools) {
+  const toolSelectionPrompt = `
+    Given the user's message, identify the single best tool to call.
+    The available tools are: [${availableTools.join(', ')}].
+
+    User Message: "${message}"
+
+    Analyze the message and determine the most appropriate tool and the arguments required to call it.
+    If you need to find a customer, use "findCustomersByName".
+    If you need to apply credit, the primary tool is "applyCreditToInvoice".
+
+    Respond with only a single JSON object in the format:
+    { "tool": "<tool_name>", "args": { "<arg_name>": "<value>" } }
+    If no specific tool seems appropriate, respond with { "tool": "unknown" }.
+  `;
+
+  try {
+    const response = await litellm.completion({
+      model: model,
+      messages: [{ role: 'user', content: toolSelectionPrompt }],
+    });
+
+    const jsonResponse = JSON.parse(response.choices[0].message.content);
+    return jsonResponse;
+  } catch (e) {
+    console.error("Failed to parse tool selection response:", e);
+    return { tool: 'unknown' };
+  }
+}
+
+/**
+ * Uses the LLM to generate a human-friendly clarification question.
+ * @param {Array} ambiguousResults The list of items the user needs to choose from.
+ * @param {string} originalIntent The original goal (e.g., 'findCustomersByName').
+ * @returns {Promise<string>} The question to ask the user.
+ */
+async function generateClarificationQuestion(ambiguousResults, originalIntent) {
+  const itemType = originalIntent.toLowerCase().includes('customer') ? 'customer' : 'item';
+  const prompt = `
+    A search for a ${itemType} returned multiple results. Your task is to generate a clear, friendly, multiple-choice question to ask the user for clarification.
+
+    Here are the search results:
+    ${JSON.stringify(ambiguousResults.map(r => ({ id: r.id, name: r.name })), null, 2)}
+
+    Generate only the question itself. Be concise and helpful.
+  `;
+
+  try {
+    const response = await litellm.completion({
+      model: 'gemini-2.5-flash-lite', // Use a fast model for simple generation
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    return response.choices[0].message.content;
+  } catch (e) {
+    console.error("Failed to generate clarification question:", e);
+    return "I found multiple matches. Please specify which one you meant.";
+  }
+}
+
 module.exports = {
   extractInfoWithLLM,
   handleGeneralQuery,
   getOllamaModels,
-  testGeminiConnection
+  testGeminiConnection,
+  selectTool,
+  generateClarificationQuestion
 };

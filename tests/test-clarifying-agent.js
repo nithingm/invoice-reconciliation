@@ -19,11 +19,11 @@ async function testClarifyingAgent() {
     // Create a new agent instance
     const agent = new ClarifyingRAGAgent('test-session-123');
     
-    console.log('\n📝 Test 1: Smart credit application');
-    console.log('User: "Apply 250$ credit for Mike Wilson"');
+    console.log('\n📝 Test 1: Customer ID lookup (CUST001)');
+    console.log('User: "What is the credit balance for CUST001?"');
 
     const result1 = await agent.processRequest(
-      'Apply 250$ credit for Mike Wilson',
+      'What is the credit balance for CUST001?',
       'gemini-2.5-flash-lite'
     );
     
@@ -32,26 +32,42 @@ async function testClarifyingAgent() {
     console.log('State:', result1.agentState);
     console.log('Message:', result1.message);
     
-    if (result1.type === 'confirmation_needed') {
-      console.log('\n✅ Agent correctly asked for confirmation and showed application plan!');
+    if (result1.type === 'success') {
+      console.log('\n✅ Customer ID lookup working correctly!');
 
-      console.log('\n📝 Test 2: User confirmation');
-      console.log('User: "Yes, proceed"');
+      // Test 2: Insufficient credits
+      console.log('\n📝 Test 2: Insufficient credits test');
+      console.log('User: "Apply $10000 credit for CUST001 to invoice INV001"');
 
-      const result2 = await agent.processRequest('Yes, proceed');
+      const agent2 = new ClarifyingRAGAgent('test-session-456');
+      const result2 = await agent2.processRequest('Apply $10000 credit for CUST001 to invoice INV001', 'gemini-2.5-flash-lite');
 
       console.log('🤖 Agent Response:');
       console.log('Type:', result2.type);
       console.log('State:', result2.agentState);
-      console.log('Message:', result2.message);
+      console.log('Message:', result2.message.substring(0, 200) + '...');
 
-      if (result2.type === 'success') {
-        console.log('\n✅ Smart credit application executed successfully!');
+      if (result2.type === 'insufficient_credits') {
+        console.log('\n✅ Insufficient credits detected correctly!');
       }
-    } else if (result1.type === 'insufficient_credits') {
-      console.log('\n✅ Agent correctly detected insufficient credits!');
-    } else if (result1.type === 'success') {
-      console.log('\n✅ Agent showed smart application plan directly!');
+
+      // Test 3: Invoice validation
+      console.log('\n📝 Test 3: Invoice validation test');
+      console.log('User: "Apply $100 to INV999 for CUST001"');
+
+      const agent3 = new ClarifyingRAGAgent('test-session-789');
+      const result3 = await agent3.processRequest('Apply $100 to INV999 for CUST001', 'gemini-2.5-flash-lite');
+
+      console.log('🤖 Agent Response:');
+      console.log('Type:', result3.type);
+      console.log('State:', result3.agentState);
+      console.log('Message:', result3.message.substring(0, 200) + '...');
+
+      if (result3.type === 'error') {
+        console.log('\n✅ Invoice validation working correctly!');
+      }
+    } else {
+      console.log('\n❌ Customer ID lookup failed');
     }
     
     console.log('\n🎉 Clarifying RAG Agent test completed successfully!');

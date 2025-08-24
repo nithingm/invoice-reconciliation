@@ -119,7 +119,12 @@ class ClarifyingRAGAgent {
       return await this.executeDirectly(extractedInfo);
     }
 
-    // For write operations, proceed to action confirmation
+    // For credit applications, validate before asking for confirmation
+    if (extractedInfo.intent === 'credit_application') {
+      return await this.validateAndPrepareConfirmation(extractedInfo);
+    }
+
+    // For other write operations, proceed to action confirmation
     return await this.prepareActionConfirmation(extractedInfo);
   }
 
@@ -205,18 +210,10 @@ class ClarifyingRAGAgent {
     const { intent, customerName, customerId, invoiceId } = extractedInfo;
 
     // Customer identification needed for most operations
-    if (customerName && !customerId) {
+    if ((customerName || customerId) && !this.context.confirmedCustomer) {
       return {
         tool: 'findCustomerByName',
-        arguments: { name: customerName }
-      };
-    }
-
-    // Invoice identification needed
-    if (invoiceId && intent.includes('invoice')) {
-      return {
-        tool: 'findInvoiceById',
-        arguments: { invoiceId }
+        arguments: { name: customerName || customerId }
       };
     }
 
@@ -286,6 +283,84 @@ class ClarifyingRAGAgent {
       agentState: this.state,
       options: results
     };
+  }
+
+  /**
+   * Validate credit application and prepare confirmation or show errors
+   */
+  async validateAndPrepareConfirmation(extractedInfo) {
+    const customer = Array.isArray(this.context.confirmedData) ? this.context.confirmedData[0] : this.context.confirmedData;
+    const { creditAmount, invoiceId } = extractedInfo;
+
+    try {
+      // Get available credits for validation
+      const availableCredits = await retrievalTools.getAvailableCredits(customer.id);
+
+      // Check if customer has enough credits
+      if (availableCredits.totalAmount < creditAmount) {
+        let message = `💳 **Insufficient Credits Available**\n\n`;
+        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `💰 **Requested:** $${creditAmount}\n`;
+        message += `💳 **Available:** $${availableCredits.totalAmount}\n`;
+        message += `❌ **Shortage:** $${creditAmount - availableCredits.totalAmount}\n\n`;
+
+        if (availableCredits.totalAmount > 0) {
+          message += `**Available Credits:**\n`;
+          availableCredits.credits.forEach((credit, index) => {
+            message += `${index + 1}. $${credit.amount} - ${credit.source}\n`;
+          });
+          message += `\nWould you like to apply all available credits ($${availableCredits.totalAmount}) instead?`;
+        } else {
+          message += `This customer has no available credits.`;
+        }
+
+        this.reset();
+        return {
+          message,
+          type: 'insufficient_credits',
+          agentState: 'completed'
+        };
+      }
+
+      // If specific invoice is mentioned, validate it
+      if (invoiceId) {
+        const invoiceValidation = await retrievalTools.findAndValidateInvoice(invoiceId, customer.id);
+
+        if (!invoiceValidation.success) {
+          let message = `🔴 **Invoice Issue**\n\n`;
+          message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+          message += `📄 **Invoice:** ${invoiceId}\n`;
+          message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+
+          if (invoiceValidation.type === 'invoice_not_found') {
+            message += `Invoice ${invoiceId} was not found in the system.`;
+          } else if (invoiceValidation.type === 'invoice_not_owned') {
+            message += `Invoice ${invoiceId} does not belong to ${customer.name}.`;
+          } else if (invoiceValidation.type === 'invoice_already_paid') {
+            message += `Invoice ${invoiceId} is already paid.`;
+          }
+
+          this.reset();
+          return {
+            message,
+            type: 'error',
+            agentState: 'completed'
+          };
+        }
+      }
+
+      // Validation passed, proceed to confirmation
+      return await this.prepareActionConfirmation(extractedInfo);
+
+    } catch (error) {
+      console.error('❌ Error in validation:', error);
+      this.reset();
+      return {
+        message: `🔴 Error validating request: ${error.message}`,
+        type: 'error',
+        agentState: 'completed'
+      };
+    }
   }
 
   /**
@@ -508,14 +583,11 @@ class ClarifyingRAGAgent {
       };
     }
 
-    const { creditAmount } = this.context.originalExtractedInfo;
+    const { creditAmount, invoiceId } = this.context.originalExtractedInfo;
 
     try {
       // Get available credits for the customer
       const availableCredits = await retrievalTools.getAvailableCredits(customer.id);
-
-      // Get pending invoices for the customer
-      const pendingInvoices = await retrievalTools.getPendingInvoices(customer.id);
 
       // Check if customer has enough credits
       if (availableCredits.totalAmount < creditAmount) {
@@ -541,6 +613,72 @@ class ClarifyingRAGAgent {
           details: { availableCredits, requestedAmount: creditAmount }
         };
       }
+
+      // If specific invoice is mentioned, validate it
+      if (invoiceId) {
+        const invoiceValidation = await retrievalTools.findAndValidateInvoice(invoiceId, customer.id);
+
+        if (!invoiceValidation.success) {
+          let message = `🔴 **Invoice Issue**\n\n`;
+          message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+          message += `📄 **Invoice:** ${invoiceId}\n`;
+          message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+
+          if (invoiceValidation.type === 'invoice_not_found') {
+            message += `Invoice ${invoiceId} was not found in the system.`;
+          } else if (invoiceValidation.type === 'invoice_not_owned') {
+            message += `Invoice ${invoiceId} does not belong to ${customer.name}.`;
+          } else if (invoiceValidation.type === 'invoice_already_paid') {
+            message += `Invoice ${invoiceId} is already paid.`;
+          }
+
+          return {
+            message,
+            type: 'error',
+            details: invoiceValidation
+          };
+        }
+
+        // Apply to specific invoice
+        const invoice = invoiceValidation.invoice;
+        const amountToApply = Math.min(creditAmount, invoice.currentAmount);
+        const newBalance = invoice.currentAmount - amountToApply;
+
+        const applicationPlan = [{
+          invoiceId: invoice.id,
+          amount: amountToApply,
+          currentBalance: invoice.currentAmount,
+          newBalance,
+          currentStatus: invoice.status,
+          newStatus: newBalance === 0 ? 'paid' : 'partial'
+        }];
+
+        let message = `💳 **Credit Application Plan**\n\n`;
+        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `💰 **Credits to Apply:** $${creditAmount}\n`;
+        message += `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n`;
+
+        message += `**Application Plan:**\n`;
+        message += `1. Invoice ${invoice.id}: $${amountToApply}\n`;
+        message += `   Current Balance: $${invoice.currentAmount} → New Balance: $${newBalance}\n`;
+        message += `   Status: ${invoice.status} → ${newBalance === 0 ? 'paid' : 'partial'}\n\n`;
+
+        if (amountToApply < creditAmount) {
+          message += `**Note:** Only $${amountToApply} will be applied (invoice balance limit)\n`;
+        }
+
+        // Store the application plan for execution
+        this.context.applicationPlan = applicationPlan;
+
+        return {
+          message,
+          type: 'success',
+          details: { applicationPlan, availableCredits, targetInvoice: invoice }
+        };
+      }
+
+      // No specific invoice - find pending invoices
+      const pendingInvoices = await retrievalTools.getPendingInvoices(customer.id);
 
       // Check if customer has pending invoices
       if (pendingInvoices.length === 0) {

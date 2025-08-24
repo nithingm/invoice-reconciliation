@@ -22,15 +22,25 @@ async function findCustomerByName(name) {
     console.log(`🔍 Searching for customer: "${name}"`);
 
     const searchTerm = name.toLowerCase().trim();
+    let matches = [];
 
-    // Search in MongoDB customers collection
-    const matches = await Customer.find({
-      $or: [
-        { name: { $regex: searchTerm, $options: 'i' } },
-        { company: { $regex: searchTerm, $options: 'i' } },
-        { name: { $regex: new RegExp(searchTerm.split(' ').join('.*'), 'i') } }
-      ]
-    });
+    // Check if it's a customer ID (starts with CUST)
+    if (searchTerm.startsWith('cust')) {
+      const customer = await Customer.findOne({ id: searchTerm.toUpperCase() });
+      if (customer) {
+        matches = [customer];
+        console.log(`✅ Found customer by ID: ${customer.name} (${customer.id})`);
+      }
+    } else {
+      // Search by name and company
+      matches = await Customer.find({
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { company: { $regex: searchTerm, $options: 'i' } },
+          { name: { $regex: new RegExp(searchTerm.split(' ').join('.*'), 'i') } }
+        ]
+      });
+    }
 
     console.log(`✅ Found ${matches.length} customer matches for "${name}"`);
 
@@ -379,6 +389,65 @@ async function findOverdueInvoices(customerId = null, daysOverdue = 30) {
   }
 }
 
+/**
+ * Find and validate invoice by ID and customer
+ * @param {string} invoiceId - Invoice ID to search for
+ * @param {string} customerId - Customer ID to validate ownership
+ * @returns {object} - Invoice details or error
+ */
+async function findAndValidateInvoice(invoiceId, customerId) {
+  try {
+    console.log(`🔍 Finding invoice ${invoiceId} for customer ${customerId}`);
+
+    const invoice = await Invoice.findOne({ id: invoiceId });
+
+    if (!invoice) {
+      return {
+        success: false,
+        error: `Invoice ${invoiceId} not found`,
+        type: 'invoice_not_found'
+      };
+    }
+
+    if (invoice.customerId !== customerId) {
+      return {
+        success: false,
+        error: `Invoice ${invoiceId} does not belong to customer ${customerId}`,
+        type: 'invoice_not_owned'
+      };
+    }
+
+    if (invoice.status === 'paid') {
+      return {
+        success: false,
+        error: `Invoice ${invoiceId} is already paid`,
+        type: 'invoice_already_paid'
+      };
+    }
+
+    return {
+      success: true,
+      invoice: {
+        id: invoice.id,
+        customerId: invoice.customerId,
+        customerName: invoice.customerName,
+        originalAmount: invoice.originalAmount,
+        currentAmount: invoice.currentAmount,
+        status: invoice.status,
+        date: invoice.date
+      }
+    };
+
+  } catch (error) {
+    console.error('❌ Error finding and validating invoice:', error);
+    return {
+      success: false,
+      error: `Failed to validate invoice: ${error.message}`,
+      type: 'system_error'
+    };
+  }
+}
+
 module.exports = {
   findCustomerByName,
   findInvoiceById,
@@ -387,5 +456,6 @@ module.exports = {
   findInvoicesByCustomerName,
   universalSearch,
   getCustomerPaymentHistory,
-  findOverdueInvoices
+  findOverdueInvoices,
+  findAndValidateInvoice
 };

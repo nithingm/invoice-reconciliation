@@ -57,6 +57,8 @@ EXAMPLES:
 - "Use 500 credits for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 500
 - "Apply credits for Sarah Johnson" → intent: credit_application, customerName: "Sarah Johnson"
 - "Apply 1000 credits to invoice INV001 for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 1000, invoiceId: "INV001"
+- "Apply $10000 credit for CUST001 to invoice INV001" → intent: credit_application, customerId: "CUST001", creditAmount: 10000, invoiceId: "INV001"
+- "Apply $100 to INV001 for CUST001" → intent: credit_application, customerId: "CUST001", creditAmount: 100, invoiceId: "INV001"
 - "Show credits for John" → intent: credit_balance_inquiry, customerName: "John"
 - "How much credits are available for John Smith?" → intent: credit_balance_inquiry, customerName: "John Smith"
 - "Check credit balance for CUST001" → intent: credit_balance_inquiry, customerId: "CUST001"
