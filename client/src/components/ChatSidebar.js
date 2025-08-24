@@ -38,7 +38,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
 
         setMessages([{
           id: Date.now(),
-          text: 'Hello! I am your AI assistant. I can help you with:\n\n• Invoice inquiries and credit validation\n• Quantity discrepancy reports\n• Damage reports and credit memos\n• Account balance and purchase history\n• General transmission service questions\n\nHow can I assist you today?',
+          text: '🤖 Hello! I am your enhanced AI assistant with intelligent clarification capabilities. I can help you with:\n\n• Invoice inquiries and credit validation\n• Quantity discrepancy reports\n• Damage reports and credit memos\n• Account balance and purchase history\n• General transmission service questions\n\n✨ **New Features:**\n• Smart ambiguity detection\n• Step-by-step confirmations\n• Context-aware conversations\n\nHow can I assist you today?',
           sender: 'bot',
           type: 'greeting',
           timestamp: new Date()
@@ -97,13 +97,34 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Send message with conversation context
-    socket.emit('chat_message', {
+    // Send message with conversation context using Clarifying RAG Agent
+    socket.emit('chat_message_agent', {
       message: inputMessage,
       context: conversationContext,
       messageHistory: messages.slice(-5) // Send last 5 messages for context
     });
     setInputMessage('');
+  };
+
+  const handleQuickResponse = (response) => {
+    if (!socket || !isConnected) return;
+
+    const userMessage = {
+      id: Date.now(),
+      text: response,
+      sender: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsTyping(true);
+
+    // Send quick response using Clarifying RAG Agent
+    socket.emit('chat_message_agent', {
+      message: response,
+      context: conversationContext,
+      messageHistory: messages.slice(-5)
+    });
   };
 
   const handleClose = () => {
@@ -127,6 +148,10 @@ const ChatSidebar = ({ isOpen, onClose }) => {
     switch (type) {
       case 'success':
         return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
+      case 'clarification_needed':
+        return <InformationCircleIcon className="h-4 w-4 text-blue-500" />;
+      case 'confirmation_needed':
+        return <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />;
       case 'error':
         return <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />;
       case 'help':
@@ -134,6 +159,21 @@ const ChatSidebar = ({ isOpen, onClose }) => {
         return <InformationCircleIcon className="h-4 w-4 text-blue-500" />;
       default:
         return <CheckCircleIcon className="h-4 w-4 text-green-500" />;
+    }
+  };
+
+  const getMessageStyling = (type) => {
+    switch (type) {
+      case 'clarification_needed':
+        return 'bg-blue-50 text-blue-800 border border-blue-200';
+      case 'confirmation_needed':
+        return 'bg-yellow-50 text-yellow-800 border border-yellow-200';
+      case 'success':
+        return 'bg-green-50 text-green-800 border border-green-200';
+      case 'error':
+        return 'bg-red-50 text-red-800 border border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -178,9 +218,9 @@ const ChatSidebar = ({ isOpen, onClose }) => {
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-xs ${
-              message.sender === 'user' 
-                ? 'bg-primary-600 text-white' 
-                : 'bg-gray-100 text-gray-800'
+              message.sender === 'user'
+                ? 'bg-primary-600 text-white'
+                : getMessageStyling(message.type)
             } rounded-lg px-3 py-2 text-sm`}>
               {message.sender === 'bot' && (
                 <div className="flex items-center space-x-2 mb-1">
@@ -193,6 +233,40 @@ const ChatSidebar = ({ isOpen, onClose }) => {
               <div className="whitespace-pre-wrap">
                 {formatMessageText(message.text)}
               </div>
+
+              {/* Yes/No buttons for confirmation messages */}
+              {message.type === 'confirmation_needed' && (
+                <div className="mt-3 flex space-x-2">
+                  <button
+                    onClick={() => handleQuickResponse('yes')}
+                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    ✅ Yes, Proceed
+                  </button>
+                  <button
+                    onClick={() => handleQuickResponse('no')}
+                    className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    ❌ No, Cancel
+                  </button>
+                </div>
+              )}
+
+              {/* Option buttons for clarification messages */}
+              {message.type === 'clarification_needed' && message.options && (
+                <div className="mt-3 space-y-2">
+                  {message.options.map((option, index) => (
+                    <button
+                      key={option.id || index}
+                      onClick={() => handleQuickResponse(option.name || option.id)}
+                      className="w-full text-left px-3 py-2 bg-blue-50 text-blue-800 text-sm rounded-lg hover:bg-blue-100 transition-colors border border-blue-200"
+                    >
+                      {option.name} {option.company && `(${option.company})`} - {option.id}
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {message.details && (
                 <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
                   <strong>Details:</strong>

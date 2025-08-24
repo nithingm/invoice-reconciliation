@@ -21,8 +21,9 @@ Customer Message: "${message}"${contextInfo}
 Your task is to extract the following information from the message:
 
 INTENT CLASSIFICATION:
-- credit_application: Customer wants to apply credits to an invoice (keywords: apply, use, request, need + credits)
-- credit_balance_inquiry: Customer wants to check available credit balance (keywords: balance, available, check + credits)
+- add_credits: Customer wants to add/give NEW credits to a customer account (keywords: add, give, create, grant + credits + customer name)
+- credit_application: Customer wants to apply/use EXISTING credits to pay invoices (keywords: apply, use + credits + customer name, NO specific invoice mentioned)
+- credit_balance_inquiry: Customer wants to check/show/view available credit balance (keywords: show, check, balance, available, how much, what credits, view + credits)
 - purchase_history: Customer wants to see their purchase history (keywords: history, purchases, transactions)
 - invoice_inquiry: Customer wants to check invoice details (keywords: invoice, INV)
 - quantity_discrepancy: Customer reports missing/incorrect quantities (keywords: missing, received less, short, quantity)
@@ -49,11 +50,19 @@ IMPORTANT:
 - Never put a customer name in the customerId field
 
 EXAMPLES:
-- "hello I am requesting 5000 credits for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 5000
-- "Apply 1000 credits for john smith's last invoice" → intent: credit_application, customerName: "John Smith", creditAmount: 1000
-- "Apply 500 credits for john smith's last invoice" → intent: credit_application, customerName: "John Smith", creditAmount: 500
-- "Invoice INV-2025-001 billed 100 units but we received 95. Fix?" → intent: quantity_discrepancy, invoiceId: "INV-2025-001", missingQuantity: 5
+- "Add 50 credits to Sarah Johnson" → intent: add_credits, customerName: "Sarah Johnson", creditAmount: 50
+- "Give 100 credits to John Smith" → intent: add_credits, customerName: "John Smith", creditAmount: 100
+- "Create 250 credits for CUST001" → intent: add_credits, customerId: "CUST001", creditAmount: 250
+- "Apply 250$ credit for Mike Wilson" → intent: credit_application, customerName: "Mike Wilson", creditAmount: 250
+- "Use 500 credits for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 500
+- "Apply credits for Sarah Johnson" → intent: credit_application, customerName: "Sarah Johnson"
+- "Apply 1000 credits to invoice INV001 for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 1000, invoiceId: "INV001"
+- "Show credits for John" → intent: credit_balance_inquiry, customerName: "John"
+- "How much credits are available for John Smith?" → intent: credit_balance_inquiry, customerName: "John Smith"
+- "Check credit balance for CUST001" → intent: credit_balance_inquiry, customerId: "CUST001"
+- "What credits does John have?" → intent: credit_balance_inquiry, customerName: "John"
 - "my credit balance" → intent: credit_balance_inquiry (use context for customer)
+- "Invoice INV-2025-001 billed 100 units but we received 95. Fix?" → intent: quantity_discrepancy, invoiceId: "INV-2025-001", missingQuantity: 5
 - "We received damaged transmission on invoice INV002" → intent: damage_report, invoiceId: "INV002", itemDescription: "transmission"
 - "apply to account" → intent: credit_memo_approval, customerChoice: "apply to account"
 - "John Smith paid 4000 for invoice INV008 but total was 5000" → intent: partial_payment, customerName: "John Smith", invoiceId: "INV008", paidAmount: 4000, invoiceAmount: 5000

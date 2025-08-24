@@ -18,7 +18,8 @@
     "start:with-ai": "concurrently \"npm start\" \"npm run python-ai\"",
     "migrate:data": "node server/scripts/migrate-data.js",
     "test:gemini": "cd tests && node test-gemini.js",
-    "test:gemini-litellm": "cd tests && node test-gemini-litellm.js"
+    "test:gemini-litellm": "cd tests && node test-gemini-litellm.js",
+    "test:agent": "cd tests && node test-clarifying-agent.js"
   },
   "keywords": [
     "transmission",

@@ -5,38 +5,14 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const database = req.app.locals.database;
+    const customers = await database.Customer.find({});
 
-    console.log(' Database check - database exists:', !!database);
-    if (database) {
-      console.log(' Database has customers:', !!database.customers);
-      console.log('Database has helper functions:', !!database.getCustomerActiveCredits);
-    }
-
-    if (!database) {
-      console.error('❌ Database is null/undefined');
-      return res.status(500).json({ error: 'Database not available' });
-    }
-
-    if (!database.customers) {
-      console.error('❌ Database.customers is null/undefined');
-      return res.status(500).json({ error: 'Database customers not available' });
-    }
-
-    if (!database.getCustomerActiveCredits) {
-      console.error('❌ Database.getCustomerActiveCredits is null/undefined');
-      return res.status(500).json({ error: 'Database helper functions not available' });
-    }
-
-    // Calculate summary data for each customer using the new database helper functions
-    const customersWithSummary = database.customers.map(customer => {
+    const customersWithSummary = await Promise.all(customers.map(async (customer) => {
       try {
-        const activeCredits = database.getCustomerActiveCredits(customer.id) || [];
-        const totalActiveCredits = database.getCustomerTotalActiveCredits(customer.id) || 0;
-        const activeCreditsCount = activeCredits.length;
-
-        const customerInvoices = database.getCustomerInvoices(customer.id) || [];
-        const pendingInvoices = (database.getCustomerPendingInvoices(customer.id) || []).length;
-        const totalInvoices = customerInvoices.length;
+        const totalActiveCredits = await database.getCustomerTotalActiveCredits(customer.id) || 0;
+        const activeCreditsCount = (await database.getCustomerActiveCredits(customer.id) || []).length;
+        const pendingInvoices = (await database.getCustomerPendingInvoices(customer.id) || []).length;
+        const totalInvoices = (await database.getCustomerInvoices(customer.id) || []).length;
 
         return {
           id: customer.id,
@@ -59,7 +35,7 @@ router.get('/', async (req, res) => {
           totalInvoices: 0
         };
       }
-    });
+    }));
 
     res.json({ customers: customersWithSummary });
   } catch (error) {
@@ -74,14 +50,12 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     const database = req.app.locals.database;
 
-    // Use the new database helper function to get customer with all related data
-    const customerWithDetails = database.getCustomerWithCreditsAndInvoices(id);
+    const customerWithDetails = await database.getCustomerWithCreditsAndInvoices(id);
     if (!customerWithDetails) {
       return res.status(404).json({ error: 'Customer not found' });
     }
 
-    // Add purchase history
-    const purchaseHistory = database.getCustomerPurchaseHistory(id);
+    const purchaseHistory = await database.getCustomerPurchaseHistory(id);
 
     res.json({
       ...customerWithDetails,
@@ -99,13 +73,13 @@ router.get('/:id/credits', async (req, res) => {
     const { id } = req.params;
     const database = req.app.locals.database;
 
-    const customer = database.getCustomerById(id);
+    const customer = await database.getCustomerById(id);
     if (!customer) {
       return res.status(404).json({ error: 'Customer not found' });
     }
 
-    const activeCredits = database.getCustomerActiveCredits(id);
-    const totalCredits = database.getCustomerTotalActiveCredits(id);
+    const activeCredits = await database.getCustomerActiveCredits(id);
+    const totalCredits = await database.getCustomerTotalActiveCredits(id);
 
     res.json({
       customerId: id,
@@ -124,12 +98,12 @@ router.get('/:id/invoices', async (req, res) => {
     const { id } = req.params;
     const database = req.app.locals.database;
 
-    const customer = database.getCustomerById(id);
+    const customer = await database.getCustomerById(id);
     if (!customer) {
       return res.status(404).json({ error: 'Customer not found' });
     }
 
-    const invoices = database.getCustomerInvoices(id);
+    const invoices = await database.getCustomerInvoices(id);
 
     res.json({ customerId: id, invoices });
   } catch (error) {

@@ -10,12 +10,16 @@
  */
 
 const { extractInfoWithLLM } = require('../services/aiService');
+const { ClarifyingRAGAgent } = require('../services/agentService');
 const { updateSessionContext, updateSessionActivity } = require('../services/contextService');
 const { handleCreditApplication, handleCreditBalanceInquiry, handleCreditMemoApproval } = require('../handlers/creditHandler');
 const { handleInvoiceInquiry, handlePurchaseHistoryInquiry } = require('../handlers/invoiceHandler');
 const { handleQuantityDiscrepancy, handleDamageReport } = require('../handlers/discrepancyHandler');
 const { handlePartialPayment } = require('../handlers/paymentHandler');
 const { handleGeneral } = require('../handlers/generalHandler');
+
+// Store active agents by session ID
+const activeAgents = new Map();
 
 /**
  * Main AI Processing Pipeline - The Heart of the Chatbot
@@ -82,6 +86,47 @@ async function processAIQuery(app, message, conversationContext = null) {
 }
 
 /**
+ * NEW: Clarifying RAG Agent Processing Pipeline
+ *
+ * This function uses the new Clarifying RAG Agent for enhanced ambiguity handling.
+ * It can be used alongside or instead of the traditional pipeline.
+ *
+ * @param {object} app - The Express app instance
+ * @param {string} message - User's message
+ * @param {object} conversationContext - Current conversation context
+ * @param {string} sessionId - Session ID for agent persistence
+ */
+async function processWithClarifyingAgent(app, message, conversationContext, sessionId) {
+  try {
+    console.log('🤖 Processing with Clarifying RAG Agent');
+
+    // Get or create agent for this session
+    let agent = activeAgents.get(sessionId);
+    if (!agent) {
+      agent = new ClarifyingRAGAgent(sessionId);
+      activeAgents.set(sessionId, agent);
+    }
+
+    // Get AI model from app config
+    const model = app.locals.aiConfig?.model || 'gemini-2.5-flash-lite';
+
+    // Process with agent
+    const result = await agent.processRequest(message, model, conversationContext);
+
+    console.log('🤖 Agent result:', result);
+
+    return result;
+
+  } catch (error) {
+    console.error('❌ Clarifying Agent error:', error);
+
+    // Fallback to traditional processing
+    console.log('🔄 Falling back to traditional processing');
+    return await processAIQuery(app, message, conversationContext);
+  }
+}
+
+/**
  * Configure Socket.IO event handlers
  * 
  * @param {object} io - Socket.IO server instance
@@ -138,6 +183,50 @@ function configureSocketHandlers(io, app) {
     });
 
     /**
+     * Handle chat messages with Clarifying RAG Agent (NEW)
+     * This provides enhanced ambiguity handling and confirmation workflows
+     */
+    socket.on('chat_message_agent', async (data) => {
+      try {
+        const { message, context, messageHistory } = data;
+
+        // Initialize or update conversation session for context persistence
+        let sessionContext = context;
+        if (context && context.sessionId) {
+          sessionContext = updateSessionContext(
+            context.sessionId,
+            context,
+            messageHistory || []
+          );
+          updateSessionActivity(context.sessionId);
+        }
+
+        // Process with Clarifying RAG Agent
+        const response = await processWithClarifyingAgent(
+          app,
+          message,
+          sessionContext,
+          context?.sessionId || socket.id
+        );
+
+        // Update session context with any changes from the response
+        if (context && context.sessionId && response.context) {
+          updateSessionContext(context.sessionId, response.context);
+        }
+
+        // Send response back to client
+        socket.emit('ai_response', response);
+
+      } catch (error) {
+        console.error('Clarifying Agent error:', error);
+        socket.emit('ai_response', {
+          message: 'Sorry, I encountered an error processing your request. Please try again.',
+          type: 'error'
+        });
+      }
+    });
+
+    /**
      * Handle user disconnection
      */
     socket.on('disconnect', () => {
@@ -148,5 +237,6 @@ function configureSocketHandlers(io, app) {
 
 module.exports = {
   configureSocketHandlers,
-  processAIQuery
+  processAIQuery,
+  processWithClarifyingAgent
 };
