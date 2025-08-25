@@ -140,15 +140,37 @@ class ClarifyingRAGAgent {
     }
 
     // Determine intent based on keywords - PRIORITIZE COMMON INTENTS
-    if ((lowerMessage.includes('balance') || lowerMessage.includes('show') || lowerMessage.includes('check') || lowerMessage.includes('what')) && lowerMessage.includes('credit')) {
-      result.intent = 'credit_balance_inquiry';
-    } else if (lowerMessage.includes('apply') && lowerMessage.includes('credit')) {
-      result.intent = 'credit_application';
-    } else if ((lowerMessage.includes('add') || lowerMessage.includes('give') || lowerMessage.includes('create')) && lowerMessage.includes('credit')) {
-      result.intent = 'add_credits';
-    } else if (lowerMessage.includes('invoice') && !lowerMessage.includes('credit')) {
+
+    // INVOICE INQUIRY: Check for invoice patterns first (highest priority when invoice ID is present)
+    if (result.invoiceId && (
+      lowerMessage.includes('invoice') ||
+      lowerMessage.includes('status') ||
+      lowerMessage.includes('details') ||
+      lowerMessage.includes('pull up') ||
+      lowerMessage.includes('show') ||
+      lowerMessage.includes('what') ||
+      lowerMessage.includes('check')
+    ) && !lowerMessage.includes('credit')) {
       result.intent = 'invoice_inquiry';
-    } else if (lowerMessage.includes('history') || lowerMessage.includes('purchase')) {
+    }
+    // CREDIT BALANCE INQUIRY: Must contain both credit-related keywords AND credit word
+    else if ((lowerMessage.includes('balance') || lowerMessage.includes('show') || lowerMessage.includes('check') || lowerMessage.includes('what')) && lowerMessage.includes('credit')) {
+      result.intent = 'credit_balance_inquiry';
+    }
+    // CREDIT APPLICATION: Apply/use credits
+    else if (lowerMessage.includes('apply') && lowerMessage.includes('credit')) {
+      result.intent = 'credit_application';
+    }
+    // ADD CREDITS: Add/give/create credits
+    else if ((lowerMessage.includes('add') || lowerMessage.includes('give') || lowerMessage.includes('create')) && lowerMessage.includes('credit')) {
+      result.intent = 'add_credits';
+    }
+    // INVOICE INQUIRY: General invoice keyword without credit
+    else if (lowerMessage.includes('invoice') && !lowerMessage.includes('credit')) {
+      result.intent = 'invoice_inquiry';
+    }
+    // PURCHASE HISTORY
+    else if (lowerMessage.includes('history') || lowerMessage.includes('purchase')) {
       result.intent = 'purchase_history';
     }
     // RESTRICT ACCESS TO SPECIALIZED INTENTS - only if very specific keywords are present
@@ -159,14 +181,21 @@ class ClarifyingRAGAgent {
     }
 
     // VALIDATION: Ensure intent makes sense with extracted data
+
+    // PRIORITY VALIDATION: If we have an invoice ID, strongly prefer invoice_inquiry
+    if (result.invoiceId && result.intent === 'general') {
+      console.log('🔧 LIVE DEBUG - Found invoice ID, switching to invoice_inquiry');
+      result.intent = 'invoice_inquiry';
+    }
+
     if (result.intent === 'quantity_discrepancy' && !result.invoiceId) {
       // Quantity discrepancy requires an invoice ID
       console.log('🔧 LIVE DEBUG - Rejecting quantity_discrepancy without invoice ID');
       result.intent = 'general';
     }
 
-    if (result.intent === 'credit_balance_inquiry' && !result.customerId) {
-      // Credit balance inquiry requires a customer
+    if (result.intent === 'credit_balance_inquiry' && !result.customerId && !result.customerName) {
+      // Credit balance inquiry requires a customer (but allow customerName too)
       console.log('🔧 LIVE DEBUG - Rejecting credit_balance_inquiry without customer');
       result.intent = 'general';
     }
@@ -464,7 +493,6 @@ class ClarifyingRAGAgent {
       'credit_application',
       'add_credits',
       'purchase_history',
-      'invoice_inquiry',
       'overdue_inquiry',
       'payment_history_inquiry'
     ];
@@ -827,6 +855,10 @@ class ClarifyingRAGAgent {
 
         case 'overdue_inquiry':
           result = await this.executeOverdueInquiry(confirmedData);
+          break;
+
+        case 'invoice_inquiry':
+          result = await this.executeInvoiceInquiry(confirmedData);
           break;
 
         case 'general':
@@ -1400,6 +1432,121 @@ class ClarifyingRAGAgent {
       message,
       type: overdueInvoices.length > 0 ? 'warning' : 'success'
     };
+  }
+
+  /**
+   * Execute invoice inquiry
+   */
+  async executeInvoiceInquiry(confirmedData) {
+    try {
+      const { invoiceId } = this.context.originalExtractedInfo;
+
+      if (!invoiceId) {
+        return {
+          message: '🔴 Please provide an invoice ID to look up.',
+          type: 'error',
+          agentState: 'completed'
+        };
+      }
+
+      console.log(`🔍 Looking up invoice: ${invoiceId}`);
+
+      // Get invoice from database
+      const database = require('../data/database');
+      const invoice = await database.getInvoiceById(invoiceId);
+
+      if (!invoice) {
+        return {
+          message: `🔴 Invoice **${invoiceId}** not found. Please check the invoice ID and try again.`,
+          type: 'error',
+          agentState: 'completed'
+        };
+      }
+
+      // Get customer information
+      const customer = await database.getCustomerById(invoice.customerId);
+      if (!customer) {
+        return {
+          message: `🔴 Customer information not found for invoice ${invoiceId}.`,
+          type: 'error',
+          agentState: 'completed'
+        };
+      }
+
+      // Get customer's available credits
+      const availableCredits = await database.getCustomerActiveCredits(invoice.customerId);
+      const totalAvailableCredits = availableCredits.reduce((sum, credit) => sum + credit.amount, 0);
+
+      // Format invoice details
+      let message = `📄 **Invoice Details for ${invoice.id}**\n\n`;
+      message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+      message += `📅 **Invoice Date:** ${new Date(invoice.date).toLocaleDateString()}\n`;
+      message += `📅 **Due Date:** ${new Date(invoice.dueDate).toLocaleDateString()}\n`;
+      message += `💰 **Original Amount:** $${invoice.originalAmount.toFixed(2)}\n`;
+      message += `💳 **Current Amount:** $${invoice.currentAmount.toFixed(2)}\n`;
+      message += `🎯 **Credits Applied:** $${invoice.creditsApplied.toFixed(2)}\n`;
+      message += `📊 **Status:** ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}\n`;
+      message += `💳 **Payment Status:** ${invoice.paymentStatus.charAt(0).toUpperCase() + invoice.paymentStatus.slice(1)}\n`;
+
+      if (invoice.paymentDate) {
+        message += `📅 **Payment Date:** ${new Date(invoice.paymentDate).toLocaleDateString()}\n`;
+      }
+
+      message += `📝 **Description:** ${invoice.description}\n`;
+      message += `💰 **Customer Available Credits:** $${totalAvailableCredits.toFixed(2)}`;
+
+      // Create detailed object for collapsible section
+      const invoiceDetails = {
+        invoice: {
+          id: invoice.id,
+          customerId: invoice.customerId,
+          customerName: customer.name,
+          date: invoice.date,
+          dueDate: invoice.dueDate,
+          originalAmount: invoice.originalAmount,
+          currentAmount: invoice.currentAmount,
+          creditsApplied: invoice.creditsApplied,
+          status: invoice.status,
+          paymentStatus: invoice.paymentStatus,
+          paymentDate: invoice.paymentDate,
+          description: invoice.description
+        },
+        items: invoice.items,
+        taxes: invoice.taxes,
+        shipping: invoice.shipping,
+        customer: {
+          id: customer.id,
+          name: customer.name,
+          company: customer.company,
+          email: customer.email,
+          totalAvailableCredits: totalAvailableCredits
+        },
+        availableCredits: availableCredits.map(credit => ({
+          id: credit.id,
+          amount: credit.amount,
+          reason: credit.reason,
+          expiryDate: credit.expiryDate
+        }))
+      };
+
+      // Format with collapsible details
+      message = formatBoldText(message);
+      message += formatCollapsibleDetails(invoiceDetails, "📄 Invoice Details");
+
+      return {
+        message,
+        type: 'success',
+        agentState: 'completed'
+      };
+
+    } catch (error) {
+      console.error('❌ Invoice inquiry error:', error);
+      return {
+        message: '🔴 An error occurred while retrieving invoice details. Please try again.',
+        type: 'error',
+        agentState: 'completed'
+      };
+    }
   }
 
   /**
