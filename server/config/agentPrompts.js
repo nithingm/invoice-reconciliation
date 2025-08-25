@@ -224,10 +224,10 @@ function generateDamageReportConfirmation(extractedInfo, confirmedData) {
   
   return `🔧 **Damage Report Confirmation**\n\n` +
          `I'm ready to process a damage report for:\n` +
-         `👤 **Customer:** ${customer.name} (${customer.id})\n` +
-         `📋 **Invoice:** ${invoiceId}\n` +
-         `🔧 **Item:** ${itemDescription}\n` +
-         `💥 **Damage:** ${damageDescription}\n\n` +
+         ` **Customer:** ${customer.name} (${customer.id})\n` +
+         ` **Invoice:** ${invoiceId}\n` +
+         ` **Item:** ${itemDescription}\n` +
+         ` **Damage:** ${damageDescription}\n\n` +
          `This will create a credit memo for the damaged item. Is this correct? Please confirm with "yes" or "no".`;
 }
 
@@ -313,40 +313,40 @@ function generateSuccessMessage(actionType, result) {
   switch (actionType) {
     case 'credit_application':
       return `✅ **Credits Applied Successfully!**\n\n` +
-             `💳 Applied $${result.transaction.amount} to invoice ${result.transaction.invoiceId}\n` +
-             `📊 New balance: $${result.invoice.newBalance}\n` +
-             `📋 Status: ${result.invoice.status}`;
+             `  Applied $${result.transaction.amount} to invoice ${result.transaction.invoiceId}\n` +
+             `  New balance: $${result.invoice.newBalance}\n` +
+             `  Status: ${result.invoice.status}`;
     
     case 'credits_added':
       return `✅ **Credits Added Successfully!**\n\n` +
-             `💰 Added $${result.credit.amount} to ${result.customer.name}'s account\n` +
-             `🆔 Credit ID: ${result.credit.id}`;
+             `  Added $${result.credit.amount} to ${result.customer.name}'s account\n` +
+             `  Credit ID: ${result.credit.id}`;
     
     case 'credit_memo_created':
       return `✅ **Credit Memo Created Successfully!**\n\n` +
-             `📝 Credit memo ${result.creditMemo.id} has been created\n` +
-             `💰 Amount: $${result.creditMemo.amount}\n` +
-             `📋 Status: Pending approval`;
+             `  Credit memo ${result.creditMemo.id} has been created\n` +
+             `  Amount: $${result.creditMemo.amount}\n` +
+             `  Status: Pending approval`;
 
     case 'payment_plan_created':
       return `✅ **Payment Plan Created Successfully!**\n\n` +
-             `📅 Plan ID: ${result.paymentPlan.id}\n` +
-             `💰 Monthly Payment: $${result.paymentPlan.monthlyAmount}\n` +
-             `📊 Estimated Duration: ${result.paymentPlan.estimatedMonths} months\n` +
-             `📋 Invoices Included: ${result.affectedInvoices.length}`;
+             `  Plan ID: ${result.paymentPlan.id}\n` +
+             `  Monthly Payment: $${result.paymentPlan.monthlyAmount}\n` +
+             `  Estimated Duration: ${result.paymentPlan.estimatedMonths} months\n` +
+             `  Invoices Included: ${result.affectedInvoices.length}`;
 
     case 'bulk_credits_applied':
       return `✅ **Bulk Credits Applied Successfully!**\n\n` +
-             `💳 Total Credits Applied: $${result.totalCreditsApplied}\n` +
-             `📋 Invoices Processed: ${result.totalApplications}\n` +
-             `📊 All applications completed successfully`;
+             `  Total Credits Applied: $${result.totalCreditsApplied}\n` +
+             `  Invoices Processed: ${result.totalApplications}\n` +
+             `  All applications completed successfully`;
 
     case 'statement_generated':
       return `✅ **Statement Generated Successfully!**\n\n` +
-             `📄 Statement ID: ${result.statement.id}\n` +
-             `💰 Total Invoiced: $${result.statement.summary.totalInvoiced}\n` +
-             `💳 Total Credits: $${result.statement.summary.totalCredits}\n` +
-             `📊 Net Amount: $${result.statement.summary.netAmount}`;
+             `  Statement ID: ${result.statement.id}\n` +
+             `  Total Invoiced: $${result.statement.summary.totalInvoiced}\n` +
+             `  Total Credits: $${result.statement.summary.totalCredits}\n` +
+             `  Net Amount: $${result.statement.summary.netAmount}`;
 
     default:
       return `✅ **Action completed successfully!**`;

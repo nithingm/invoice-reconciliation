@@ -442,9 +442,9 @@ class ClarifyingRAGAgent {
         console.log('🔍 IMMEDIATE VALIDATION - Invoice validation failed:', invoiceValidation);
 
         let message = `🔴 **Invoice Issue**\n\n`;
-        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-        message += `📄 **Invoice:** ${extractedInfo.invoiceId}\n`;
-        message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+        message += `  **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `  **Invoice:** ${extractedInfo.invoiceId}\n`;
+        message += `  **Error:** ${invoiceValidation.error}\n\n`;
 
         if (invoiceValidation.type === 'invoice_not_found') {
           message += `Invoice ${extractedInfo.invoiceId} does not exist in the system.`;
@@ -686,10 +686,10 @@ class ClarifyingRAGAgent {
       // Check if customer has enough credits
       if (availableCredits.totalAmount < creditAmount) {
         let message = `💳 **Insufficient Credits Available**\n\n`;
-        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-        message += `💰 **Requested:** $${creditAmount}\n`;
-        message += `💳 **Available:** $${availableCredits.totalAmount}\n`;
-        message += `❌ **Shortage:** $${creditAmount - availableCredits.totalAmount}\n\n`;
+        message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `   **Requested:** $${creditAmount}\n`;
+        message += `   **Available:** $${availableCredits.totalAmount}\n`;
+        message += `   **Shortage:** $${creditAmount - availableCredits.totalAmount}\n\n`;
 
         if (availableCredits.totalAmount > 0) {
           message += `**Available Credits:**\n`;
@@ -718,9 +718,9 @@ class ClarifyingRAGAgent {
 
         if (!invoiceValidation.success) {
           let message = `🔴 **Invoice Issue**\n\n`;
-          message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-          message += `📄 **Invoice:** ${invoiceId}\n`;
-          message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+          message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+          message += `   **Invoice:** ${invoiceId}\n`;
+          message += `   **Error:** ${invoiceValidation.error}\n\n`;
 
           if (invoiceValidation.type === 'invoice_not_found') {
             message += `Invoice ${invoiceId} was not found in the system.`;
@@ -991,10 +991,10 @@ class ClarifyingRAGAgent {
 
     if (result.success) {
       let message = `✅ **Credits Added Successfully!**\n\n`;
-      message += `💰 Added $${result.credit.amount} to ${customer.name}'s account\n`;
-      message += `🆔 Credit ID: ${result.credit.id}\n`;
-      message += `📅 Date: ${new Date().toLocaleDateString()}\n`;
-      message += `📝 Source: Manual addition`;
+      message += `   Added $${result.credit.amount} to ${customer.name}'s account\n`;
+      message += `   Credit ID: ${result.credit.id}\n`;
+      message += `   Date: ${new Date().toLocaleDateString()}\n`;
+      message += `   Source: Manual addition`;
 
       // Format with collapsible details
       message = formatBoldText(message);
@@ -1051,9 +1051,9 @@ class ClarifyingRAGAgent {
     const credits = await retrievalTools.getAvailableCredits(customer.id);
 
     let message = `💳 **Credit Balance for ${customer.name}**\n\n`;
-    message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-    message += `💰 **Total Available Credits:** $${credits.totalAmount}\n`;
-    message += `📊 **Number of Credits:** ${credits.creditCount}\n\n`;
+    message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+    message += `   **Total Available Credits:** $${credits.totalAmount}\n`;
+    message += `   **Number of Credits:** ${credits.creditCount}\n\n`;
 
     if (credits.credits.length > 0) {
       message += `**Credit Details:**\n`;
@@ -1100,10 +1100,10 @@ class ClarifyingRAGAgent {
       // Check if customer has enough credits
       if (availableCredits.totalAmount < creditAmount) {
         let message = `💳 **Insufficient Credits Available**\n\n`;
-        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-        message += `💰 **Requested:** $${creditAmount}\n`;
-        message += `💳 **Available:** $${availableCredits.totalAmount}\n`;
-        message += `❌ **Shortage:** $${creditAmount - availableCredits.totalAmount}\n\n`;
+        message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `   **Requested:** $${creditAmount}\n`;
+        message += `   **Available:** $${availableCredits.totalAmount}\n`;
+        message += `   **Shortage:** $${creditAmount - availableCredits.totalAmount}\n\n`;
 
         if (availableCredits.totalAmount > 0) {
           message += `**Available Credits:**\n`;
@@ -1128,9 +1128,9 @@ class ClarifyingRAGAgent {
 
         if (!invoiceValidation.success) {
           let message = `🔴 **Invoice Issue**\n\n`;
-          message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-          message += `📄 **Invoice:** ${invoiceId}\n`;
-          message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+          message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+          message += `   **Invoice:** ${invoiceId}\n`;
+          message += `   **Error:** ${invoiceValidation.error}\n\n`;
 
           if (invoiceValidation.type === 'invoice_not_found') {
             message += `Invoice ${invoiceId} was not found in the system.`;
@@ -1162,9 +1162,9 @@ class ClarifyingRAGAgent {
         }];
 
         let message = `💳 **Credit Application Plan**\n\n`;
-        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-        message += `💰 **Credits to Apply:** $${creditAmount}\n`;
-        message += `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n`;
+        message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `   **Credits to Apply:** $${creditAmount}\n`;
+        message += `   **Available Credits:** $${availableCredits.totalAmount}\n\n`;
 
         message += `**Application Plan:**\n`;
         message += `1. Invoice ${invoice.id}: $${amountToApply}\n`;
@@ -1191,8 +1191,8 @@ class ClarifyingRAGAgent {
       // Check if customer has pending invoices
       if (pendingInvoices.length === 0) {
         let message = `📋 **No Pending Invoices**\n\n` +
-                     `👤 **Customer:** ${customer.name} (${customer.id})\n` +
-                     `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n` +
+                     `   **Customer:** ${customer.name} (${customer.id})\n` +
+                     `   **Available Credits:** $${availableCredits.totalAmount}\n\n` +
                      `This customer has no pending invoices to apply credits to. All invoices are already paid.`;
 
         // Format with collapsible details like credit balance query
@@ -1210,9 +1210,9 @@ class ClarifyingRAGAgent {
       const applicationPlan = this.calculateCreditApplication(pendingInvoices, creditAmount);
 
       let message = `💳 **Credit Application Plan**\n\n`;
-      message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-      message += `💰 **Credits to Apply:** $${creditAmount}\n`;
-      message += `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n`;
+      message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+      message += `   **Credits to Apply:** $${creditAmount}\n`;
+      message += `   **Available Credits:** $${availableCredits.totalAmount}\n\n`;
 
       message += `**Application Plan:**\n`;
       let totalApplied = 0;
@@ -1224,8 +1224,8 @@ class ClarifyingRAGAgent {
       });
 
       message += `**Summary:**\n`;
-      message += `💰 Total Applied: $${totalApplied}\n`;
-      message += `📋 Invoices Affected: ${applicationPlan.length}\n`;
+      message += `   Total Applied: $${totalApplied}\n`;
+      message += `   Invoices Affected: ${applicationPlan.length}\n`;
 
       // Store the application plan for execution
       this.context.applicationPlan = applicationPlan;
@@ -1328,9 +1328,9 @@ class ClarifyingRAGAgent {
 
       // Generate success message
       let message = `✅ **Credits Applied Successfully!**\n\n`;
-      message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-      message += `💰 **Total Applied:** $${totalApplied}\n`;
-      message += `📋 **Invoices Updated:** ${results.length}\n\n`;
+      message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+      message += `   **Total Applied:** $${totalApplied}\n`;
+      message += `   **Invoices Updated:** ${results.length}\n\n`;
 
       message += `**Application Details:**\n`;
       results.forEach((result, index) => {
@@ -1373,15 +1373,15 @@ class ClarifyingRAGAgent {
     const history = await retrievalTools.getCustomerPaymentHistory(customer.id, 12);
 
     let message = `📊 **Payment History for ${customer.name}**\n\n`;
-    message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-    message += `📅 **Period:** ${history.period}\n`;
-    message += `📋 **Total Invoices:** ${history.totalInvoices}\n`;
-    message += `💰 **Total Invoiced:** $${history.totalInvoiced}\n`;
-    message += `💳 **Total Paid:** $${history.totalPaid}\n`;
-    message += `⏳ **Total Pending:** $${history.totalPending}\n`;
-    message += `📈 **Payment Rate:** ${history.paymentRate}%\n`;
-    message += `📊 **Average Invoice:** $${history.averageInvoiceAmount}\n`;
-    message += `📈 **Trend:** ${history.paymentTrend}`;
+    message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+    message += `   **Period:** ${history.period}\n`;
+    message += `   **Total Invoices:** ${history.totalInvoices}\n`;
+    message += `   **Total Invoiced:** $${history.totalInvoiced}\n`;
+    message += `   **Total Paid:** $${history.totalPaid}\n`;
+    message += `   **Total Pending:** $${history.totalPending}\n`;
+    message += `   **Payment Rate:** ${history.paymentRate}%\n`;
+    message += `   **Average Invoice:** $${history.averageInvoiceAmount}\n`;
+    message += `   **Trend:** ${history.paymentTrend}`;
 
     // Format with collapsible details
     message = formatBoldText(message);
@@ -1479,21 +1479,21 @@ class ClarifyingRAGAgent {
 
       // Format invoice details
       let message = `📄 **Invoice Details for ${invoice.id}**\n\n`;
-      message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
-      message += `📅 **Invoice Date:** ${new Date(invoice.date).toLocaleDateString()}\n`;
-      message += `📅 **Due Date:** ${new Date(invoice.dueDate).toLocaleDateString()}\n`;
-      message += `💰 **Original Amount:** $${invoice.originalAmount.toFixed(2)}\n`;
-      message += `💳 **Current Amount:** $${invoice.currentAmount.toFixed(2)}\n`;
-      message += `🎯 **Credits Applied:** $${invoice.creditsApplied.toFixed(2)}\n`;
-      message += `📊 **Status:** ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}\n`;
-      message += `💳 **Payment Status:** ${invoice.paymentStatus.charAt(0).toUpperCase() + invoice.paymentStatus.slice(1)}\n`;
+      message += `   **Customer:** ${customer.name} (${customer.id})\n`;
+      message += `   **Invoice Date:** ${new Date(invoice.date).toLocaleDateString()}\n`;
+      message += `   **Due Date:** ${new Date(invoice.dueDate).toLocaleDateString()}\n`;
+      message += `   **Original Amount:** $${invoice.originalAmount.toFixed(2)}\n`;
+      message += `   **Current Amount:** $${invoice.currentAmount.toFixed(2)}\n`;
+      message += `   **Credits Applied:** $${invoice.creditsApplied.toFixed(2)}\n`;
+      message += `   **Status:** ${invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}\n`;
+      message += `   **Payment Status:** ${invoice.paymentStatus.charAt(0).toUpperCase() + invoice.paymentStatus.slice(1)}\n`;
 
       if (invoice.paymentDate) {
-        message += `📅 **Payment Date:** ${new Date(invoice.paymentDate).toLocaleDateString()}\n`;
+        message += `   **Payment Date:** ${new Date(invoice.paymentDate).toLocaleDateString()}\n`;
       }
 
-      message += `📝 **Description:** ${invoice.description}\n`;
-      message += `💰 **Customer Available Credits:** $${totalAvailableCredits.toFixed(2)}`;
+      message += `   **Description:** ${invoice.description}\n`;
+      message += `   **Customer Available Credits:** $${totalAvailableCredits.toFixed(2)}`;
 
       // Create detailed object for collapsible section
       const invoiceDetails = {
