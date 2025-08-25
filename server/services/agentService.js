@@ -340,8 +340,9 @@ class ClarifyingRAGAgent {
       const cleanCustomerName = (extractedInfo.customerName === 'null' || extractedInfo.customerName === null) ? null : extractedInfo.customerName;
       const cleanCustomerId = (extractedInfo.customerId === 'null' || extractedInfo.customerId === null) ? null : extractedInfo.customerId;
 
-      if (this.isReadOnlyOperation(extractedInfo.intent) && (cleanCustomerName || cleanCustomerId)) {
-        console.log('🔍 Read-only operation needs customer - finding customer first');
+      // Check if this operation needs customer data (both read-only and write operations)
+      if (this.needsCustomerData(extractedInfo.intent) && (cleanCustomerName || cleanCustomerId)) {
+        console.log('🔍 Operation needs customer - finding customer first');
         const customerName = cleanCustomerName || cleanCustomerId;
         const customers = await retrievalTools.findCustomerByName(customerName);
 
@@ -353,9 +354,9 @@ class ClarifyingRAGAgent {
           };
         }
 
-        // Store customer data and execute
-        this.context.confirmedData = customers;
-        return await this.executeDirectly(extractedInfo);
+        // Store customer data and proceed to ambiguity detection
+        this.context.retrievalResults = customers;
+        return await this.handleRetrievalResults(customers, extractedInfo);
       }
 
       // For read-only operations without customer data, execute directly
@@ -436,6 +437,44 @@ class ClarifyingRAGAgent {
       }
     }
 
+    // Handle retrieval results with ambiguity detection
+    return await this.handleRetrievalResults(retrievalResults, extractedInfo);
+  }
+
+  /**
+   * Check if operation is read-only (doesn't need confirmation)
+   */
+  isReadOnlyOperation(intent) {
+    const readOnlyIntents = [
+      'credit_balance_inquiry',
+      'purchase_history',
+      'invoice_inquiry',
+      'overdue_inquiry',
+      'payment_history_inquiry'
+    ];
+    return readOnlyIntents.includes(intent);
+  }
+
+  /**
+   * Check if operation needs customer data (both read-only and write operations)
+   */
+  needsCustomerData(intent) {
+    const customerDataIntents = [
+      'credit_balance_inquiry',
+      'credit_application',
+      'add_credits',
+      'purchase_history',
+      'invoice_inquiry',
+      'overdue_inquiry',
+      'payment_history_inquiry'
+    ];
+    return customerDataIntents.includes(intent);
+  }
+
+  /**
+   * Handle retrieval results with ambiguity detection
+   */
+  async handleRetrievalResults(retrievalResults, extractedInfo) {
     // Check for ambiguity
     if (this.detectAmbiguity(retrievalResults)) {
       return await this.generateClarificationQuestion(retrievalResults, extractedInfo);
@@ -456,20 +495,6 @@ class ClarifyingRAGAgent {
 
     // For other write operations, proceed to action confirmation
     return await this.prepareActionConfirmation(extractedInfo);
-  }
-
-  /**
-   * Check if operation is read-only (doesn't need confirmation)
-   */
-  isReadOnlyOperation(intent) {
-    const readOnlyIntents = [
-      'credit_balance_inquiry',
-      'purchase_history',
-      'invoice_inquiry',
-      'overdue_inquiry',
-      'payment_history_inquiry'
-    ];
-    return readOnlyIntents.includes(intent);
   }
 
   /**
@@ -730,8 +755,18 @@ class ClarifyingRAGAgent {
    * Parse user's choice from clarification options
    */
   parseUserChoice(userMessage, options) {
-    const message = userMessage.toLowerCase();
-    
+    const message = userMessage.toLowerCase().trim();
+
+    // Try to match by numeric choice (1, 2, 3, etc.)
+    const numericMatch = message.match(/^(\d+)$/);
+    if (numericMatch) {
+      const choiceIndex = parseInt(numericMatch[1]) - 1; // Convert to 0-based index
+      if (choiceIndex >= 0 && choiceIndex < options.length) {
+        console.log(`🔍 Parsed numeric choice: ${numericMatch[1]} -> ${options[choiceIndex].name}`);
+        return options[choiceIndex];
+      }
+    }
+
     // Try to match by name or ID
     return options.find(option => {
       const name = option.name?.toLowerCase() || '';

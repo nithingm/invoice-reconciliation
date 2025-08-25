@@ -1,0 +1,93 @@
+{
+  "summary": {
+    "totalTests": 10,
+    "successCount": 10,
+    "failureCount": 0,
+    "successRate": "100.00%",
+    "avgResponseTime": "3033ms",
+    "totalTestTime": "45s"
+  },
+  "results": [
+    {
+      "message": "What is the credit balance for CUST001?",
+      "success": true,
+      "responseTime": 3030,
+      "expectedIntent": "credit_balance_inquiry",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:03.274Z"
+    },
+    {
+      "message": "Show me the credits for John Smith.",
+      "success": true,
+      "responseTime": 3031,
+      "expectedIntent": "credit_balance_inquiry",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:07.314Z"
+    },
+    {
+      "message": "Apply $100 of credit for CUST001 to invoice INV001.",
+      "success": true,
+      "responseTime": 3032,
+      "expectedIntent": "credit_application",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:11.353Z"
+    },
+    {
+      "message": "Use $50 credit for John.",
+      "success": true,
+      "responseTime": 3033,
+      "expectedIntent": "credit_application",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:15.400Z"
+    },
+    {
+      "message": "Hello",
+      "success": true,
+      "responseTime": 3031,
+      "expectedIntent": "general",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:19.444Z"
+    },
+    {
+      "message": "What services do you offer?",
+      "success": true,
+      "responseTime": 3035,
+      "expectedIntent": "general",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:23.495Z"
+    },
+    {
+      "message": "Check credits for CUST999.",
+      "success": true,
+      "responseTime": 3039,
+      "expectedIntent": "credit_balance_inquiry",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:27.536Z"
+    },
+    {
+      "message": "Apply $5000 credit for CUST001.",
+      "success": true,
+      "responseTime": 3026,
+      "expectedIntent": "credit_application",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:31.572Z"
+    },
+    {
+      "message": "What's my balance?",
+      "success": true,
+      "responseTime": 3039,
+      "expectedIntent": "credit_balance_inquiry",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:35.622Z"
+    },
+    {
+      "message": "Colorless green ideas sleep furiously.",
+      "success": true,
+      "responseTime": 3038,
+      "expectedIntent": "general",
+      "hasCollapsibleDetails": true,
+      "timestamp": "2025-08-25T14:11:39.669Z"
+    }
+  ],
+  "timestamp": "2025-08-25T14:11:40.684Z"
+}

@@ -1,0 +1,1679 @@
+{
+  "summary": {
+    "totalTests": 26,
+    "successCount": 10,
+    "failureCount": 16,
+    "successRate": "38.46%",
+    "avgResponseTime": "674ms",
+    "totalTestTime": "31s",
+    "qualityMetrics": {
+      "excellentResponses": 4,
+      "goodResponses": 5,
+      "collapsibleDetailsCount": 4,
+      "properFormattingCount": 15,
+      "collapsibleDetailsRate": "15.4%",
+      "properFormattingRate": "57.7%"
+    }
+  },
+  "categories": {
+    "Credit Balance - Simple ID": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "What is the credit balance for CUST001?",
+          "expectedIntent": "credit_balance_inquiry",
+          "category": "Credit Balance - Simple ID",
+          "sessionId": "stress-test-0",
+          "success": true,
+          "responseTime": 1734,
+          "actualType": "success",
+          "agentState": "completed",
+          "hasCollapsibleDetails": true,
+          "hasProperFormatting": true,
+          "response": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earne...",
+          "fullResult": {
+            "message": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earned: 14/1/2024 | Expires: 14/12/2025\n   📝 5% cashback on transmission rebuild\n\n2. $20 - promotional\n   📅 Earned: 23/8/2025 | Expires: 23/8/2026\n   📝 Manual credit addition via AI assistant\n\n3. $1000 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n4. $100 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n5. $50 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n6. $250 - damage_compensation\n   📅 Earned: 19/2/2024 | Expires: 19/12/2025\n   📝 Compensation for damaged filter kit\n\n\n---DETAILS---\n{\n  \"customerId\": \"CUST001\",\n  \"totalAmount\": 1620,\n  \"creditCount\": 6,\n  \"credits\": [\n    {\n      \"id\": \"CREDIT001\",\n      \"amount\": 200,\n      \"originalAmount\": 500,\n      \"source\": \"purchase_reward\",\n      \"description\": \"5% cashback on transmission rebuild\",\n      \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756004416555-c8781b5a\",\n      \"amount\": 20,\n      \"originalAmount\": 20,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n      \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129138008-d6c5be00\",\n      \"amount\": 1000,\n      \"originalAmount\": 1000,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n      \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129436140-b9444101\",\n      \"amount\": 100,\n      \"originalAmount\": 100,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n      \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129481288-74b6da89\",\n      \"amount\": 50,\n      \"originalAmount\": 50,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n      \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT002\",\n      \"amount\": 250,\n      \"originalAmount\": 300,\n      \"source\": \"damage_compensation\",\n      \"description\": \"Compensation for damaged filter kit\",\n      \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n      \"status\": \"partially_used\"\n    }\n  ],\n  \"type\": \"credits\"\n}",
+            "type": "success",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": true,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "excellent"
+          },
+          "timestamp": "2025-08-25T14:13:09.682Z"
+        }
+      ]
+    },
+    "Credit Balance - Simple Name": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Show me the credits for John Smith.",
+          "expectedIntent": "credit_balance_inquiry",
+          "category": "Credit Balance - Simple Name",
+          "sessionId": "stress-test-1",
+          "success": true,
+          "responseTime": 963,
+          "actualType": "success",
+          "agentState": "completed",
+          "hasCollapsibleDetails": true,
+          "hasProperFormatting": true,
+          "response": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earne...",
+          "fullResult": {
+            "message": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earned: 14/1/2024 | Expires: 14/12/2025\n   📝 5% cashback on transmission rebuild\n\n2. $20 - promotional\n   📅 Earned: 23/8/2025 | Expires: 23/8/2026\n   📝 Manual credit addition via AI assistant\n\n3. $1000 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n4. $100 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n5. $50 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n6. $250 - damage_compensation\n   📅 Earned: 19/2/2024 | Expires: 19/12/2025\n   📝 Compensation for damaged filter kit\n\n\n---DETAILS---\n{\n  \"customerId\": \"CUST001\",\n  \"totalAmount\": 1620,\n  \"creditCount\": 6,\n  \"credits\": [\n    {\n      \"id\": \"CREDIT001\",\n      \"amount\": 200,\n      \"originalAmount\": 500,\n      \"source\": \"purchase_reward\",\n      \"description\": \"5% cashback on transmission rebuild\",\n      \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756004416555-c8781b5a\",\n      \"amount\": 20,\n      \"originalAmount\": 20,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n      \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129138008-d6c5be00\",\n      \"amount\": 1000,\n      \"originalAmount\": 1000,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n      \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129436140-b9444101\",\n      \"amount\": 100,\n      \"originalAmount\": 100,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n      \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129481288-74b6da89\",\n      \"amount\": 50,\n      \"originalAmount\": 50,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n      \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT002\",\n      \"amount\": 250,\n      \"originalAmount\": 300,\n      \"source\": \"damage_compensation\",\n      \"description\": \"Compensation for damaged filter kit\",\n      \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n      \"status\": \"partially_used\"\n    }\n  ],\n  \"type\": \"credits\"\n}",
+            "type": "success",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": true,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "excellent"
+          },
+          "timestamp": "2025-08-25T14:13:11.160Z"
+        }
+      ]
+    },
+    "Credit Balance - Ambiguous": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "What's the balance for John?",
+          "expectedIntent": "credit_balance_inquiry",
+          "category": "Credit Balance - Ambiguous",
+          "sessionId": "stress-test-2",
+          "success": true,
+          "responseTime": 981,
+          "actualType": "clarification_needed",
+          "agentState": "waiting_for_clarification",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+          "fullResult": {
+            "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+            "type": "clarification_needed",
+            "agentState": "waiting_for_clarification",
+            "options": [
+              {
+                "id": "CUST001",
+                "name": "John Smith",
+                "company": "Smith Auto Repair",
+                "email": "john.smith@email.com",
+                "type": "customer"
+              },
+              {
+                "id": "CUST002",
+                "name": "Sarah Johnson",
+                "company": "Johnson Transmission Services",
+                "email": "sarah.johnson@email.com",
+                "type": "customer"
+              }
+            ]
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "good"
+          },
+          "timestamp": "2025-08-25T14:13:12.644Z"
+        }
+      ]
+    },
+    "Credit Balance - No Customer": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "What's my balance?",
+          "expectedIntent": "credit_balance_inquiry",
+          "category": "Credit Balance - No Customer",
+          "sessionId": "stress-test-3",
+          "success": false,
+          "responseTime": 367,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:13.513Z"
+        }
+      ]
+    },
+    "Credit Balance - Invalid Customer": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Check credits for CUST999.",
+          "expectedIntent": "credit_balance_inquiry",
+          "category": "Credit Balance - Invalid Customer",
+          "sessionId": "stress-test-4",
+          "success": true,
+          "responseTime": 882,
+          "actualType": "error",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "🔴 Customer not found. Please check the customer name or ID....",
+          "fullResult": {
+            "message": "🔴 Customer not found. Please check the customer name or ID.",
+            "type": "error",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": true,
+            "responseQuality": "fair"
+          },
+          "timestamp": "2025-08-25T14:13:14.906Z"
+        }
+      ]
+    },
+    "Credit Application - Simple": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Apply $100 of credit for CUST001 to invoice INV001.",
+          "expectedIntent": "credit_application",
+          "category": "Credit Application - Simple",
+          "sessionId": "stress-test-5",
+          "success": true,
+          "responseTime": 1042,
+          "actualType": "error",
+          "agentState": "completed",
+          "hasCollapsibleDetails": true,
+          "hasProperFormatting": true,
+          "response": "🔴 **Invoice Issue**\n\n👤 **Customer:** John Smith (CUST001)\n📄 **Invoice:** INV001\n❌ **Error:** Invoice INV001 is already paid\n\nInvoice INV001 is already paid.\n---DETAILS---\n{\n  \"success\": false,\n  \"e...",
+          "fullResult": {
+            "message": "🔴 **Invoice Issue**\n\n👤 **Customer:** John Smith (CUST001)\n📄 **Invoice:** INV001\n❌ **Error:** Invoice INV001 is already paid\n\nInvoice INV001 is already paid.\n---DETAILS---\n{\n  \"success\": false,\n  \"error\": \"Invoice INV001 is already paid\",\n  \"type\": \"invoice_already_paid\"\n}",
+            "type": "error",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": true,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "excellent"
+          },
+          "timestamp": "2025-08-25T14:13:16.462Z"
+        }
+      ]
+    },
+    "Credit Application - Smart (No Invoice)": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Use $200 of credit for Lisa Chen.",
+          "expectedIntent": "credit_application",
+          "category": "Credit Application - Smart (No Invoice)",
+          "sessionId": "stress-test-6",
+          "success": true,
+          "responseTime": 1583,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$200** credits for:\n👤 **Lisa Chen** (CUST004)\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm w...",
+          "fullResult": {
+            "message": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$200** credits for:\n👤 **Lisa Chen** (CUST004)\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "good"
+          },
+          "timestamp": "2025-08-25T14:13:18.560Z"
+        }
+      ]
+    },
+    "Credit Application - Ambiguous Customer": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Use $50 credit for John.",
+          "expectedIntent": "credit_application",
+          "category": "Credit Application - Ambiguous Customer",
+          "sessionId": "stress-test-7",
+          "success": true,
+          "responseTime": 562,
+          "actualType": "clarification_needed",
+          "agentState": "waiting_for_clarification",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+          "fullResult": {
+            "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+            "type": "clarification_needed",
+            "agentState": "waiting_for_clarification",
+            "options": [
+              {
+                "id": "CUST001",
+                "name": "John Smith",
+                "company": "Smith Auto Repair",
+                "email": "john.smith@email.com",
+                "type": "customer"
+              },
+              {
+                "id": "CUST002",
+                "name": "Sarah Johnson",
+                "company": "Johnson Transmission Services",
+                "email": "sarah.johnson@email.com",
+                "type": "customer"
+              }
+            ]
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "good"
+          },
+          "timestamp": "2025-08-25T14:13:19.630Z"
+        }
+      ]
+    },
+    "Credit Application - Insufficient Credits": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Apply $5000 credit for CUST001.",
+          "expectedIntent": "credit_application",
+          "category": "Credit Application - Insufficient Credits",
+          "sessionId": "stress-test-8",
+          "success": true,
+          "responseTime": 987,
+          "actualType": "insufficient_credits",
+          "agentState": "completed",
+          "hasCollapsibleDetails": true,
+          "hasProperFormatting": true,
+          "response": "💳 **Insufficient Credits Available**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Requested:** $5000\n💳 **Available:** $1620\n❌ **Shortage:** $3380\n\n**Available Credits:**\n1. $200 - purchase_reward\n2. ...",
+          "fullResult": {
+            "message": "💳 **Insufficient Credits Available**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Requested:** $5000\n💳 **Available:** $1620\n❌ **Shortage:** $3380\n\n**Available Credits:**\n1. $200 - purchase_reward\n2. $20 - promotional\n3. $1000 - promotional\n4. $100 - promotional\n5. $50 - promotional\n6. $250 - damage_compensation\n\nWould you like to apply all available credits ($1620) instead?\n---DETAILS---\n{\n  \"availableCredits\": {\n    \"customerId\": \"CUST001\",\n    \"totalAmount\": 1620,\n    \"creditCount\": 6,\n    \"credits\": [\n      {\n        \"id\": \"CREDIT001\",\n        \"amount\": 200,\n        \"originalAmount\": 500,\n        \"source\": \"purchase_reward\",\n        \"description\": \"5% cashback on transmission rebuild\",\n        \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n        \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756004416555-c8781b5a\",\n        \"amount\": 20,\n        \"originalAmount\": 20,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n        \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129138008-d6c5be00\",\n        \"amount\": 1000,\n        \"originalAmount\": 1000,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n        \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129436140-b9444101\",\n        \"amount\": 100,\n        \"originalAmount\": 100,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n        \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129481288-74b6da89\",\n        \"amount\": 50,\n        \"originalAmount\": 50,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n        \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT002\",\n        \"amount\": 250,\n        \"originalAmount\": 300,\n        \"source\": \"damage_compensation\",\n        \"description\": \"Compensation for damaged filter kit\",\n        \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n        \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n        \"status\": \"partially_used\"\n      }\n    ],\n    \"type\": \"credits\"\n  },\n  \"requestedAmount\": 5000\n}",
+            "type": "insufficient_credits",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": true,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "excellent"
+          },
+          "timestamp": "2025-08-25T14:13:21.119Z"
+        }
+      ]
+    },
+    "Credit Application - Exceeds Balance": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Apply $500 credit to invoice INV005.",
+          "expectedIntent": "credit_application",
+          "category": "Credit Application - Exceeds Balance",
+          "sessionId": "stress-test-9",
+          "success": true,
+          "responseTime": 1289,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$500** credits for:\n👤 **Unknown Customer** (Unknown ID)\n📄 **Invoice:** INV005\n\nI'll find the best way to apply these credits to pe...",
+          "fullResult": {
+            "message": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$500** credits for:\n👤 **Unknown Customer** (Unknown ID)\n📄 **Invoice:** INV005\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": true,
+            "responseQuality": "good"
+          },
+          "timestamp": "2025-08-25T14:13:22.917Z"
+        }
+      ]
+    },
+    "Invoice Inquiry - Simple": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Show me the details for invoice INV002.",
+          "expectedIntent": "invoice_inquiry",
+          "category": "Invoice Inquiry - Simple",
+          "sessionId": "stress-test-10",
+          "success": false,
+          "responseTime": 1132,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:24.553Z"
+        }
+      ]
+    },
+    "Invoice Inquiry - Different Phrasing": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "What's the status of INV003?",
+          "expectedIntent": "invoice_inquiry",
+          "category": "Invoice Inquiry - Different Phrasing",
+          "sessionId": "stress-test-11",
+          "success": false,
+          "responseTime": 978,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:26.042Z"
+        }
+      ]
+    },
+    "Invoice Inquiry - Invalid Invoice": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Pull up invoice INV999.",
+          "expectedIntent": "invoice_inquiry",
+          "category": "Invoice Inquiry - Invalid Invoice",
+          "sessionId": "stress-test-12",
+          "success": false,
+          "responseTime": 843,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:27.392Z"
+        }
+      ]
+    },
+    "Purchase History - Simple": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Show me the purchase history for Sarah Johnson.",
+          "expectedIntent": "purchase_history",
+          "category": "Purchase History - Simple",
+          "sessionId": "stress-test-13",
+          "success": false,
+          "responseTime": 1051,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'purchase_history' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'purchase_history' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:28.946Z"
+        }
+      ]
+    },
+    "Purchase History - By ID": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "What has CUST005 bought?",
+          "expectedIntent": "purchase_history",
+          "category": "Purchase History - By ID",
+          "sessionId": "stress-test-14",
+          "success": false,
+          "responseTime": 990,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'purchase_history' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'purchase_history' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:30.448Z"
+        }
+      ]
+    },
+    "Purchase History - Ambiguous": {
+      "total": 1,
+      "success": 1,
+      "results": [
+        {
+          "message": "Show me the history for John.",
+          "expectedIntent": "purchase_history",
+          "category": "Purchase History - Ambiguous",
+          "sessionId": "stress-test-15",
+          "success": true,
+          "responseTime": 1036,
+          "actualType": "clarification_needed",
+          "agentState": "waiting_for_clarification",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+          "fullResult": {
+            "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+            "type": "clarification_needed",
+            "agentState": "waiting_for_clarification",
+            "options": [
+              {
+                "id": "CUST001",
+                "name": "John Smith",
+                "company": "Smith Auto Repair",
+                "email": "john.smith@email.com",
+                "type": "customer"
+              },
+              {
+                "id": "CUST002",
+                "name": "Sarah Johnson",
+                "company": "Johnson Transmission Services",
+                "email": "sarah.johnson@email.com",
+                "type": "customer"
+              }
+            ]
+          },
+          "analysis": {
+            "success": true,
+            "status": "✅",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "good"
+          },
+          "timestamp": "2025-08-25T14:13:31.990Z"
+        }
+      ]
+    },
+    "Quantity Discrepancy - Simple": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "We were short 5 units of the 'Standard Rebuild Kit' on invoice INV001.",
+          "expectedIntent": "quantity_discrepancy",
+          "category": "Quantity Discrepancy - Simple",
+          "sessionId": "stress-test-16",
+          "success": false,
+          "responseTime": 124,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:32.625Z"
+        }
+      ]
+    },
+    "Quantity Discrepancy - Vague Item": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "We were missing 10 items on invoice INV003.",
+          "expectedIntent": "quantity_discrepancy",
+          "category": "Quantity Discrepancy - Vague Item",
+          "sessionId": "stress-test-17",
+          "success": false,
+          "responseTime": 126,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:33.265Z"
+        }
+      ]
+    },
+    "Quantity Discrepancy - Vague Invoice": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "We had a quantity discrepancy for CUST001.",
+          "expectedIntent": "quantity_discrepancy",
+          "category": "Quantity Discrepancy - Vague Invoice",
+          "sessionId": "stress-test-18",
+          "success": false,
+          "responseTime": 97,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:33.877Z"
+        }
+      ]
+    },
+    "Damage Report - Simple": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "The 'Torque Converter' on invoice INV002 arrived damaged.",
+          "expectedIntent": "damage_report",
+          "category": "Damage Report - Simple",
+          "sessionId": "stress-test-19",
+          "success": false,
+          "responseTime": 105,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:34.494Z"
+        }
+      ]
+    },
+    "Damage Report - Vague": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Something was broken in our last shipment for CUST004.",
+          "expectedIntent": "damage_report",
+          "category": "Damage Report - Vague",
+          "sessionId": "stress-test-20",
+          "success": false,
+          "responseTime": 115,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:35.110Z"
+        }
+      ]
+    },
+    "Partial Payment - Simple": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "We made a partial payment of $4000 on invoice INV003 for Mike Wilson.",
+          "expectedIntent": "partial_payment",
+          "category": "Partial Payment - Simple",
+          "sessionId": "stress-test-21",
+          "success": false,
+          "responseTime": 111,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:35.732Z"
+        }
+      ]
+    },
+    "Partial Payment - Exceeds Balance": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "I paid $6000 for invoice INV005.",
+          "expectedIntent": "partial_payment",
+          "category": "Partial Payment - Exceeds Balance",
+          "sessionId": "stress-test-22",
+          "success": false,
+          "responseTime": 111,
+          "actualType": "info",
+          "agentState": "completed",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": false,
+          "response": "Action type 'invoice_inquiry' is not yet implemented....",
+          "fullResult": {
+            "message": "Action type 'invoice_inquiry' is not yet implemented.",
+            "type": "info",
+            "agentState": "completed"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": false,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:36.345Z"
+        }
+      ]
+    },
+    "General - Greeting": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Hello",
+          "expectedIntent": "general",
+          "category": "General - Greeting",
+          "sessionId": "stress-test-23",
+          "success": false,
+          "responseTime": 103,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:36.959Z"
+        }
+      ]
+    },
+    "General - Question": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "What services do you offer?",
+          "expectedIntent": "general",
+          "category": "General - Question",
+          "sessionId": "stress-test-24",
+          "success": false,
+          "responseTime": 106,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:37.573Z"
+        }
+      ]
+    },
+    "General - Nonsense": {
+      "total": 1,
+      "success": 0,
+      "results": [
+        {
+          "message": "Colorless green ideas sleep furiously.",
+          "expectedIntent": "general",
+          "category": "General - Nonsense",
+          "sessionId": "stress-test-25",
+          "success": false,
+          "responseTime": 103,
+          "actualType": "confirmation_needed",
+          "agentState": "waiting_for_confirmation",
+          "hasCollapsibleDetails": false,
+          "hasProperFormatting": true,
+          "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+          "fullResult": {
+            "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+            "type": "confirmation_needed",
+            "agentState": "waiting_for_confirmation"
+          },
+          "analysis": {
+            "success": false,
+            "status": "❌",
+            "hasCollapsibleDetails": false,
+            "hasProperFormatting": true,
+            "intentMatch": false,
+            "responseQuality": "poor"
+          },
+          "timestamp": "2025-08-25T14:13:38.180Z"
+        }
+      ]
+    }
+  },
+  "results": [
+    {
+      "message": "What is the credit balance for CUST001?",
+      "expectedIntent": "credit_balance_inquiry",
+      "category": "Credit Balance - Simple ID",
+      "sessionId": "stress-test-0",
+      "success": true,
+      "responseTime": 1734,
+      "actualType": "success",
+      "agentState": "completed",
+      "hasCollapsibleDetails": true,
+      "hasProperFormatting": true,
+      "response": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earne...",
+      "fullResult": {
+        "message": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earned: 14/1/2024 | Expires: 14/12/2025\n   📝 5% cashback on transmission rebuild\n\n2. $20 - promotional\n   📅 Earned: 23/8/2025 | Expires: 23/8/2026\n   📝 Manual credit addition via AI assistant\n\n3. $1000 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n4. $100 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n5. $50 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n6. $250 - damage_compensation\n   📅 Earned: 19/2/2024 | Expires: 19/12/2025\n   📝 Compensation for damaged filter kit\n\n\n---DETAILS---\n{\n  \"customerId\": \"CUST001\",\n  \"totalAmount\": 1620,\n  \"creditCount\": 6,\n  \"credits\": [\n    {\n      \"id\": \"CREDIT001\",\n      \"amount\": 200,\n      \"originalAmount\": 500,\n      \"source\": \"purchase_reward\",\n      \"description\": \"5% cashback on transmission rebuild\",\n      \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756004416555-c8781b5a\",\n      \"amount\": 20,\n      \"originalAmount\": 20,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n      \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129138008-d6c5be00\",\n      \"amount\": 1000,\n      \"originalAmount\": 1000,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n      \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129436140-b9444101\",\n      \"amount\": 100,\n      \"originalAmount\": 100,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n      \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129481288-74b6da89\",\n      \"amount\": 50,\n      \"originalAmount\": 50,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n      \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT002\",\n      \"amount\": 250,\n      \"originalAmount\": 300,\n      \"source\": \"damage_compensation\",\n      \"description\": \"Compensation for damaged filter kit\",\n      \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n      \"status\": \"partially_used\"\n    }\n  ],\n  \"type\": \"credits\"\n}",
+        "type": "success",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": true,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "excellent"
+      },
+      "timestamp": "2025-08-25T14:13:09.682Z"
+    },
+    {
+      "message": "Show me the credits for John Smith.",
+      "expectedIntent": "credit_balance_inquiry",
+      "category": "Credit Balance - Simple Name",
+      "sessionId": "stress-test-1",
+      "success": true,
+      "responseTime": 963,
+      "actualType": "success",
+      "agentState": "completed",
+      "hasCollapsibleDetails": true,
+      "hasProperFormatting": true,
+      "response": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earne...",
+      "fullResult": {
+        "message": "💳 **Credit Balance for John Smith**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Total Available Credits:** $1620\n📊 **Number of Credits:** 6\n\n**Credit Details:**\n1. $200 - purchase_reward\n   📅 Earned: 14/1/2024 | Expires: 14/12/2025\n   📝 5% cashback on transmission rebuild\n\n2. $20 - promotional\n   📅 Earned: 23/8/2025 | Expires: 23/8/2026\n   📝 Manual credit addition via AI assistant\n\n3. $1000 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n4. $100 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n5. $50 - promotional\n   📅 Earned: 25/8/2025 | Expires: 25/8/2026\n   📝 Manual credit addition via AI assistant\n\n6. $250 - damage_compensation\n   📅 Earned: 19/2/2024 | Expires: 19/12/2025\n   📝 Compensation for damaged filter kit\n\n\n---DETAILS---\n{\n  \"customerId\": \"CUST001\",\n  \"totalAmount\": 1620,\n  \"creditCount\": 6,\n  \"credits\": [\n    {\n      \"id\": \"CREDIT001\",\n      \"amount\": 200,\n      \"originalAmount\": 500,\n      \"source\": \"purchase_reward\",\n      \"description\": \"5% cashback on transmission rebuild\",\n      \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756004416555-c8781b5a\",\n      \"amount\": 20,\n      \"originalAmount\": 20,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n      \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129138008-d6c5be00\",\n      \"amount\": 1000,\n      \"originalAmount\": 1000,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n      \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129436140-b9444101\",\n      \"amount\": 100,\n      \"originalAmount\": 100,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n      \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT-1756129481288-74b6da89\",\n      \"amount\": 50,\n      \"originalAmount\": 50,\n      \"source\": \"promotional\",\n      \"description\": \"Manual credit addition via AI assistant\",\n      \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n      \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n      \"status\": \"active\"\n    },\n    {\n      \"id\": \"CREDIT002\",\n      \"amount\": 250,\n      \"originalAmount\": 300,\n      \"source\": \"damage_compensation\",\n      \"description\": \"Compensation for damaged filter kit\",\n      \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n      \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n      \"status\": \"partially_used\"\n    }\n  ],\n  \"type\": \"credits\"\n}",
+        "type": "success",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": true,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "excellent"
+      },
+      "timestamp": "2025-08-25T14:13:11.160Z"
+    },
+    {
+      "message": "What's the balance for John?",
+      "expectedIntent": "credit_balance_inquiry",
+      "category": "Credit Balance - Ambiguous",
+      "sessionId": "stress-test-2",
+      "success": true,
+      "responseTime": 981,
+      "actualType": "clarification_needed",
+      "agentState": "waiting_for_clarification",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+      "fullResult": {
+        "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+        "type": "clarification_needed",
+        "agentState": "waiting_for_clarification",
+        "options": [
+          {
+            "id": "CUST001",
+            "name": "John Smith",
+            "company": "Smith Auto Repair",
+            "email": "john.smith@email.com",
+            "type": "customer"
+          },
+          {
+            "id": "CUST002",
+            "name": "Sarah Johnson",
+            "company": "Johnson Transmission Services",
+            "email": "sarah.johnson@email.com",
+            "type": "customer"
+          }
+        ]
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "good"
+      },
+      "timestamp": "2025-08-25T14:13:12.644Z"
+    },
+    {
+      "message": "What's my balance?",
+      "expectedIntent": "credit_balance_inquiry",
+      "category": "Credit Balance - No Customer",
+      "sessionId": "stress-test-3",
+      "success": false,
+      "responseTime": 367,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:13.513Z"
+    },
+    {
+      "message": "Check credits for CUST999.",
+      "expectedIntent": "credit_balance_inquiry",
+      "category": "Credit Balance - Invalid Customer",
+      "sessionId": "stress-test-4",
+      "success": true,
+      "responseTime": 882,
+      "actualType": "error",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "🔴 Customer not found. Please check the customer name or ID....",
+      "fullResult": {
+        "message": "🔴 Customer not found. Please check the customer name or ID.",
+        "type": "error",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": true,
+        "responseQuality": "fair"
+      },
+      "timestamp": "2025-08-25T14:13:14.906Z"
+    },
+    {
+      "message": "Apply $100 of credit for CUST001 to invoice INV001.",
+      "expectedIntent": "credit_application",
+      "category": "Credit Application - Simple",
+      "sessionId": "stress-test-5",
+      "success": true,
+      "responseTime": 1042,
+      "actualType": "error",
+      "agentState": "completed",
+      "hasCollapsibleDetails": true,
+      "hasProperFormatting": true,
+      "response": "🔴 **Invoice Issue**\n\n👤 **Customer:** John Smith (CUST001)\n📄 **Invoice:** INV001\n❌ **Error:** Invoice INV001 is already paid\n\nInvoice INV001 is already paid.\n---DETAILS---\n{\n  \"success\": false,\n  \"e...",
+      "fullResult": {
+        "message": "🔴 **Invoice Issue**\n\n👤 **Customer:** John Smith (CUST001)\n📄 **Invoice:** INV001\n❌ **Error:** Invoice INV001 is already paid\n\nInvoice INV001 is already paid.\n---DETAILS---\n{\n  \"success\": false,\n  \"error\": \"Invoice INV001 is already paid\",\n  \"type\": \"invoice_already_paid\"\n}",
+        "type": "error",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": true,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "excellent"
+      },
+      "timestamp": "2025-08-25T14:13:16.462Z"
+    },
+    {
+      "message": "Use $200 of credit for Lisa Chen.",
+      "expectedIntent": "credit_application",
+      "category": "Credit Application - Smart (No Invoice)",
+      "sessionId": "stress-test-6",
+      "success": true,
+      "responseTime": 1583,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$200** credits for:\n👤 **Lisa Chen** (CUST004)\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm w...",
+      "fullResult": {
+        "message": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$200** credits for:\n👤 **Lisa Chen** (CUST004)\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "good"
+      },
+      "timestamp": "2025-08-25T14:13:18.560Z"
+    },
+    {
+      "message": "Use $50 credit for John.",
+      "expectedIntent": "credit_application",
+      "category": "Credit Application - Ambiguous Customer",
+      "sessionId": "stress-test-7",
+      "success": true,
+      "responseTime": 562,
+      "actualType": "clarification_needed",
+      "agentState": "waiting_for_clarification",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+      "fullResult": {
+        "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+        "type": "clarification_needed",
+        "agentState": "waiting_for_clarification",
+        "options": [
+          {
+            "id": "CUST001",
+            "name": "John Smith",
+            "company": "Smith Auto Repair",
+            "email": "john.smith@email.com",
+            "type": "customer"
+          },
+          {
+            "id": "CUST002",
+            "name": "Sarah Johnson",
+            "company": "Johnson Transmission Services",
+            "email": "sarah.johnson@email.com",
+            "type": "customer"
+          }
+        ]
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "good"
+      },
+      "timestamp": "2025-08-25T14:13:19.630Z"
+    },
+    {
+      "message": "Apply $5000 credit for CUST001.",
+      "expectedIntent": "credit_application",
+      "category": "Credit Application - Insufficient Credits",
+      "sessionId": "stress-test-8",
+      "success": true,
+      "responseTime": 987,
+      "actualType": "insufficient_credits",
+      "agentState": "completed",
+      "hasCollapsibleDetails": true,
+      "hasProperFormatting": true,
+      "response": "💳 **Insufficient Credits Available**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Requested:** $5000\n💳 **Available:** $1620\n❌ **Shortage:** $3380\n\n**Available Credits:**\n1. $200 - purchase_reward\n2. ...",
+      "fullResult": {
+        "message": "💳 **Insufficient Credits Available**\n\n👤 **Customer:** John Smith (CUST001)\n💰 **Requested:** $5000\n💳 **Available:** $1620\n❌ **Shortage:** $3380\n\n**Available Credits:**\n1. $200 - purchase_reward\n2. $20 - promotional\n3. $1000 - promotional\n4. $100 - promotional\n5. $50 - promotional\n6. $250 - damage_compensation\n\nWould you like to apply all available credits ($1620) instead?\n---DETAILS---\n{\n  \"availableCredits\": {\n    \"customerId\": \"CUST001\",\n    \"totalAmount\": 1620,\n    \"creditCount\": 6,\n    \"credits\": [\n      {\n        \"id\": \"CREDIT001\",\n        \"amount\": 200,\n        \"originalAmount\": 500,\n        \"source\": \"purchase_reward\",\n        \"description\": \"5% cashback on transmission rebuild\",\n        \"earnedDate\": \"2024-01-15T00:00:00.000Z\",\n        \"expiryDate\": \"2025-12-15T00:00:00.000Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756004416555-c8781b5a\",\n        \"amount\": 20,\n        \"originalAmount\": 20,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-24T03:00:16.555Z\",\n        \"expiryDate\": \"2026-08-24T03:00:16.555Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129138008-d6c5be00\",\n        \"amount\": 1000,\n        \"originalAmount\": 1000,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:38:58.009Z\",\n        \"expiryDate\": \"2026-08-25T13:38:58.009Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129436140-b9444101\",\n        \"amount\": 100,\n        \"originalAmount\": 100,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:43:56.141Z\",\n        \"expiryDate\": \"2026-08-25T13:43:56.141Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT-1756129481288-74b6da89\",\n        \"amount\": 50,\n        \"originalAmount\": 50,\n        \"source\": \"promotional\",\n        \"description\": \"Manual credit addition via AI assistant\",\n        \"earnedDate\": \"2025-08-25T13:44:41.288Z\",\n        \"expiryDate\": \"2026-08-25T13:44:41.288Z\",\n        \"status\": \"active\"\n      },\n      {\n        \"id\": \"CREDIT002\",\n        \"amount\": 250,\n        \"originalAmount\": 300,\n        \"source\": \"damage_compensation\",\n        \"description\": \"Compensation for damaged filter kit\",\n        \"earnedDate\": \"2024-02-20T00:00:00.000Z\",\n        \"expiryDate\": \"2025-12-20T00:00:00.000Z\",\n        \"status\": \"partially_used\"\n      }\n    ],\n    \"type\": \"credits\"\n  },\n  \"requestedAmount\": 5000\n}",
+        "type": "insufficient_credits",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": true,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "excellent"
+      },
+      "timestamp": "2025-08-25T14:13:21.119Z"
+    },
+    {
+      "message": "Apply $500 credit to invoice INV005.",
+      "expectedIntent": "credit_application",
+      "category": "Credit Application - Exceeds Balance",
+      "sessionId": "stress-test-9",
+      "success": true,
+      "responseTime": 1289,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$500** credits for:\n👤 **Unknown Customer** (Unknown ID)\n📄 **Invoice:** INV005\n\nI'll find the best way to apply these credits to pe...",
+      "fullResult": {
+        "message": "💳 **Apply Credits Confirmation**\n\nI understand you want to apply **$500** credits for:\n👤 **Unknown Customer** (Unknown ID)\n📄 **Invoice:** INV005\n\nI'll find the best way to apply these credits to pending invoices.\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": true,
+        "responseQuality": "good"
+      },
+      "timestamp": "2025-08-25T14:13:22.917Z"
+    },
+    {
+      "message": "Show me the details for invoice INV002.",
+      "expectedIntent": "invoice_inquiry",
+      "category": "Invoice Inquiry - Simple",
+      "sessionId": "stress-test-10",
+      "success": false,
+      "responseTime": 1132,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:24.553Z"
+    },
+    {
+      "message": "What's the status of INV003?",
+      "expectedIntent": "invoice_inquiry",
+      "category": "Invoice Inquiry - Different Phrasing",
+      "sessionId": "stress-test-11",
+      "success": false,
+      "responseTime": 978,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:26.042Z"
+    },
+    {
+      "message": "Pull up invoice INV999.",
+      "expectedIntent": "invoice_inquiry",
+      "category": "Invoice Inquiry - Invalid Invoice",
+      "sessionId": "stress-test-12",
+      "success": false,
+      "responseTime": 843,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:27.392Z"
+    },
+    {
+      "message": "Show me the purchase history for Sarah Johnson.",
+      "expectedIntent": "purchase_history",
+      "category": "Purchase History - Simple",
+      "sessionId": "stress-test-13",
+      "success": false,
+      "responseTime": 1051,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'purchase_history' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'purchase_history' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:28.946Z"
+    },
+    {
+      "message": "What has CUST005 bought?",
+      "expectedIntent": "purchase_history",
+      "category": "Purchase History - By ID",
+      "sessionId": "stress-test-14",
+      "success": false,
+      "responseTime": 990,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'purchase_history' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'purchase_history' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:30.448Z"
+    },
+    {
+      "message": "Show me the history for John.",
+      "expectedIntent": "purchase_history",
+      "category": "Purchase History - Ambiguous",
+      "sessionId": "stress-test-15",
+      "success": true,
+      "responseTime": 1036,
+      "actualType": "clarification_needed",
+      "agentState": "waiting_for_clarification",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me ...",
+      "fullResult": {
+        "message": "🔍 I found 2 customers matching \"John\". Which one did you mean?\n\n1. **John Smith** (Smith Auto Repair) - ID: CUST001\n2. **Sarah Johnson** (Johnson Transmission Services) - ID: CUST002\n\nPlease tell me the name or ID of the correct customer.",
+        "type": "clarification_needed",
+        "agentState": "waiting_for_clarification",
+        "options": [
+          {
+            "id": "CUST001",
+            "name": "John Smith",
+            "company": "Smith Auto Repair",
+            "email": "john.smith@email.com",
+            "type": "customer"
+          },
+          {
+            "id": "CUST002",
+            "name": "Sarah Johnson",
+            "company": "Johnson Transmission Services",
+            "email": "sarah.johnson@email.com",
+            "type": "customer"
+          }
+        ]
+      },
+      "analysis": {
+        "success": true,
+        "status": "✅",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "good"
+      },
+      "timestamp": "2025-08-25T14:13:31.990Z"
+    },
+    {
+      "message": "We were short 5 units of the 'Standard Rebuild Kit' on invoice INV001.",
+      "expectedIntent": "quantity_discrepancy",
+      "category": "Quantity Discrepancy - Simple",
+      "sessionId": "stress-test-16",
+      "success": false,
+      "responseTime": 124,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:32.625Z"
+    },
+    {
+      "message": "We were missing 10 items on invoice INV003.",
+      "expectedIntent": "quantity_discrepancy",
+      "category": "Quantity Discrepancy - Vague Item",
+      "sessionId": "stress-test-17",
+      "success": false,
+      "responseTime": 126,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:33.265Z"
+    },
+    {
+      "message": "We had a quantity discrepancy for CUST001.",
+      "expectedIntent": "quantity_discrepancy",
+      "category": "Quantity Discrepancy - Vague Invoice",
+      "sessionId": "stress-test-18",
+      "success": false,
+      "responseTime": 97,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:33.877Z"
+    },
+    {
+      "message": "The 'Torque Converter' on invoice INV002 arrived damaged.",
+      "expectedIntent": "damage_report",
+      "category": "Damage Report - Simple",
+      "sessionId": "stress-test-19",
+      "success": false,
+      "responseTime": 105,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:34.494Z"
+    },
+    {
+      "message": "Something was broken in our last shipment for CUST004.",
+      "expectedIntent": "damage_report",
+      "category": "Damage Report - Vague",
+      "sessionId": "stress-test-20",
+      "success": false,
+      "responseTime": 115,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:35.110Z"
+    },
+    {
+      "message": "We made a partial payment of $4000 on invoice INV003 for Mike Wilson.",
+      "expectedIntent": "partial_payment",
+      "category": "Partial Payment - Simple",
+      "sessionId": "stress-test-21",
+      "success": false,
+      "responseTime": 111,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:35.732Z"
+    },
+    {
+      "message": "I paid $6000 for invoice INV005.",
+      "expectedIntent": "partial_payment",
+      "category": "Partial Payment - Exceeds Balance",
+      "sessionId": "stress-test-22",
+      "success": false,
+      "responseTime": 111,
+      "actualType": "info",
+      "agentState": "completed",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": false,
+      "response": "Action type 'invoice_inquiry' is not yet implemented....",
+      "fullResult": {
+        "message": "Action type 'invoice_inquiry' is not yet implemented.",
+        "type": "info",
+        "agentState": "completed"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": false,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:36.345Z"
+    },
+    {
+      "message": "Hello",
+      "expectedIntent": "general",
+      "category": "General - Greeting",
+      "sessionId": "stress-test-23",
+      "success": false,
+      "responseTime": 103,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:36.959Z"
+    },
+    {
+      "message": "What services do you offer?",
+      "expectedIntent": "general",
+      "category": "General - Question",
+      "sessionId": "stress-test-24",
+      "success": false,
+      "responseTime": 106,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:37.573Z"
+    },
+    {
+      "message": "Colorless green ideas sleep furiously.",
+      "expectedIntent": "general",
+      "category": "General - Nonsense",
+      "sessionId": "stress-test-25",
+      "success": false,
+      "responseTime": 103,
+      "actualType": "confirmation_needed",
+      "agentState": "waiting_for_confirmation",
+      "hasCollapsibleDetails": false,
+      "hasProperFormatting": true,
+      "response": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel....",
+      "fullResult": {
+        "message": "✅ **Confirmation Required**\n\nI'm ready to process your request (general).\n\nPlease confirm with \"yes\" to proceed or \"no\" to cancel.",
+        "type": "confirmation_needed",
+        "agentState": "waiting_for_confirmation"
+      },
+      "analysis": {
+        "success": false,
+        "status": "❌",
+        "hasCollapsibleDetails": false,
+        "hasProperFormatting": true,
+        "intentMatch": false,
+        "responseQuality": "poor"
+      },
+      "timestamp": "2025-08-25T14:13:38.180Z"
+    }
+  ],
+  "timestamp": "2025-08-25T14:13:38.684Z"
+}
