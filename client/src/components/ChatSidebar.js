@@ -178,12 +178,60 @@ const ChatSidebar = ({ isOpen, onClose }) => {
   };
 
   const formatMessageText = (text) => {
-    return text.split('\n').map((line, index) => (
+    // Split text into sections: main content and details
+    const sections = text.split('---DETAILS---');
+    const mainContent = sections[0];
+    const detailsContent = sections[1];
+
+    const formatLine = (line) => {
+      // Handle **bold** markdown
+      const parts = line.split(/(\*\*.*?\*\*)/g);
+      return parts.map((part, partIndex) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          const boldText = part.slice(2, -2);
+          return <strong key={partIndex}>{boldText}</strong>;
+        }
+        return part;
+      });
+    };
+
+    const mainLines = mainContent.split('\n').map((line, index) => (
       <React.Fragment key={index}>
-        {line}
-        {index < text.split('\n').length - 1 && <br />}
+        {formatLine(line)}
+        {index < mainContent.split('\n').length - 1 && <br />}
       </React.Fragment>
     ));
+
+    return (
+      <div>
+        {mainLines}
+        {detailsContent && <CollapsibleDetails content={detailsContent.trim()} />}
+      </div>
+    );
+  };
+
+  // Collapsible Details Component
+  const CollapsibleDetails = ({ content }) => {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+
+    return (
+      <div className="mt-3 border-t pt-3">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center space-x-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <span>{isExpanded ? '▼' : '▶'}</span>
+          <span className="font-medium">📋 Technical Details</span>
+        </button>
+        {isExpanded && (
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg border">
+            <pre className="text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
+              {content}
+            </pre>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -267,14 +315,7 @@ const ChatSidebar = ({ isOpen, onClose }) => {
                 </div>
               )}
 
-              {message.details && (
-                <div className="mt-2 p-2 bg-gray-50 rounded text-xs">
-                  <strong>Details:</strong>
-                  <pre className="mt-1 whitespace-pre-wrap">
-                    {JSON.stringify(message.details, null, 2)}
-                  </pre>
-                </div>
-              )}
+
               <div className="text-xs opacity-70 mt-1">
                 {message.timestamp.toLocaleTimeString()}
               </div>

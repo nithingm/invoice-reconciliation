@@ -162,17 +162,25 @@ function generateAddCreditsConfirmation(extractedInfo, confirmedData) {
  * Generate credit application confirmation
  */
 function generateCreditApplicationConfirmation(extractedInfo, confirmedData) {
-  const { creditAmount } = extractedInfo;
+  const { creditAmount, customerName, customerId, invoiceId } = extractedInfo;
   const customer = Array.isArray(confirmedData) ? confirmedData[0] : confirmedData;
 
-  const displayName = customer?.name || 'Unknown Customer';
-  const displayId = customer?.id || 'Unknown ID';
+  const displayName = customer?.name || customerName || 'Unknown Customer';
+  const displayId = customer?.id || customerId || 'Unknown ID';
+  const amount = creditAmount || 'unknown amount';
 
-  return `💳 **Apply Credits Confirmation**\n\n` +
-         `I understand you want to apply **$${creditAmount}** credits for:\n` +
-         `👤 **${displayName}** (${displayId})\n\n` +
-         `I'll find the best way to apply these credits to pending invoices.\n\n` +
-         `Please confirm with "yes" to proceed or "no" to cancel.`;
+  let message = `💳 **Apply Credits Confirmation**\n\n`;
+  message += `I understand you want to apply **$${amount}** credits for:\n`;
+  message += `👤 **${displayName}** (${displayId})\n`;
+
+  if (invoiceId) {
+    message += `📄 **Invoice:** ${invoiceId}\n`;
+  }
+
+  message += `\nI'll find the best way to apply these credits to pending invoices.\n\n`;
+  message += `Please confirm with "yes" to proceed or "no" to cancel.`;
+
+  return message;
 }
 
 /**

@@ -22,15 +22,17 @@ Your task is to extract the following information from the message:
 
 INTENT CLASSIFICATION:
 - add_credits: Customer wants to add/give NEW credits to a customer account (keywords: add, give, create, grant + credits + customer name)
-- credit_application: Customer wants to apply/use EXISTING credits to pay invoices (keywords: apply, use + credits + customer name, NO specific invoice mentioned)
+- credit_application: Customer wants to apply/use EXISTING credits to pay invoices (keywords: apply, use + credits + customer name OR customer ID)
 - credit_balance_inquiry: Customer wants to check/show/view available credit balance (keywords: show, check, balance, available, how much, what credits, view + credits)
 - purchase_history: Customer wants to see their purchase history (keywords: history, purchases, transactions)
 - invoice_inquiry: Customer wants to check invoice details (keywords: invoice, INV)
-- quantity_discrepancy: Customer reports missing/incorrect quantities (keywords: missing, received less, short, quantity)
+- quantity_discrepancy: Customer reports missing/incorrect quantities (keywords: missing, received less, short, quantity, wrong amount received)
 - damage_report: Customer reports damaged items (keywords: damaged, broken, defective, cracked)
 - credit_memo_approval: Customer responds to credit memo options (keywords: yes, approve, apply to, refund)
 - partial_payment: Customer paid less than invoice amount and needs credit deduction (keywords: paid, payment, less than, partial, remaining)
 - general: General inquiry or greeting
+
+IMPORTANT: If the message contains "apply" + "$" + "credit" + customer name, it is ALWAYS credit_application, NOT quantity_discrepancy.
 
 EXTRACTION RULES:
 1. customerName: Extract full customer name if mentioned (e.g., "John Smith", "Sarah Johnson")
@@ -59,6 +61,8 @@ EXAMPLES:
 - "Apply 1000 credits to invoice INV001 for John Smith" → intent: credit_application, customerName: "John Smith", creditAmount: 1000, invoiceId: "INV001"
 - "Apply $10000 credit for CUST001 to invoice INV001" → intent: credit_application, customerId: "CUST001", creditAmount: 10000, invoiceId: "INV001"
 - "Apply $100 to INV001 for CUST001" → intent: credit_application, customerId: "CUST001", creditAmount: 100, invoiceId: "INV001"
+- "Apply $5 credits from CUST001 to invoice INV001" → intent: credit_application, customerId: "CUST001", creditAmount: 5, invoiceId: "INV001"
+- "Apply 20$ credit for Lisa Chen" → intent: credit_application, customerName: "Lisa Chen", creditAmount: 20
 - "Show credits for John" → intent: credit_balance_inquiry, customerName: "John"
 - "How much credits are available for John Smith?" → intent: credit_balance_inquiry, customerName: "John Smith"
 - "Check credit balance for CUST001" → intent: credit_balance_inquiry, customerId: "CUST001"

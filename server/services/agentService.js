@@ -29,6 +29,24 @@ const AGENT_STATES = {
 };
 
 /**
+ * Helper function to format details as collapsible section
+ */
+function formatCollapsibleDetails(details, title = "📋 Technical Details") {
+  if (!details) return '';
+
+  const detailsJson = JSON.stringify(details, null, 2);
+  return `\n---DETAILS---\n${detailsJson}`;
+}
+
+/**
+ * Helper function to keep bold markdown as-is (frontend will handle **)
+ */
+function formatBoldText(text) {
+  // Keep markdown format - frontend will render ** as bold
+  return text;
+}
+
+/**
  * Main Agent class that orchestrates the entire request lifecycle
  */
 class ClarifyingRAGAgent {
@@ -77,34 +95,346 @@ class ClarifyingRAGAgent {
   }
 
   /**
+   * Pattern-based extraction as fallback when LLM fails
+   */
+  patternBasedExtraction(message) {
+    const lowerMessage = message.toLowerCase();
+    const result = {
+      intent: 'general',
+      customerName: null,
+      customerId: null,
+      creditAmount: null,
+      invoiceId: null,
+      itemDescription: null,
+      damageDescription: null,
+      customerChoice: null,
+      targetInvoiceId: null,
+      missingQuantity: null
+    };
+
+    // Extract customer ID (CUST001, CUST002, etc.)
+    const custMatch = message.match(/CUST\d+/i);
+    if (custMatch) {
+      result.customerId = custMatch[0].toUpperCase();
+    }
+
+    // Extract invoice ID (INV001, INV002, etc.)
+    const invMatch = message.match(/INV\d+/i);
+    if (invMatch) {
+      result.invoiceId = invMatch[0].toUpperCase();
+    }
+
+    // Extract credit amount ($5, $250, 100, etc.) - only if explicitly mentioned
+    // Be more specific to avoid extracting from invoice IDs like INV008
+    const amountMatch = message.match(/\$(\d+)|(\d+)\s*(?:credit|dollar)|apply\s+(\d+)|credit.*?(\d+)(?!\d)/i);
+    if (amountMatch) {
+      // Get the first non-null capture group, but avoid invoice ID numbers
+      const amount = amountMatch[1] || amountMatch[2] || amountMatch[3] || amountMatch[4];
+      if (amount) {
+        // Additional validation: don't extract if it's part of an invoice ID
+        const invoicePattern = new RegExp(`INV\\d*${amount}`, 'i');
+        if (!invoicePattern.test(message)) {
+          result.creditAmount = parseInt(amount);
+        }
+      }
+    }
+
+    // Determine intent based on keywords - PRIORITIZE COMMON INTENTS
+    if ((lowerMessage.includes('balance') || lowerMessage.includes('show') || lowerMessage.includes('check') || lowerMessage.includes('what')) && lowerMessage.includes('credit')) {
+      result.intent = 'credit_balance_inquiry';
+    } else if (lowerMessage.includes('apply') && lowerMessage.includes('credit')) {
+      result.intent = 'credit_application';
+    } else if ((lowerMessage.includes('add') || lowerMessage.includes('give') || lowerMessage.includes('create')) && lowerMessage.includes('credit')) {
+      result.intent = 'add_credits';
+    } else if (lowerMessage.includes('invoice') && !lowerMessage.includes('credit')) {
+      result.intent = 'invoice_inquiry';
+    } else if (lowerMessage.includes('history') || lowerMessage.includes('purchase')) {
+      result.intent = 'purchase_history';
+    }
+    // RESTRICT ACCESS TO SPECIALIZED INTENTS - only if very specific keywords are present
+    else if (lowerMessage.includes('missing') && lowerMessage.includes('quantity') && lowerMessage.includes('received')) {
+      result.intent = 'quantity_discrepancy';
+    } else if (lowerMessage.includes('damaged') && (lowerMessage.includes('broken') || lowerMessage.includes('defective'))) {
+      result.intent = 'damage_report';
+    }
+
+    // VALIDATION: Ensure intent makes sense with extracted data
+    if (result.intent === 'quantity_discrepancy' && !result.invoiceId) {
+      // Quantity discrepancy requires an invoice ID
+      console.log('🔧 LIVE DEBUG - Rejecting quantity_discrepancy without invoice ID');
+      result.intent = 'general';
+    }
+
+    if (result.intent === 'credit_balance_inquiry' && !result.customerId) {
+      // Credit balance inquiry requires a customer
+      console.log('🔧 LIVE DEBUG - Rejecting credit_balance_inquiry without customer');
+      result.intent = 'general';
+    }
+
+    console.log('🔧 LIVE DEBUG - Pattern extraction details:', {
+      custMatch: custMatch?.[0],
+      invMatch: invMatch?.[0],
+      amountMatch: amountMatch?.[1],
+      detectedIntent: result.intent,
+      validationPassed: result.intent !== 'general'
+    });
+
+    return result;
+  }
+
+  /**
+   * Check if the current request involves a different customer than previous context
+   */
+  checkForCustomerChange(extractedInfo) {
+    const { customerName, customerId } = extractedInfo;
+    // Handle "null" strings from LLM extraction
+    const cleanCustomerName = (customerName === 'null' || customerName === null) ? null : customerName;
+    const cleanCustomerId = (customerId === 'null' || customerId === null) ? null : customerId;
+    const currentCustomerIdentifier = cleanCustomerName || cleanCustomerId;
+
+    console.log('🔍 LIVE DEBUG - Customer change check:', {
+      currentCustomerIdentifier,
+      hasConfirmedData: !!this.context.confirmedData,
+      confirmedDataType: Array.isArray(this.context.confirmedData) ? 'array' : typeof this.context.confirmedData
+    });
+
+    if (!currentCustomerIdentifier) return false;
+
+    // Check if we have previous customer data
+    if (this.context.confirmedData && Array.isArray(this.context.confirmedData) && this.context.confirmedData.length > 0) {
+      const previousCustomer = this.context.confirmedData[0];
+      const previousIdentifier = previousCustomer.name || previousCustomer.id;
+
+      console.log('🔍 LIVE DEBUG - Previous customer:', {
+        name: previousCustomer.name,
+        id: previousCustomer.id,
+        identifier: previousIdentifier
+      });
+
+      // If customer identifier is different, clear previous context
+      if (currentCustomerIdentifier !== previousIdentifier &&
+          currentCustomerIdentifier !== previousCustomer.id &&
+          currentCustomerIdentifier !== previousCustomer.name) {
+        console.log(`🔄 LIVE DEBUG - Customer change detected: ${previousIdentifier} → ${currentCustomerIdentifier}`);
+        console.log('🧹 LIVE DEBUG - Clearing previous customer context');
+        this.context.confirmedData = null;
+        return true;
+      } else {
+        console.log('🔍 LIVE DEBUG - Same customer, keeping context');
+      }
+    } else {
+      console.log('🔍 LIVE DEBUG - No previous customer data');
+    }
+
+    return false;
+  }
+
+  /**
    * Step 1: Analyze intent and execute retrieval tools
    */
   async analyzeAndRetrieve(userMessage, model, conversationContext) {
     this.context.originalRequest = userMessage;
 
+    // Check for reset command
+    if (userMessage.toLowerCase().includes('reset session') || userMessage.toLowerCase().includes('clear session')) {
+      console.log('🔄 LIVE DEBUG - Session reset requested');
+      this.reset();
+      return {
+        message: '🔄 **Session Reset**\n\nI\'ve cleared all session data. You can now start fresh with your queries.',
+        type: 'info',
+        agentState: 'completed'
+      };
+    }
+
+    console.log('🔍 LIVE DEBUG - Session:', this.sessionId);
+    console.log('🔍 LIVE DEBUG - Message:', userMessage);
+    console.log('🔍 LIVE DEBUG - Current context before extraction:', {
+      confirmedData: this.context.confirmedData ?
+        (Array.isArray(this.context.confirmedData) ? this.context.confirmedData[0]?.name : this.context.confirmedData.name) : 'null'
+    });
+
     // Use existing LLM to extract intent and parameters
-    const extractedInfo = await extractInfoWithLLM(userMessage, model, conversationContext);
+    let extractedInfo = await extractInfoWithLLM(userMessage, model, conversationContext);
 
     console.log('🧠 Extracted info:', extractedInfo);
+
+    // ROBUST FALLBACK: If LLM extraction fails or returns general intent, use pattern matching
+    if (extractedInfo.intent === 'general' || extractedInfo.error ||
+        (extractedInfo.customerId === 'null' || extractedInfo.customerId === null) && userMessage.match(/CUST\d+/i)) {
+      console.log('🔧 LIVE DEBUG - LLM extraction failed or incomplete, using pattern-based fallback');
+      console.log('🔧 LIVE DEBUG - Original LLM result:', extractedInfo);
+      extractedInfo = this.patternBasedExtraction(userMessage);
+      console.log('🔧 LIVE DEBUG - Pattern-based result:', extractedInfo);
+    }
+
+    // VALIDATION: Check for LLM hallucination and wrong intent classification
+    const originalMessage = userMessage.toLowerCase();
+
+    // Check for hallucinated customer names
+    if (extractedInfo.customerName && extractedInfo.customerName !== 'null') {
+      const extractedName = extractedInfo.customerName.toLowerCase();
+
+      if (!originalMessage.includes(extractedName)) {
+        console.log('🚨 LIVE DEBUG - LLM hallucination detected:', {
+          extractedName: extractedInfo.customerName,
+          originalMessage: userMessage,
+          containsName: originalMessage.includes(extractedName)
+        });
+
+        // Clear the hallucinated customer name but preserve customerId if it exists
+        extractedInfo.customerName = null;
+        console.log('🧹 LIVE DEBUG - Cleared hallucinated customer name');
+
+        // If we have a customerId from the original message, use pattern extraction to get it
+        if (!extractedInfo.customerId) {
+          const custMatch = userMessage.match(/CUST\d+/i);
+          if (custMatch) {
+            extractedInfo.customerId = custMatch[0].toUpperCase();
+            console.log('🔧 LIVE DEBUG - Recovered customerId from pattern:', extractedInfo.customerId);
+          }
+        }
+      }
+    }
+
+    // CRITICAL: Validate intent classification
+    if (extractedInfo.intent === 'quantity_discrepancy') {
+      // Quantity discrepancy requires very specific keywords
+      if (!originalMessage.includes('missing') || !originalMessage.includes('quantity') || !originalMessage.includes('received')) {
+        console.log('🚨 LIVE DEBUG - Wrong quantity_discrepancy classification, correcting to credit_balance_inquiry');
+        extractedInfo.intent = 'credit_balance_inquiry';
+      }
+    }
+
+    if (extractedInfo.intent === 'damage_report') {
+      // Damage report requires damage-related keywords
+      if (!originalMessage.includes('damaged') && !originalMessage.includes('broken') && !originalMessage.includes('defective')) {
+        console.log('🚨 LIVE DEBUG - Wrong damage_report classification, correcting to credit_balance_inquiry');
+        extractedInfo.intent = 'credit_balance_inquiry';
+      }
+    }
 
     // Store extracted info for later use
     this.context.originalExtractedInfo = extractedInfo;
 
+    // Check for customer change and clear context if needed
+    this.checkForCustomerChange(extractedInfo);
+
+    // AGGRESSIVE FIX: Always clear context when a specific customer is mentioned
+    // This ensures no session contamination
+    const cleanCustomerName = (extractedInfo.customerName === 'null' || extractedInfo.customerName === null) ? null : extractedInfo.customerName;
+    const cleanCustomerId = (extractedInfo.customerId === 'null' || extractedInfo.customerId === null) ? null : extractedInfo.customerId;
+
+    if (cleanCustomerName || cleanCustomerId) {
+      console.log('🔄 LIVE DEBUG - Aggressive context clearing for customer query');
+      this.context.confirmedData = null;
+    }
+
     // Determine which retrieval tool to use based on intent
     const toolSelection = this.selectRetrievalTool(extractedInfo);
+    console.log('🔍 Tool selection result:', toolSelection);
 
     if (!toolSelection) {
-      // For read-only operations (like credit_balance_inquiry), execute directly without confirmation
+      console.log('🔍 No tool selection - taking direct path');
+
+      // For read-only operations that need customer data, try to find customer first
+      const cleanCustomerName = (extractedInfo.customerName === 'null' || extractedInfo.customerName === null) ? null : extractedInfo.customerName;
+      const cleanCustomerId = (extractedInfo.customerId === 'null' || extractedInfo.customerId === null) ? null : extractedInfo.customerId;
+
+      if (this.isReadOnlyOperation(extractedInfo.intent) && (cleanCustomerName || cleanCustomerId)) {
+        console.log('🔍 Read-only operation needs customer - finding customer first');
+        const customerName = cleanCustomerName || cleanCustomerId;
+        const customers = await retrievalTools.findCustomerByName(customerName);
+
+        if (customers.length === 0) {
+          return {
+            message: `🔴 Customer not found. Please check the customer name or ID.`,
+            type: 'error',
+            agentState: 'completed'
+          };
+        }
+
+        // Store customer data and execute
+        this.context.confirmedData = customers;
+        return await this.executeDirectly(extractedInfo);
+      }
+
+      // For read-only operations without customer data, execute directly
       if (this.isReadOnlyOperation(extractedInfo.intent)) {
+        console.log('🔍 Read-only operation - executing directly without retrieval');
         return await this.executeDirectly(extractedInfo);
       }
 
       // For write operations, proceed to action confirmation
+      // But first check if this is a failed intent extraction
+      if (extractedInfo.intent === 'general' && extractedInfo.error) {
+        console.log('🔍 Intent extraction failed, attempting to parse manually');
+        // Try to manually detect credit application patterns
+        const message = this.context.originalRequest.toLowerCase();
+        if (message.includes('apply') && message.includes('credit') && (message.includes('cust') || message.includes('invoice'))) {
+          console.log('🔍 Detected credit application pattern, switching intent');
+          extractedInfo.intent = 'credit_application';
+
+          // Try to extract basic info manually
+          const custMatch = this.context.originalRequest.match(/CUST\d+/i);
+          const invMatch = this.context.originalRequest.match(/INV\d+/i);
+          const amountMatch = this.context.originalRequest.match(/\$?(\d+)/);
+
+          if (custMatch) extractedInfo.customerId = custMatch[0].toUpperCase();
+          if (invMatch) extractedInfo.invoiceId = invMatch[0].toUpperCase();
+          if (amountMatch) extractedInfo.creditAmount = parseInt(amountMatch[1]);
+
+          console.log('🔍 Manual extraction result:', extractedInfo);
+
+          // If we have customer data and specific invoice, execute directly for validation
+          if (this.context.confirmedData && extractedInfo.invoiceId) {
+            console.log('🔍 Manual extraction with specific invoice - executing directly for validation');
+            return await this.executeDirectly(extractedInfo);
+          }
+        }
+      }
+
       return await this.prepareActionConfirmation(extractedInfo);
     }
 
     // Execute the retrieval tool
     const retrievalResults = await this.executeRetrievalTool(toolSelection);
+
+    console.log(`🔍 Retrieval results:`, retrievalResults);
+    console.log(`🔍 Retrieval results length:`, Array.isArray(retrievalResults) ? retrievalResults.length : 'not array');
+
+    // IMMEDIATE VALIDATION: If this is a credit application with specific invoice, validate it now
+    if (extractedInfo.intent === 'credit_application' && extractedInfo.invoiceId && retrievalResults && retrievalResults.length > 0) {
+      console.log('🔍 IMMEDIATE VALIDATION - Checking invoice before confirmation');
+      const customer = Array.isArray(retrievalResults) ? retrievalResults[0] : retrievalResults;
+      const invoiceValidation = await retrievalTools.findAndValidateInvoice(extractedInfo.invoiceId, customer.id);
+
+      if (!invoiceValidation.success) {
+        console.log('🔍 IMMEDIATE VALIDATION - Invoice validation failed:', invoiceValidation);
+
+        let message = `🔴 **Invoice Issue**\n\n`;
+        message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+        message += `📄 **Invoice:** ${extractedInfo.invoiceId}\n`;
+        message += `❌ **Error:** ${invoiceValidation.error}\n\n`;
+
+        if (invoiceValidation.type === 'invoice_not_found') {
+          message += `Invoice ${extractedInfo.invoiceId} does not exist in the system.`;
+        } else if (invoiceValidation.type === 'invoice_not_owned') {
+          message += `Invoice ${extractedInfo.invoiceId} does not belong to ${customer.name}.`;
+        } else if (invoiceValidation.type === 'invoice_already_paid') {
+          message += `Invoice ${extractedInfo.invoiceId} is already paid.`;
+        }
+
+        message = formatBoldText(message);
+        message += formatCollapsibleDetails(invoiceValidation, "📄 Invoice Validation Details");
+
+        this.reset();
+        return {
+          message,
+          type: 'error',
+          agentState: 'completed'
+        };
+      }
+    }
 
     // Check for ambiguity
     if (this.detectAmbiguity(retrievalResults)) {
@@ -209,11 +539,15 @@ class ClarifyingRAGAgent {
   selectRetrievalTool(extractedInfo) {
     const { intent, customerName, customerId, invoiceId } = extractedInfo;
 
+    // Handle "null" strings from LLM extraction
+    const cleanCustomerName = (customerName === 'null' || customerName === null) ? null : customerName;
+    const cleanCustomerId = (customerId === 'null' || customerId === null) ? null : customerId;
+
     // Customer identification needed for most operations
-    if ((customerName || customerId) && !this.context.confirmedCustomer) {
+    if (cleanCustomerName || cleanCustomerId) {
       return {
         tool: 'findCustomerByName',
-        arguments: { name: customerName || customerId }
+        arguments: { name: cleanCustomerName || cleanCustomerId }
       };
     }
 
@@ -315,6 +649,9 @@ class ClarifyingRAGAgent {
         }
 
         this.reset();
+        message = formatBoldText(message);
+        message += formatCollapsibleDetails({ availableCredits, requestedAmount: creditAmount }, "💳 Available Credits Details");
+
         return {
           message,
           type: 'insufficient_credits',
@@ -339,6 +676,9 @@ class ClarifyingRAGAgent {
           } else if (invoiceValidation.type === 'invoice_already_paid') {
             message += `Invoice ${invoiceId} is already paid.`;
           }
+
+          message = formatBoldText(message);
+          message += formatCollapsibleDetails(invoiceValidation, "📄 Invoice Validation Details");
 
           this.reset();
           return {
@@ -454,6 +794,11 @@ class ClarifyingRAGAgent {
           result = await this.executeOverdueInquiry(confirmedData);
           break;
 
+        case 'general':
+          // Handle failed intent extraction - try to detect what user actually wants
+          result = await this.handleGeneralIntent();
+          break;
+
         default:
           result = {
             message: `Action type '${intent}' is not yet implemented.`,
@@ -476,6 +821,75 @@ class ClarifyingRAGAgent {
         agentState: this.state
       };
     }
+  }
+
+  /**
+   * Handle general intent - try to detect what user actually wants
+   */
+  async handleGeneralIntent() {
+    const originalMessage = this.context.originalRequest;
+    const message = originalMessage.toLowerCase();
+
+    console.log('🔍 Handling general intent for:', originalMessage);
+
+    // Try to detect credit application patterns
+    if (message.includes('apply') && message.includes('credit')) {
+      console.log('🔍 Detected credit application pattern');
+
+      // Extract basic info manually
+      const custMatch = originalMessage.match(/CUST\d+/i);
+      const invMatch = originalMessage.match(/INV\d+/i);
+      const amountMatch = originalMessage.match(/\$?(\d+)/);
+
+      if (custMatch && invMatch && amountMatch) {
+        const customerId = custMatch[0].toUpperCase();
+        const invoiceId = invMatch[0].toUpperCase();
+        const creditAmount = parseInt(amountMatch[1]);
+
+        console.log(`🔍 Manual extraction: ${customerId}, ${invoiceId}, $${creditAmount}`);
+
+        // Try to execute credit application directly
+        try {
+          // First, look up the customer if we don't have it
+          let customer = Array.isArray(this.context.confirmedData) ? this.context.confirmedData[0] : this.context.confirmedData;
+
+          if (!customer) {
+            console.log('🔍 No customer in context, looking up customer:', customerId);
+            const retrievalTools = require('./tools/retrievalTools');
+            const customers = await retrievalTools.findCustomerByName(customerId);
+
+            if (customers.length === 0) {
+              return {
+                message: `🔴 Customer not found. Please check the customer name or ID.`,
+                type: 'error'
+              };
+            }
+
+            this.context.confirmedData = customers;
+            customer = customers[0];
+          }
+
+          // Update the original extracted info
+          this.context.originalExtractedInfo = {
+            ...this.context.originalExtractedInfo,
+            intent: 'credit_application',
+            customerId,
+            invoiceId,
+            creditAmount
+          };
+
+          return await this.executeSmartCreditApplication(this.context.confirmedData);
+        } catch (error) {
+          console.error('❌ Error in manual credit application:', error);
+        }
+      }
+    }
+
+    // Default fallback
+    return {
+      message: `🔴 I couldn't understand your request. Please try rephrasing it or contact support for assistance.\n\n**Original message:** "${originalMessage}"`,
+      type: 'error'
+    };
   }
 
   /**
@@ -515,16 +929,36 @@ class ClarifyingRAGAgent {
       message += `📅 Date: ${new Date().toLocaleDateString()}\n`;
       message += `📝 Source: Manual addition`;
 
+      // Format with collapsible details
+      message = formatBoldText(message);
+      message += formatCollapsibleDetails({
+        success: true,
+        credit: {
+          id: result.credit.id,
+          amount: result.credit.amount,
+          date: result.credit.date
+        },
+        customer: {
+          id: customer.id,
+          name: customer.name
+        },
+        type: 'credits_added'
+      }, "💳 Credit Details");
+
       return {
         message,
-        type: 'success',
-        details: result
+        type: 'success'
       };
     } else {
+      let message = `🔴 **Failed to Add Credits**\n\n${result.error}`;
+
+      // Format with collapsible details
+      message = formatBoldText(message);
+      message += formatCollapsibleDetails(result, "❌ Error Details");
+
       return {
-        message: `🔴 **Failed to Add Credits**\n\n${result.error}`,
-        type: 'error',
-        details: result
+        message,
+        type: 'error'
       };
     }
   }
@@ -536,7 +970,11 @@ class ClarifyingRAGAgent {
     // Handle both single customer and array from retrieval
     const customer = Array.isArray(customerData) ? customerData[0] : customerData;
 
+    console.log('🔍 executeCreditBalanceInquiry called with:', customerData);
+    console.log('🔍 Processed customer:', customer);
+
     if (!customer) {
+      console.log('❌ No customer found in executeCreditBalanceInquiry');
       return {
         message: `🔴 Customer not found. Please check the customer name or ID.`,
         type: 'error'
@@ -563,10 +1001,13 @@ class ClarifyingRAGAgent {
       message += `No active credits found for this customer.`;
     }
 
+    // Add collapsible details section and format bold text
+    message = formatBoldText(message);
+    message += formatCollapsibleDetails(credits);
+
     return {
       message,
-      type: 'success',
-      details: credits
+      type: 'success'
     };
   }
 
@@ -682,13 +1123,19 @@ class ClarifyingRAGAgent {
 
       // Check if customer has pending invoices
       if (pendingInvoices.length === 0) {
+        let message = `📋 **No Pending Invoices**\n\n` +
+                     `👤 **Customer:** ${customer.name} (${customer.id})\n` +
+                     `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n` +
+                     `This customer has no pending invoices to apply credits to. All invoices are already paid.`;
+
+        // Format with collapsible details like credit balance query
+        message = formatBoldText(message);
+        message += formatCollapsibleDetails({ availableCredits, pendingInvoices }, "📋 Technical Details");
+
         return {
-          message: `📋 **No Pending Invoices**\n\n` +
-                   `👤 **Customer:** ${customer.name} (${customer.id})\n` +
-                   `💳 **Available Credits:** $${availableCredits.totalAmount}\n\n` +
-                   `This customer has no pending invoices to apply credits to. All invoices are already paid.`,
+          message,
           type: 'no_pending_invoices',
-          details: { availableCredits, pendingInvoices }
+          agentState: 'completed'
         };
       }
 
@@ -797,12 +1244,17 @@ class ClarifyingRAGAgent {
           results.push(result);
           totalApplied += application.amount;
         } else {
+          let message = `🔴 **Credit Application Failed**\n\n` +
+                       `Failed to apply $${application.amount} to invoice ${application.invoiceId}:\n` +
+                       `${result.error}`;
+
+          // Format with collapsible details
+          message = formatBoldText(message);
+          message += formatCollapsibleDetails(result, "❌ Error Details");
+
           return {
-            message: `🔴 **Credit Application Failed**\n\n` +
-                     `Failed to apply $${application.amount} to invoice ${application.invoiceId}:\n` +
-                     `${result.error}`,
-            type: 'error',
-            details: result
+            message,
+            type: 'error'
           };
         }
       }
@@ -821,13 +1273,21 @@ class ClarifyingRAGAgent {
         message += `   Status: ${application.currentStatus} → ${result.invoice.status}\n\n`;
       });
 
+      // Format with collapsible details
+      message = formatBoldText(message);
+      message += formatCollapsibleDetails({
+        results,
+        totalApplied,
+        invoicesUpdated: results.length,
+        applicationPlan
+      }, "💳 Application Details");
+
       // Clear the application plan
       this.context.applicationPlan = null;
 
       return {
         message,
-        type: 'success',
-        details: { results, totalApplied, invoicesUpdated: results.length }
+        type: 'success'
       };
 
     } catch (error) {
@@ -856,10 +1316,13 @@ class ClarifyingRAGAgent {
     message += `📊 **Average Invoice:** $${history.averageInvoiceAmount}\n`;
     message += `📈 **Trend:** ${history.paymentTrend}`;
 
+    // Format with collapsible details
+    message = formatBoldText(message);
+    message += formatCollapsibleDetails(history, "📊 Payment History Details");
+
     return {
       message,
-      type: 'success',
-      details: history
+      type: 'success'
     };
   }
 
@@ -894,10 +1357,13 @@ class ClarifyingRAGAgent {
       });
     }
 
+    // Format with collapsible details
+    message = formatBoldText(message);
+    message += formatCollapsibleDetails(overdueInvoices, "⏰ Overdue Invoice Details");
+
     return {
       message,
-      type: overdueInvoices.length > 0 ? 'warning' : 'success',
-      details: overdueInvoices
+      type: overdueInvoices.length > 0 ? 'warning' : 'success'
     };
   }
 
