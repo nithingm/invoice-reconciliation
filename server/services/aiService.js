@@ -23,6 +23,34 @@ function isGeminiModel(model) {
 }
 
 /**
+ * Check if a model is an OpenAI model
+ * @param {string} model - The model name
+ * @returns {boolean} - True if it's an OpenAI model
+ */
+function isOpenAIModel(model) {
+  return model.startsWith('gpt-') || model.startsWith('openai/');
+}
+
+/**
+ * Clean model name for proper API usage
+ * @param {string} model - The model name
+ * @returns {string} - Cleaned model name
+ */
+function cleanModelName(model) {
+  // Remove provider prefixes for direct API usage
+  if (model.startsWith('openai/')) {
+    return model.replace('openai/', '');
+  }
+  if (model.startsWith('gemini/')) {
+    return model.replace('gemini/', '');
+  }
+  if (model.startsWith('google/')) {
+    return model.replace('google/', '');
+  }
+  return model;
+}
+
+/**
  * Process AI query with Python microservice for Gemini models
  * @param {string} message - User's message
  * @param {string} model - The Gemini model to use
@@ -79,9 +107,12 @@ async function extractInfoWithLLM(message, model, conversationContext = null) {
 
     console.log(`🧠 Sending prompt to ${model}:`, prompt.substring(0, 200) + '...');
 
+    // Clean model name for proper API usage (remove provider prefixes)
+    const cleanedModel = cleanModelName(model);
+
     // Use Node.js LiteLLM for non-Gemini models
     const response = await litellm.completion({
-      model: model,
+      model: cleanedModel,
       messages: [{ role: 'user', content: prompt }],
       stream: false,
     });
@@ -190,8 +221,11 @@ async function handleGeneralQuery(message, model) {
 
     console.log(`💬 General query prompt to ${model}:`, prompt.substring(0, 200) + '...');
 
+    // Clean model name for proper API usage (remove provider prefixes)
+    const cleanedModel = cleanModelName(model);
+
     const response = await litellm.completion({
-      model: model,
+      model: cleanedModel,
       messages: [{ role: 'user', content: prompt }],
       stream: false,
     });

@@ -3,9 +3,22 @@ const { connectToMongoDB, disconnectFromMongoDB } = require('../server/config/mo
 const { ClarifyingRAGAgent } = require('../server/services/agentService');
 
 /**
+ * Parse command line arguments
+ */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const useGemini = args.includes('--gemini');
+  const model = useGemini ? 'gemini-2.5-flash-lite' : 'ollama/llama3.2:3b';
+
+  console.log(`🤖 Using AI Model: ${model}`);
+  return { model, useGemini };
+}
+
+/**
  * Debug the clarification issue - why is it showing generic confirmation instead of clarification?
  */
 async function debugClarificationIssue() {
+  const { model } = parseArgs();
   console.log('🔍 Debugging Clarification Issue...');
   
   try {
@@ -24,7 +37,7 @@ async function debugClarificationIssue() {
     // Enable more detailed logging
     console.log('\n📝 Testing with detailed logging...');
     
-    const result = await agent.processRequest("Use $50 credit for John", 'gemini-2.5-flash-lite');
+    const result = await agent.processRequest("Use $50 credit for John", model);
     
     console.log('\n🔍 DETAILED ANALYSIS:');
     console.log('='.repeat(40));
@@ -59,7 +72,7 @@ async function debugClarificationIssue() {
     console.log('='.repeat(40));
     
     const agent2 = new ClarifyingRAGAgent('debug-comparison');
-    const result2 = await agent2.processRequest("What's the balance for John?", 'gemini-2.5-flash-lite');
+    const result2 = await agent2.processRequest("What's the balance for John?", model);
     
     console.log('Credit Balance Result Type:', result2.type);
     console.log('Credit Balance Agent State:', result2.agentState);
@@ -76,7 +89,7 @@ async function debugClarificationIssue() {
     console.log('='.repeat(40));
     
     const agent3 = new ClarifyingRAGAgent('debug-control');
-    const result3 = await agent3.processRequest("Use $50 credit for John Smith", 'gemini-2.5-flash-lite');
+    const result3 = await agent3.processRequest("Use $50 credit for John Smith", model);
     
     console.log('Specific Name Result Type:', result3.type);
     console.log('Specific Name Agent State:', result3.agentState);

@@ -3,9 +3,22 @@ const { connectToMongoDB, disconnectFromMongoDB } = require('../server/config/mo
 const { ClarifyingRAGAgent } = require('../server/services/agentService');
 
 /**
+ * Parse command line arguments
+ */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const useGemini = args.includes('--gemini');
+  const model = useGemini ? 'gemini-2.5-flash-lite' : 'ollama/llama3.2:3b';
+
+  console.log(`🤖 Using AI Model: ${model}`);
+  return { model, useGemini };
+}
+
+/**
  * Test the specific problematic invoice inquiry phrases
  */
 async function testInvoiceIntentFix() {
+  const { model } = parseArgs();
   console.log('🧪 Testing Invoice Intent Detection Fixes...');
   
   try {
@@ -60,7 +73,7 @@ async function testInvoiceIntentFix() {
       console.log('='.repeat(70));
       
       const agent = new ClarifyingRAGAgent(`test-intent-${i}`);
-      const result = await agent.processRequest(testCase.message, 'gemini-2.5-flash-lite');
+      const result = await agent.processRequest(testCase.message, model);
       
       console.log('🤖 Result Type:', result.type);
       console.log('🤖 Agent State:', result.agentState);

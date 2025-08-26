@@ -3,9 +3,22 @@ const { connectToMongoDB, disconnectFromMongoDB } = require('../server/config/mo
 const { ClarifyingRAGAgent } = require('../server/services/agentService');
 
 /**
+ * Parse command line arguments
+ */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const useGemini = args.includes('--gemini');
+  const model = useGemini ? 'gemini-2.5-flash-lite' : 'ollama/llama3.2:3b';
+
+  console.log(`🤖 Using AI Model: ${model}`);
+  return { model, useGemini };
+}
+
+/**
  * Test invoice inquiry functionality
  */
 async function testInvoiceInquiry() {
+  const { model } = parseArgs();
   console.log('🧪 Testing Invoice Inquiry Functionality...');
   
   try {
@@ -54,7 +67,7 @@ async function testInvoiceInquiry() {
       console.log('='.repeat(60));
       
       const agent = new ClarifyingRAGAgent(`test-invoice-${i}`);
-      const result = await agent.processRequest(testCase.message, 'gemini-2.5-flash-lite');
+      const result = await agent.processRequest(testCase.message, model);
       
       console.log('🤖 Result Type:', result.type);
       console.log('🤖 Agent State:', result.agentState);

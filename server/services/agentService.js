@@ -169,8 +169,11 @@ class ClarifyingRAGAgent {
     else if (lowerMessage.includes('invoice') && !lowerMessage.includes('credit')) {
       result.intent = 'invoice_inquiry';
     }
-    // PURCHASE HISTORY
-    else if (lowerMessage.includes('history') || lowerMessage.includes('purchase')) {
+    // PURCHASE HISTORY: Check for purchase/history patterns
+    else if (lowerMessage.includes('history') || lowerMessage.includes('purchase') ||
+             lowerMessage.includes('bought') || lowerMessage.includes('purchased') ||
+             (lowerMessage.includes('what') && (lowerMessage.includes('has') || lowerMessage.includes('did')) &&
+              (result.customerId || result.customerName))) {
       result.intent = 'purchase_history';
     }
     // RESTRICT ACCESS TO SPECIALIZED INTENTS - only if very specific keywords are present
@@ -861,6 +864,10 @@ class ClarifyingRAGAgent {
           result = await this.executeInvoiceInquiry(confirmedData);
           break;
 
+        case 'purchase_history':
+          result = await this.executePurchaseHistoryInquiry(confirmedData);
+          break;
+
         case 'general':
           // Handle failed intent extraction - try to detect what user actually wants
           result = await this.handleGeneralIntent();
@@ -1543,6 +1550,129 @@ class ClarifyingRAGAgent {
       console.error('❌ Invoice inquiry error:', error);
       return {
         message: '🔴 An error occurred while retrieving invoice details. Please try again.',
+        type: 'error',
+        agentState: 'completed'
+      };
+    }
+  }
+
+  /**
+   * Execute purchase history inquiry
+   */
+  async executePurchaseHistoryInquiry(confirmedData) {
+    try {
+      console.log('📊 Executing purchase history inquiry');
+
+      // Get customer from confirmed data
+      const customer = confirmedData && confirmedData.length > 0 ? confirmedData[0] : null;
+
+      if (!customer) {
+        return {
+          message: '🔴 Customer information not found. Please specify a customer name or ID.',
+          type: 'error',
+          agentState: 'completed'
+        };
+      }
+
+      console.log(`📊 Getting purchase history for customer: ${customer.name} (${customer.id})`);
+
+      // Get purchase history from MongoDB database
+      const database = require('../data/database');
+      const purchaseHistory = await database.getCustomerPurchaseHistory(customer.id);
+
+      if (!purchaseHistory || purchaseHistory.length === 0) {
+        return {
+          message: `📊 **Purchase History for ${customer.name}**\n\n🔍 No purchase history found for this customer.`,
+          type: 'info',
+          agentState: 'completed'
+        };
+      }
+
+      // Calculate totals
+      const totalPurchases = purchaseHistory.length;
+      const totalSpent = purchaseHistory.reduce((sum, purchase) => sum + purchase.amount, 0);
+      const totalCreditsEarned = purchaseHistory.reduce((sum, purchase) => sum + purchase.creditsEarned, 0);
+      const totalCreditsApplied = purchaseHistory.reduce((sum, purchase) => sum + purchase.creditsApplied, 0);
+
+      // Format purchase history message
+      let message = `📊 **Purchase History for ${customer.name}**\n\n`;
+      message += `👤 **Customer:** ${customer.name} (${customer.id})\n`;
+      message += `📧 **Email:** ${customer.email}\n`;
+      message += `🏢 **Company:** ${customer.company}\n\n`;
+
+      message += `📈 **Summary:**\n`;
+      message += `• **Total Purchases:** ${totalPurchases} invoices\n`;
+      message += `• **Total Spent:** $${totalSpent.toFixed(2)}\n`;
+      message += `• **Credits Earned:** $${totalCreditsEarned.toFixed(2)}\n`;
+      message += `• **Credits Applied:** $${totalCreditsApplied.toFixed(2)}\n\n`;
+
+      message += `📋 **Recent Purchases:**\n`;
+
+      // Show recent purchases (limit to 5 for readability)
+      const recentPurchases = purchaseHistory.slice(0, 5);
+      recentPurchases.forEach((purchase, index) => {
+        const purchaseDate = new Date(purchase.date).toLocaleDateString();
+        message += `${index + 1}. **${purchase.invoiceId}** - $${purchase.amount.toFixed(2)} (${purchaseDate})\n`;
+        message += `   📝 ${purchase.description}\n`;
+        message += `   📊 Status: ${purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)} | Payment: ${purchase.paymentStatus.charAt(0).toUpperCase() + purchase.paymentStatus.slice(1)}\n`;
+
+        if (purchase.creditsApplied > 0) {
+          message += `   💳 Current Amount: $${purchase.currentAmount.toFixed(2)} (after $${purchase.creditsApplied.toFixed(2)} credits)\n`;
+        }
+
+        if (purchase.creditsEarned > 0) {
+          message += `   🎁 Credits Earned: $${purchase.creditsEarned.toFixed(2)}\n`;
+        }
+
+        message += `   📦 Items: ${purchase.itemCount}\n\n`;
+      });
+
+      if (purchaseHistory.length > 5) {
+        message += `... and ${purchaseHistory.length - 5} more purchases`;
+      }
+
+      // Create detailed object for collapsible section
+      const purchaseDetails = {
+        customer: {
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          company: customer.company
+        },
+        summary: {
+          totalPurchases,
+          totalSpent,
+          totalCreditsEarned,
+          totalCreditsApplied
+        },
+        purchases: purchaseHistory.map(purchase => ({
+          invoiceId: purchase.invoiceId,
+          date: purchase.date,
+          amount: purchase.amount,
+          currentAmount: purchase.currentAmount,
+          creditsApplied: purchase.creditsApplied,
+          creditsEarned: purchase.creditsEarned,
+          status: purchase.status,
+          paymentStatus: purchase.paymentStatus,
+          description: purchase.description,
+          itemCount: purchase.itemCount
+        }))
+      };
+
+      // Format with collapsible details
+      message = formatBoldText(message);
+      message += formatCollapsibleDetails(purchaseDetails, "📊 Purchase History Details");
+
+      return {
+        message,
+        type: 'success',
+        agentState: 'completed'
+      };
+
+    } catch (error) {
+      console.error('❌ Purchase history inquiry error:', error);
+      return {
+        message: '🔴 An error occurred while retrieving purchase history. Please try again.',
         type: 'error',
         agentState: 'completed'
       };

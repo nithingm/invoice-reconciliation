@@ -9,7 +9,7 @@ router.get('/models', async (req, res) => {
   const availableModels = {
     ollama: ollamaModels,
     gemini: ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite'],
-    openai: ['gpt-5-nano', 'gpt-5-mini'],
+    openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
     anthropic: ['claude-sonnet-4-20250514', 'claude-3-5-haiku-latest'],
   };
   res.json(availableModels);
