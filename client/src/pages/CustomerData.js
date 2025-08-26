@@ -201,12 +201,18 @@ const CustomerData = () => {
                           <div key={index} className="border border-gray-200 rounded-lg p-3">
                             <div className="flex items-center justify-between mb-1">
                               <span className="font-medium text-gray-900">{purchase.product}</span>
-                              <span className="text-green-600 font-medium">${purchase.amount}</span>
+                              <span className="text-green-600 font-medium">${purchase.amount.toFixed(2)}</span>
                             </div>
+                            {purchase.currentAmount !== purchase.amount && (
+                              <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                                <span className="font-medium">New Balance:</span>
+                                <span className="text-blue-600 font-semibold">${purchase.currentAmount.toFixed(2)}</span>
+                              </div>
+                            )}
                             <div className="text-sm text-gray-600">
                               <p>Invoice: {purchase.invoiceId}</p>
                               <p>Date: {formatDate(purchase.date)}</p>
-                              <p>Credits Earned: ${purchase.creditsEarned}</p>
+                              <p>Credits Earned: ${purchase.creditsEarned.toFixed(2)}</p>
                             </div>
                           </div>
                         ))
